@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Simple dashboard with links
+name: simple-dashboard
+version: 1

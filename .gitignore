@@ -1,0 +1,7 @@
+# OS-specific
+.DS_Store
+
+# Vagrant stuff
+*/.vagrant/
+microk8s/*.log
+config.yml

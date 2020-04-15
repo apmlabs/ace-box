@@ -1,0 +1,46 @@
+plugins_dependencies = %w( vagrant-hostmanager vagrant-disksize vagrant-docker-compose )
+plugin_status = false
+plugins_dependencies.each do |plugin_name|
+  unless Vagrant.has_plugin? plugin_name
+    system("vagrant plugin install #{plugin_name}")
+    plugin_status = true
+    puts " #{plugin_name}  Dependencies installed"
+  end
+end
+
+if plugin_status === true
+  exec "vagrant #{ARGV.join' '}"
+else
+  puts "All Plugin Dependencies already installed"
+end
+
+require 'yaml'
+vmconfig = YAML.load_file('config.yml')
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "ubuntu/xenial64"
+    config.hostmanager.enabled = true
+    config.hostmanager.include_offline = true
+    config.hostmanager.manage_host = true
+    config.vm.provision :hostmanager
+  
+    config.vm.define "ace-box" do |c|
+      c.vm.hostname = "ace-box"
+      c.vm.network "private_network", ip: "192.168.50.10"
+      c.disksize.size = '50GB'
+      c.vm.provision "ansible", run: "always" do |ansible|
+        ansible.become = "true"
+        ansible.verbose = "true"
+        ansible.playbook = "ansible/initial.yml"
+        ansible.galaxy_role_file = "ansible/requirements.yml"
+        ansible.galaxy_roles_path = "/etc/ansible/roles"
+        ansible.galaxy_command = "sudo ansible-galaxy install --role-file=%{role_file} --force"
+      end
+      c.vm.provider "virtualbox" do |vb|
+        vb.memory = "8192"
+        vb.cpus = 2
+      end
+      c.vm.post_up_message = "Please open http://ace-box:30001 and use links"
+    end
+  
+  end 

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Microk8s links</title>
+  <meta charset="utf-8">
+</head>
+<style type="text/css">
+  @import url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css);
+  @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: #353535;
+    color: #FFF;
+  }
+
+  h2 {
+    color: #BDC3C7;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .mrng-60-top {
+    margin-top: 60px;
+  }
+
+  /* Global Button Styles */
+  a.animated-button:link,
+  a.animated-button:visited {
+    position: relative;
+    display: block;
+    margin: 30px auto 0;
+    padding: 14px 15px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    letter-spacing: .08em;
+    border-radius: 0;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+  }
+
+  a.animated-button:link:after,
+  a.animated-button:visited:after {
+    content: "";
+    position: absolute;
+    height: 0%;
+    left: 50%;
+    top: 50%;
+    width: 150%;
+    z-index: -1;
+    -webkit-transition: all 0.75s ease 0s;
+    -moz-transition: all 0.75s ease 0s;
+    -o-transition: all 0.75s ease 0s;
+    transition: all 0.75s ease 0s;
+  }
+
+  a.animated-button:link:hover,
+  a.animated-button:visited:hover {
+    color: #FFF;
+    text-shadow: none;
+  }
+
+  a.animated-button:link:hover:after,
+  a.animated-button:visited:hover:after {
+    height: 450%;
+  }
+
+  a.animated-button:link,
+  a.animated-button:visited {
+    position: relative;
+    display: block;
+    margin: 30px auto 0;
+    padding: 14px 15px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 0;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    letter-spacing: .08em;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+  }
+
+  /* Gibson Buttons */
+
+  a.animated-button.gibson-one {
+    border: 2px solid #65b37a;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-one:after {
+    opacity: 0;
+    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-size: 10px 10px;
+    -moz-transform: translateX(-50%) translateY(-50%) rotate(25deg);
+    -ms-transform: translateX(-50%) translateY(-50%) rotate(25deg);
+    -webkit-transform: translateX(-50%) translateY(-50%) rotate(25deg);
+    transform: translateX(-50%) translateY(-50%) rotate(25deg);
+  }
+
+  a.animated-button.gibson-one:hover:after {
+    height: 600% !important;
+    opacity: 1;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-two {
+    border: 2px solid #65b37a;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-two:after {
+    opacity: 0;
+    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-size: 10px 10px;
+    -moz-transform: translateX(-50%) translateY(-50%) rotate(-25deg);
+    -ms-transform: translateX(-50%) translateY(-50%) rotate(-25deg);
+    -webkit-transform: translateX(-50%) translateY(-50%) rotate(-25deg);
+    transform: translateX(-50%) translateY(-50%) rotate(-25deg);
+  }
+
+  a.animated-button.gibson-two:hover:after {
+    height: 600% !important;
+    opacity: 1;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-three {
+    border: 2px solid #65b37a;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-three:after {
+    opacity: 0;
+    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-size: 10px 10px;
+    -moz-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+    -ms-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+    -webkit-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+    transform: translateX(-50%) translateY(-50%) rotate(90deg);
+  }
+
+  a.animated-button.gibson-three:hover:after {
+    height: 600% !important;
+    opacity: 1;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-four {
+    border: 2px solid #65b37a;
+    color: #FFF;
+  }
+
+  a.animated-button.gibson-four:after {
+    opacity: 0;
+    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
+    background-size: 10px 10px;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%));
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  a.animated-button.gibson-four:hover:after {
+    height: 600% !important;
+    opacity: 1;
+    color: #FFF;
+  }
+</style>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2>Important links</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:8080/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/" class="btn btn-sm animated-button gibson-one">Microk8s dashboard</a> </div>
+      <div class="col-md-3 col-sm-3 col-xs-6"><a target="_blank" href="http://ace-box:31000/" class="btn btn-sm animated-button gibson-one">Jenkins</a> </div>
+      <div class="col-md-3 col-sm-3 col-xs-6"><a target="_blank" href="http://ace-box:31001/" class="btn btn-sm animated-button gibson-one">Gogs</a> </div>
+      <div class="col-md-3 col-sm-3 col-xs-6"></div>
+      <!--div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="https://github.com/ganochenkodg/vagrant-microk8s" class="btn btn-sm animated-button gibson-two">Github repo</a> </div-->
+    </div>
+  </div>
+
+    <div class="container">
+        <div class="row">
+        <div class="col-md-12 text-center">
+            <h2 class="mrng-60-top">Services links</h2>
+        </div>
+        </div>
+        <!--div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31200" class="btn btn-sm animated-button gibson-three">Salaryapp, prod</a> </div>
+            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31100" class="btn btn-sm animated-button gibson-four">Salaryapp, staging</a> </div>
+            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31400" class="btn btn-sm animated-button gibson-three">Books crud, prod</a> </div>
+            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31300" class="btn btn-sm animated-button gibson-four">Books crud, staging</a> </div>
+        </div-->
+    </div>
+</body>
+
+</html>
