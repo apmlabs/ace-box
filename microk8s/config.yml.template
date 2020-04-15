@@ -1,0 +1,4 @@
+dynatrace:
+  tenant: 'gcp25389.sprint.dynatracelabs.com'
+  apitoken: 's_8U6A8XSjCqtdDbEZ9rk'
+  paastoken: 'd_qYgDEbRh6L8gOTE01_G'
