@@ -19,6 +19,7 @@
       - snapd
       - cloud-utils
       - parted
+      - docker.io
 
   - name: Disable swap and resize disk
     become: true
@@ -32,7 +33,19 @@
 
   - name: Install microk8s
     become: true
-    command: snap install microk8s --classic --channel=1.13/stable
+    command: snap install microk8s --classic --channel=1.16/stable 
+  
+  - name: Add vagrant to microk8s group
+    become: true
+    command: usermod -a -G microk8s vagrant
+
+  - name: Add vagrant to docker group
+    become: true
+    command: usermod -a -G docker vagrant
+
+  - name: Allow Priv
+    become: true
+    shell: bash -c "echo \"--allow-privileged=true\" >> /var/snap/microk8s/current/args/kube-apiserver"
 
   - name: Alias to kubectl
     shell: snap alias microk8s.kubectl kubectl
@@ -43,7 +56,7 @@
   - name: And wait this
     shell: /snap/bin/microk8s.status --wait-ready
 
-  - name: Enable dashboard, dns, storage and registry
+  - name: Enable dashboard, dns, storage, registry, helm
     shell: /snap/bin/microk8s.enable dns dashboard storage registry
 
   - name: Add namespaces services, staging and prod
@@ -58,35 +71,43 @@
   - name: Config for helm
     shell: "/snap/bin/microk8s.kubectl config view --raw > /home/vagrant/.kube/config"
 
-  - name: Download helm
-    command: wget -O helm.tar.gz https://get.helm.sh/helm-v2.14.0-linux-amd64.tar.gz
-    args:
-      creates: helm.tar.gz
-
-  - name: Extract
-    command: tar zxvf helm.tar.gz
-    args:
-      creates: linux-amd64/helm
-
-  - name: Install helm
+  - name: Install Helm with snap
     become: true
-    command: cp linux-amd64/helm /usr/local/bin/helm
-    args:
-      creates: /usr/local/bin/helm
+    shell: "snap install helm --classic"
 
-  - name: Install tiller
-    become: true
-    command: cp linux-amd64/tiller /usr/local/bin/tiller
-    args:
-      creates: /usr/local/bin/tiller
+  # - name: Download helm
+  #   command: wget -O helm.tar.gz https://get.helm.sh/helm-v2.16.6-linux-amd64.tar.gz
+  #   args:
+  #     creates: helm.tar.gz
 
-  - name: Init helm
+  # - name: Extract
+  #   command: tar zxvf helm.tar.gz
+  #   args:
+  #     creates: linux-amd64/helm
+
+  # - name: Install helm
+  #   become: true
+  #   command: cp linux-amd64/helm /usr/local/bin/helm
+  #   args:
+  #     creates: /usr/local/bin/helm
+
+  # - name: Install tiller
+  #   become: true
+  #   command: cp linux-amd64/tiller /usr/local/bin/tiller
+  #   args:
+  #     creates: /usr/local/bin/tiller
+
+  # - name: Init helm
+  #   become_user: vagrant
+  #   shell: helm init --wait
+
+  - name: Helm - enable Stable Repo
     become_user: vagrant
-    shell: helm init --wait
+    command: /snap/bin/helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 
   - name: Helm - enable Incubator Repo
     become_user: vagrant
-    shell: helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+    shell: /snap/bin/helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
     
   - name: Create persistent volume for jenkins
     shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/jenkins-pvc.yml
@@ -95,7 +116,7 @@
   - name: Chmod 777 to docker socker
     become: true
     file:
-      path: /var/snap/microk8s/current/docker.sock
+      path: /var/run/docker.sock
       mode: '0777'
 
   - name: Allow jenkins to admin k8s
@@ -104,16 +125,16 @@
 
   - name: Prepull jenkins image
     become_user: vagrant
-    shell: /snap/bin/microk8s.docker pull jenkins/jenkins:lts
+    shell: docker pull jenkins/jenkins:lts
 
   - name: Install jenkins
     become_user: vagrant
-    shell: helm upgrade -i -f /vagrant/k8s/jenkins-values.yml --namespace services jenkins stable/jenkins
+    shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values.yml --namespace services jenkins stable/jenkins
     ignore_errors: yes
 
   - name: Install Gogs local Git Server
     become_user: vagrant
-    shell: helm upgrade -i -f /vagrant/k8s/gogs-values.yml --namespace services gogs incubator/gogs
+    shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/gogs-values.yml --namespace services gogs incubator/gogs
     ignore_errors: yes
 
   - name: Build simple dashboard
@@ -122,7 +143,7 @@
 
   - name: Run simple dashboard
     become_user: vagrant
-    shell: helm upgrade -i simple-dashboard /vagrant/helm-charts/dashboard --namespace services
+    shell: /snap/bin/helm upgrade -i simple-dashboard /vagrant/helm-charts/dashboard --namespace services
     ignore_errors: yes    
 
   - name: iptables - Allow forwarding
