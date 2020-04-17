@@ -1,0 +1,20 @@
+
+- name: Create directory for helm
+  file:
+    path: /home/vagrant/.kube
+    state: directory
+
+- name: Config for helm
+  shell: "/snap/bin/microk8s.kubectl config view --raw > /home/vagrant/.kube/config"
+
+- name: Install Helm with snap
+  become: true
+  shell: "snap install helm --classic"
+
+- name: Helm - enable Stable Repo
+  become_user: vagrant
+  command: /snap/bin/helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+
+- name: Helm - enable Incubator Repo
+  become_user: vagrant
+  shell: /snap/bin/helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/

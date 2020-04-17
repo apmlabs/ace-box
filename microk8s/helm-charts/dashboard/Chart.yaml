@@ -1,4 +1,4 @@
 apiVersion: v1
-description: Simple dashboard with links
-name: simple-dashboard
+description: ACE-box dashboard
+name: dashboard
 version: 1

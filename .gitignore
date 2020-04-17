@@ -5,3 +5,6 @@
 */.vagrant/
 microk8s/*.log
 config.yml
+
+#Generated files
+*gen.yml

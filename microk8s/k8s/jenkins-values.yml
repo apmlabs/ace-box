@@ -6,312 +6,396 @@ master:
   adminPassword: "dynatrace"
   serviceType: "NodePort"
   nodePort: 31000
-  jobs:
-    # Test_docker: |-
-    #   <?xml version='1.1' encoding='UTF-8'?>
-    #   <flow-definition plugin="workflow-job@2.33">
-    #     <actions>
-    #       <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.3.9"/>
-    #       <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.3.9">
-    #         <jobProperties/>
-    #         <triggers/>
-    #         <parameters/>
-    #         <options/>
-    #       </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
-    #     </actions>
-    #     <description></description>
-    #     <keepDependencies>false</keepDependencies>
-    #     <properties/>
-    #     <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.74">
-    #       <script>pipeline {
-    #     agent {
-    #       kubernetes {
-    #         // this label will be the prefix of the generated pod&apos;s name
-    #         label &apos;jenkins-docker-agent&apos;
-    #         yaml &quot;&quot;&quot;
-    #   apiVersion: v1
-    #   kind: Pod
-    #   metadata:
-    #     labels:
-    #       component: ci
-    #   spec:
-    #     containers:
-    #       - name: docker
-    #         image: docker
-    #         command:
-    #           - cat
-    #         tty: true
-    #         volumeMounts:
-    #           - mountPath: /var/run/docker.sock
-    #             name: docker-sock
-    #     volumes:
-    #       - name: docker-sock
-    #         hostPath:
-    #           path: /var/snap/microk8s/current/docker.sock
-    #   &quot;&quot;&quot;
-    #       }
-    #     }
-      
-    #     stages {
-    #       stage(&apos;Test docker&apos;) {
-    #         steps {
-    #           container(&apos;docker&apos;) {
-    #             sh &quot;docker version &amp;&amp; docker run hello-world&quot;
-    #           }
-    #         }
-    #       }
-    #     }
-    #   }</script>
-    #       <sandbox>true</sandbox>
-    #     </definition>
-    #     <triggers/>
-    #     <disabled>false</disabled>
-    # Deploy_salaryapp: |-
-    #   <?xml version='1.1' encoding='UTF-8'?>
-    #   <flow-definition plugin="workflow-job@2.33">
-    #     <actions>
-    #       <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.3.9"/>
-    #       <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.3.9">
-    #         <jobProperties/>
-    #         <triggers/>
-    #         <parameters/>
-    #         <options/>
-    #       </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
-    #     </actions>
-    #     <description>Deploy golang app with nginx front, working with mongodb</description>
-    #     <keepDependencies>false</keepDependencies>
-    #     <properties>
-    #       <hudson.model.ParametersDefinitionProperty>
-    #         <parameterDefinitions>
-    #           <hudson.model.ChoiceParameterDefinition>
-    #             <name>ENV</name>
-    #             <description>where to deploy</description>
-    #             <choices class="java.util.Arrays$ArrayList">
-    #               <a class="string-array">
-    #                 <string>staging</string>
-    #                 <string>production</string>
-    #               </a>
-    #             </choices>
-    #           </hudson.model.ChoiceParameterDefinition>
-    #           <hudson.model.ChoiceParameterDefinition>
-    #             <name>FRONTREPL</name>
-    #             <description>Number of front replicas</description>
-    #             <choices class="java.util.Arrays$ArrayList">
-    #               <a class="string-array">
-    #                 <string>1</string>
-    #                 <string>2</string>
-    #                 <string>3</string>
-    #               </a>
-    #             </choices>
-    #           </hudson.model.ChoiceParameterDefinition>
-    #           <hudson.model.ChoiceParameterDefinition>
-    #             <name>BACKREPL</name>
-    #             <description>Number of backend replicas</description>
-    #             <choices class="java.util.Arrays$ArrayList">
-    #               <a class="string-array">
-    #                 <string>1</string>
-    #                 <string>2</string>
-    #                 <string>3</string>
-    #               </a>
-    #             </choices>
-    #           </hudson.model.ChoiceParameterDefinition>
-    #         </parameterDefinitions>
-    #       </hudson.model.ParametersDefinitionProperty>
-    #     </properties>
-    #     <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.74">
-    #       <script>pipeline {
-    #     agent {
-    #       kubernetes {
-    #         label &apos;jenkins-docker-agent&apos;
-    #         yaml &quot;&quot;&quot;
-    #   apiVersion: v1
-    #   kind: Pod
-    #   metadata:
-    #     labels:
-    #       component: ci
-    #   spec:
-    #     containers:
-    #       - name: docker
-    #         image: docker
-    #         command: [&quot;cat&quot;]
-    #         tty: true
-    #         volumeMounts:
-    #           - mountPath: /var/run/docker.sock
-    #             name: docker-sock
-    #       - name: helm-cli
-    #         image: ibmcom/k8s-helm:v2.6.0
-    #         command: [&quot;cat&quot;]
-    #         tty: true
-    #     volumes:
-    #       - name: docker-sock
-    #         hostPath:
-    #           path: /var/snap/microk8s/current/docker.sock
-    #   &quot;&quot;&quot;
-    #       }
-    #     }
-      
-    #     stages {
-    #       stage(&apos;Git checkout&apos;) {
-    #         steps {
-    #           git url: &apos;https://github.com/ganochenkodg/vagrant-microk8s.git&apos;
-    #         }
-    #       }
-    #       stage(&apos;Build docker&apos;) {
-    #         steps {
-    #           container(&apos;docker&apos;) {
-    #             sh &quot;docker build -t 127.0.0.1:32000/salaryweb ./docker/salaryweb&quot;
-    #             sh &quot;docker push 127.0.0.1:32000/salaryweb&quot;
-    #             sh &quot;docker build -t 127.0.0.1:32000/salaryapi:master-${BUILD_NUMBER} -t 127.0.0.1:32000/salaryapi:latest ./docker/salaryapi&quot;
-    #             sh &quot;docker push 127.0.0.1:32000/salaryapi&quot;
-    #           }
-    #         }
-    #       }
-    #       stage(&apos;Deploy to env&apos;) {
-    #         steps {
-    #           container(&apos;helm-cli&apos;) {
-    #             script {
-    #               def MongoPort = &quot;27017&quot;
-    #               def NodePort = &quot;31200&quot;
-    #               if (params.ENV.equals(&quot;staging&quot;)) {
-    #                   MongoPort = &quot;27018&quot;
-    #                   NodePort = &quot;31100&quot;
-    #               }
-    #               sh &quot;/helm upgrade ${params.ENV}-salaryapi ./helm-charts/salaryapi/ --install --namespace ${params.ENV} --set mongoport=${MongoPort},replicasnum=${params.BACKREPL},contversion=${BUILD_NUMBER}&quot;
-    #               sh &quot;/helm upgrade ${params.ENV}-salaryweb ./helm-charts/salaryweb/ --install --namespace ${params.ENV} --set replicasnum=${params.FRONTREPL},nodeport=${NodePort}&quot;
-    #             }
-    #           }
-    #         }
-    #       }
-    #     }
-    #   }
-    #   </script>
-    #       <sandbox>true</sandbox>
-    #     </definition>
-    #     <triggers/>
-    #     <disabled>false</disabled>
-    # Deploy_books: |-
-    #   <?xml version='1.1' encoding='UTF-8'?>
-    #   <flow-definition plugin="workflow-job@2.33">
-    #     <actions>
-    #       <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.3.9"/>
-    #       <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.3.9">
-    #         <jobProperties/>
-    #         <triggers/>
-    #         <parameters/>
-    #         <options/>
-    #       </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
-    #     </actions>
-    #     <description>Deploy simple crud app on vue and nodejs</description>
-    #     <keepDependencies>false</keepDependencies>
-    #     <properties>
-    #       <hudson.model.ParametersDefinitionProperty>
-    #         <parameterDefinitions>
-    #           <hudson.model.ChoiceParameterDefinition>
-    #             <name>ENV</name>
-    #             <description>where to deploy</description>
-    #             <choices class="java.util.Arrays$ArrayList">
-    #               <a class="string-array">
-    #                 <string>staging</string>
-    #                 <string>production</string>
-    #               </a>
-    #             </choices>
-    #           </hudson.model.ChoiceParameterDefinition>
-    #           <hudson.model.ChoiceParameterDefinition>
-    #             <name>FRONTREPL</name>
-    #             <description>Number of front replicas</description>
-    #             <choices class="java.util.Arrays$ArrayList">
-    #               <a class="string-array">
-    #                 <string>1</string>
-    #                 <string>2</string>
-    #                 <string>3</string>
-    #               </a>
-    #             </choices>
-    #           </hudson.model.ChoiceParameterDefinition>
-    #           <hudson.model.ChoiceParameterDefinition>
-    #             <name>BACKREPL</name>
-    #             <description>Number of backend replicas</description>
-    #             <choices class="java.util.Arrays$ArrayList">
-    #               <a class="string-array">
-    #                 <string>1</string>
-    #                 <string>2</string>
-    #                 <string>3</string>
-    #               </a>
-    #             </choices>
-    #           </hudson.model.ChoiceParameterDefinition>
-    #         </parameterDefinitions>
-    #       </hudson.model.ParametersDefinitionProperty>
-    #     </properties>
-    #     <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.74">
-    #       <script>pipeline {
-    #     agent {
-    #       kubernetes {
-    #         label &apos;jenkins-docker-agent&apos;
-    #         yaml &quot;&quot;&quot;
-    #   apiVersion: v1
-    #   kind: Pod
-    #   metadata:
-    #     labels:
-    #       component: ci
-    #   spec:
-    #     containers:
-    #       - name: docker
-    #         image: docker
-    #         command: [&quot;cat&quot;]
-    #         tty: true
-    #         volumeMounts:
-    #           - mountPath: /var/run/docker.sock
-    #             name: docker-sock
-    #       - name: helm-cli
-    #         image: ibmcom/k8s-helm:v2.6.0
-    #         command: [&quot;cat&quot;]
-    #         tty: true
-    #     volumes:
-    #       - name: docker-sock
-    #         hostPath:
-    #           path: /var/snap/microk8s/current/docker.sock
-    #   &quot;&quot;&quot;
-    #       }
-    #     }
-      
-    #     stages {
-    #       stage(&apos;Git checkout&apos;) {
-    #         steps {
-    #           git url: &apos;https://github.com/ganochenkodg/vagrant-microk8s.git&apos;
-    #         }
-    #       }
-    #       stage(&apos;Build docker&apos;) {
-    #         steps {
-    #           container(&apos;docker&apos;) {
-    #             sh &quot;docker build -t 127.0.0.1:32000/crud-frontend:master-${BUILD_NUMBER} -t 127.0.0.1:32000/crud-frontend:latest ./docker/crud-frontend&quot;
-    #             sh &quot;docker push 127.0.0.1:32000/crud-frontend&quot;
-    #             sh &quot;docker build -t 127.0.0.1:32000/crud-backend:master-${BUILD_NUMBER} -t 127.0.0.1:32000/crud-backend:latest ./docker/crud-backend&quot;
-    #             sh &quot;docker push 127.0.0.1:32000/crud-backend&quot;
-    #           }
-    #         }
-    #       }
-    #       stage(&apos;Deploy to env&apos;) {
-    #         steps {
-    #           container(&apos;helm-cli&apos;) {
-    #             script {
-    #               def MongoPort = &quot;27020&quot;
-    #               def NodePort = &quot;31400&quot;
-    #               if (params.ENV.equals(&quot;staging&quot;)) {
-    #                   MongoPort = &quot;27019&quot;
-    #                   NodePort = &quot;31300&quot;
-    #               }
-    #               sh &quot;/helm upgrade ${params.ENV}-crud-backend ./helm-charts/crud-backend/ --install --namespace ${params.ENV} --set mongoport=${MongoPort},replicasnum=${params.BACKREPL},contversion=${BUILD_NUMBER}&quot;
-    #               sh &quot;/helm upgrade ${params.ENV}-crud-books ./helm-charts/crud-frontend/ --install --namespace ${params.ENV} --set replicasnum=${params.FRONTREPL},nodeport=${NodePort},contversion=${BUILD_NUMBER}&quot;
-    #             }
-    #           }
-    #         }
-    #       }
-    #     }
-    #   }
-    #   </script>
-    #       <sandbox>true</sandbox>
-    #     </definition>
-    #     <triggers/>
-    #     <disabled>false</disabled>
+  containerEnv:
+    - name: GITHUB_USER_EMAIL
+      value: GITHUB_USER_EMAIL_PLACEHOLDER
+    - name: GITHUB_ORGANIZATION
+      value: GITHUB_ORGANIZATION_PLACEHOLDER
+    - name: GITHUB_USER_NAME
+      value: GITHUB_USER_NAME_PLACEHOLDER
+    - name: GITHUB_PERSONAL_ACCESS_TOKEN
+      value: GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER
+    - name: DOCKER_REGISTRY_URL
+      value: "localhost:32000"
+    - name: DT_TENANT_URL
+      value: DT_TENANT_URL_PLACEHOLDER
+    - name: DT_API_TOKEN
+      value: DT_API_TOKEN_PLACEHOLDER
+  csrf:
+    defaultCrumbIssuer:
+      enabled: false
+      proxyCompatability: true
+  installPlugins:
+    - kubernetes:1.21.2
+    - kubernetes-credentials-provider:0.13
+    - workflow-job:2.36
+    - workflow-aggregator:2.6
+    - credentials-binding:1.20
+    - git:4.2.2
+    - google-oauth-plugin:1.0.0
+    - google-source-plugin:0.4
+    - performance:3.17
+    - github-branch-source:2.5.8
+    - job-dsl:1.76
+    - pipeline-build-step:2.7
+  JCasC:
+    enabled: true
+    defaultConfig: false
+    pluginVersion: "1.35"
+    configScripts:
+      jenkins-settings: |
+        jenkins:
+          agentProtocols:
+          - "JNLP4-connect"
+          - "Ping"
+          authorizationStrategy:
+            loggedInUsersCanDoAnything:
+              allowAnonymousRead: false
+          systemMessage: Welcome to the ACE BOX CI\CD server.  This Jenkins is configured and managed 'as code'.
+          disableRememberMe: false
+          globalNodeProperties:
+          - envVars:
+              env:
+              - key: "DOCKER_REGISTRY_URL"
+                value: ${DOCKER_REGISTRY_URL} #Load from Environment Variable
+              - key: "GITHUB_USER_EMAIL"
+                value: ${GITHUB_USER_EMAIL} #Load from Environment Variable
+              - key: "GITHUB_ORGANIZATION"
+                value: ${GITHUB_ORGANIZATION} #Load from Environment Variable
+              - key: "DT_TENANT_URL"
+                value: ${DT_TENANT_URL} #Load from Environment Variable
+              - key: "DT_API_TOKEN"
+                value: ${DT_API_TOKEN} #Load from Environment Variable
+          clouds:
+          - kubernetes:
+              containerCapStr: "10"
+              jenkinsTunnel: "jenkins-agent:50000"
+              jenkinsUrl: "http://jenkins:80"
+              maxRequestsPerHostStr: "32"
+              name: "kubernetes"
+              namespace: "cicd"
+              serverUrl: "https://kubernetes.default"
+              templates:
+              - containers:
+                - args: "^${computer.jnlpmac} ^${computer.name}"
+                  envVars:
+                  - envVar:
+                      key: "JENKINS_URL"
+                      value: "http://jenkins.default.svc.cluster.local:80"
+                  image: "jenkins/jnlp-slave:3.27-1"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: "512m"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: "512m"
+                  resourceRequestMemory: "512Mi"
+                  workingDir: "/home/jenkins/agent"
+                hostNetwork: false
+                label: "jenkins-jenkins-slave "
+                name: "default"
+                nodeUsageMode: NORMAL
+                serviceAccount: "default"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "maven:3.3.9-jdk-8-alpine"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "maven"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                idleMinutes: 10
+                idleMinutesStr: "10"
+                label: "maven"
+                name: "maven-docker-k8s-jmeter"
+                nodeUsageMode: NORMAL
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                - persistentVolumeClaim:
+                    claimName: "maven-repo"
+                    mountPath: "/root/.m2/repository"
+                    readOnly: false
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/git"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "git"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "git"
+                name: "Git"
+                nodeUsageMode: NORMAL
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "node:8"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "nodejs"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                idleMinutes: 10
+                idleMinutesStr: "10"
+                label: "nodejs"
+                name: "nodejs"
+                nodeUsageMode: NORMAL
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/gobuilder"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "gobuilder"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "golang2"
+                name: "golang2"
+                nodeUsageMode: NORMAL
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/git"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "git"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "kubegit"
+                name: "kubegit"
+                nodeUsageMode: NORMAL
+                yamlMergeStrategy: "override"
+        credentials:
+          system:
+            domainCredentials:
+              - credentials:
+                - usernamePassword:
+                    username: ${GITHUB_USER_NAME} #Load from Environment Variable
+                    password: ${GITHUB_PERSONAL_ACCESS_TOKEN} #Load from Environment Variable
+                    description: "Github Credentials for ACE"
+                    id: "git-creds-ace"
+                    scope: GLOBAL
 agent:
   enabled: true
   image: "odavid/jenkins-jnlp-slave"

@@ -15,8 +15,8 @@ spec:
         app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: simple-dashboard
-          image: 127.0.0.1:32000/dashboard
+        - name: dashboard
+          image: localhost:32000/dashboard
           ports:
             - name: http
               containerPort: 80

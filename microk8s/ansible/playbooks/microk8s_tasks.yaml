@@ -1,0 +1,24 @@
+- name: Install microk8s
+  become: true
+  command: snap install microk8s --classic --channel=1.18/stable 
+  
+- name: Add vagrant to microk8s group
+  become: true
+  command: usermod -a -G microk8s vagrant
+
+- name: Allow Priv
+  become: true
+  shell: bash -c "echo \"--allow-privileged=true\" >> /var/snap/microk8s/current/args/kube-apiserver"
+
+- name: Alias to kubectl
+  shell: snap alias microk8s.kubectl kubectl
+
+- name: Enable dashboard, dns, storage, registry, helm
+  shell: /snap/bin/microk8s.enable dns dashboard storage registry
+
+- name: Start k8s
+  shell: /snap/bin/microk8s.start
+
+- name: And wait this
+  shell: /snap/bin/microk8s.status --wait-ready
+

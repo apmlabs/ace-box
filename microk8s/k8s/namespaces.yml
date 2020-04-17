@@ -2,4 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-   name: services
+   name: ace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: staging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: production

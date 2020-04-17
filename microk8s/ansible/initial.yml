@@ -3,8 +3,8 @@
   become: true
   vars_files:
   - ../config.yml
-  roles:
-  - role: Dynatrace.OneAgent
+  #roles:
+  #- role: Dynatrace.OneAgent
   vars:
     dynatrace_environment_url:  "{{ dynatrace['tenant'] }}"
     dynatrace_paas_token:       "{{ dynatrace['paastoken'] }}"
@@ -31,121 +31,48 @@
     become: true
     command: snap install core
 
-  - name: Install microk8s
-    become: true
-    command: snap install microk8s --classic --channel=1.16/stable 
-  
-  - name: Add vagrant to microk8s group
-    become: true
-    command: usermod -a -G microk8s vagrant
+  - name: Install and configure microk8s
+    import_tasks: playbooks/microk8s_tasks.yaml
 
   - name: Add vagrant to docker group
     become: true
     command: usermod -a -G docker vagrant
 
-  - name: Allow Priv
-    become: true
-    shell: bash -c "echo \"--allow-privileged=true\" >> /var/snap/microk8s/current/args/kube-apiserver"
-
-  - name: Alias to kubectl
-    shell: snap alias microk8s.kubectl kubectl
-
-  - name: Start k8s
-    shell: /snap/bin/microk8s.start
-
-  - name: And wait this
-    shell: /snap/bin/microk8s.status --wait-ready
-
-  - name: Enable dashboard, dns, storage, registry, helm
-    shell: /snap/bin/microk8s.enable dns dashboard storage registry
-
-  - name: Add namespaces services, staging and prod
+  - name: Add namespaces
     shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/namespaces.yml
     ignore_errors: yes
 
-  - name: Create directory for helm
-    file:
-      path: /home/vagrant/.kube
-      state: directory
-
-  - name: Config for helm
-    shell: "/snap/bin/microk8s.kubectl config view --raw > /home/vagrant/.kube/config"
-
-  - name: Install Helm with snap
-    become: true
-    shell: "snap install helm --classic"
-
-  # - name: Download helm
-  #   command: wget -O helm.tar.gz https://get.helm.sh/helm-v2.16.6-linux-amd64.tar.gz
-  #   args:
-  #     creates: helm.tar.gz
-
-  # - name: Extract
-  #   command: tar zxvf helm.tar.gz
-  #   args:
-  #     creates: linux-amd64/helm
-
-  # - name: Install helm
-  #   become: true
-  #   command: cp linux-amd64/helm /usr/local/bin/helm
-  #   args:
-  #     creates: /usr/local/bin/helm
-
-  # - name: Install tiller
-  #   become: true
-  #   command: cp linux-amd64/tiller /usr/local/bin/tiller
-  #   args:
-  #     creates: /usr/local/bin/tiller
-
-  # - name: Init helm
-  #   become_user: vagrant
-  #   shell: helm init --wait
-
-  - name: Helm - enable Stable Repo
-    become_user: vagrant
-    command: /snap/bin/helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-
-  - name: Helm - enable Incubator Repo
-    become_user: vagrant
-    shell: /snap/bin/helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
-    
-  - name: Create persistent volume for jenkins
-    shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/jenkins-pvc.yml
-    ignore_errors: yes
+  - name: Install and configure helm
+    import_tasks: playbooks/helm.yaml
 
   - name: Chmod 777 to docker socker
     become: true
     file:
       path: /var/run/docker.sock
       mode: '0777'
+  
+  - name: Install and configure jenkins
+    import_tasks: playbooks/jenkins_tasks.yaml
 
-  - name: Allow jenkins to admin k8s
-    shell: /snap/bin/microk8s.kubectl create clusterrolebinding jenkins --clusterrole cluster-admin --serviceaccount=jenkins:services
-    ignore_errors: yes
+  # need to update helm charts for proper Deployment definition
+  # - name: Install Gogs local Git Server
+  #   become_user: vagrant
+  #   shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/gogs-values.yml --namespace services gogs incubator/gogs
+  #   ignore_errors: yes
 
-  - name: Prepull jenkins image
+  - name: Build ace dashboard
     become_user: vagrant
-    shell: docker pull jenkins/jenkins:lts
+    shell: docker build -t localhost:32000/dashboard /vagrant/docker/dashboard && docker push localhost:32000/dashboard
 
-  - name: Install jenkins
+  - name: Run ace dashboard
     become_user: vagrant
-    shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values.yml --namespace services jenkins stable/jenkins
-    ignore_errors: yes
-
-  - name: Install Gogs local Git Server
-    become_user: vagrant
-    shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/gogs-values.yml --namespace services gogs incubator/gogs
-    ignore_errors: yes
-
-  - name: Build simple dashboard
-    become_user: vagrant
-    shell: /snap/bin/microk8s.docker build -t 127.0.0.1:32000/dashboard /vagrant/docker/dashboard && /snap/bin/microk8s.docker push 127.0.0.1:32000/dashboard
-
-  - name: Run simple dashboard
-    become_user: vagrant
-    shell: /snap/bin/helm upgrade -i simple-dashboard /vagrant/helm-charts/dashboard --namespace services
+    shell: /snap/bin/helm upgrade -i ace-dashboard /vagrant/helm-charts/dashboard --namespace ace
     ignore_errors: yes    
 
   - name: iptables - Allow forwarding
     become: true
     shell: iptables -P FORWARD ACCEPT
+
+  # INSTALL PRIVATE SYNTHETIC NODE
+  #- name: Install and configure Dynatrace ActiveGate
+  #  import_tasks: playbooks/dynatrace_tasks.yaml
