@@ -1,0 +1,11 @@
+- name: "Dynatrace OneAgent 1 - Enable Dynatrace OneAgent helm repo"
+  become_user: vagrant
+  shell: /snap/bin/helm repo add dynatrace https://raw.githubusercontent.com/Dynatrace/helm-charts/master/repos/stable
+
+- name: "Dynatrace OneAgent 2 - Create Dynatrace namespace"
+  shell: /snap/bin/microk8s.kubectl create ns dynatrace
+  ignore_errors: yes
+
+- name: "Dynatrace OneAgent 3 - Install Dynatrace One-Agent Operator"
+  become_user: vagrant
+  shell: /snap/bin/helm install dynatrace-oneagent-operator dynatrace/dynatrace-oneagent-operator -n dynatrace --set platform="kubernetes",oneagent.apiUrl="https://{{ dynatrace_tenant_url }}/api",secret.apiToken="{{ dynatrace_api_token }}",secret.paasToken="{{ dynatrace_paas_token }}"

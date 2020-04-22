@@ -1,0 +1,3 @@
+  - name: iptables - Allow forwarding
+    become: true
+    shell: iptables -P FORWARD ACCEPT

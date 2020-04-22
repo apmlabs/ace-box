@@ -6,73 +6,45 @@
   #roles:
   #- role: Dynatrace.OneAgent
   vars:
-    dynatrace_environment_url:  "{{ dynatrace['tenant'] }}"
+    feature_activegate:         "{{ acebox['features']['activegate'] | default(false) }}"
+    feature_oneagent:           "{{ acebox['features']['oneagent'] | default(true) }}"
+    feature_gogs:               "{{ acebox['features']['gogs'] | default(true) }}"
+    feature_jenkins:            "{{ acebox['features']['jenkins'] | default(true) }}"
+    feature_jenkins_setcreds:   "{{ acebox['features']['jenkins_setcreds'] | default(true) }}"
+    feature_dashboard:          "{{ acebox['features']['dashboard'] | default(false) }}"
+    dynatrace_tenant_url:       "{{ dynatrace['tenant'] }}" #abc1234.live.dynatrace.com
     dynatrace_paas_token:       "{{ dynatrace['paastoken'] }}"
+    dynatrace_api_token:        "{{ dynatrace['apitoken'] }}"
+    microk8s_addons:            "{{ microk8s['addons'] | default('dns dashboard storage registry') }}"
   tasks:
-  - name: Install snapd and disk utils
-    apt:
-      name: "{{ packages }}"
-      state: present
-      update_cache: yes
-    vars:
-      packages:
-      - snapd
-      - cloud-utils
-      - parted
-      - docker.io
-
-  - name: Disable swap and resize disk
-    become: true
-    shell: "swapoff -a && sed -i '/swap/d' /etc/fstab && parted /dev/sda rm 2 && growpart /dev/sda 1 && resize2fs /dev/sda1"
-    args:
-      removes: /dev/sda2
-
-  - name: Install snap core
-    become: true
-    command: snap install core
+  - name: Init install tasks
+    import_tasks: playbooks/init_tasks.yaml
 
   - name: Install and configure microk8s
     import_tasks: playbooks/microk8s_tasks.yaml
 
-  - name: Add vagrant to docker group
-    become: true
-    command: usermod -a -G docker vagrant
+  - name: Install and configure helm
+    import_tasks: playbooks/helm.yaml
+
+  - name: Install and configure Dynatrace OneAgent
+    import_tasks: playbooks/dtoneagent_tasks.yaml
+    when: feature_oneagent == true
 
   - name: Add namespaces
     shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/namespaces.yml
     ignore_errors: yes
 
-  - name: Install and configure helm
-    import_tasks: playbooks/helm.yaml
-
-  - name: Chmod 777 to docker socker
-    become: true
-    file:
-      path: /var/run/docker.sock
-      mode: '0777'
-  
   - name: Install and configure jenkins
     import_tasks: playbooks/jenkins_tasks.yaml
+    when: feature_jenkins == true
 
-  # need to update helm charts for proper Deployment definition
-  # - name: Install Gogs local Git Server
-  #   become_user: vagrant
-  #   shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/gogs-values.yml --namespace services gogs incubator/gogs
-  #   ignore_errors: yes
+  - name: Create ACE Dashboard
+    import_tasks: playbooks/dashboard_tasks.yaml
+    when: feature_dashboard == true
 
-  - name: Build ace dashboard
-    become_user: vagrant
-    shell: docker build -t localhost:32000/dashboard /vagrant/docker/dashboard && docker push localhost:32000/dashboard
+  - name: Install and configure Dynatrace ActiveGate
+    import_tasks: playbooks/dtactivegate_tasks.yaml
+    when: feature_activegate == true
 
-  - name: Run ace dashboard
-    become_user: vagrant
-    shell: /snap/bin/helm upgrade -i ace-dashboard /vagrant/helm-charts/dashboard --namespace ace
-    ignore_errors: yes    
-
-  - name: iptables - Allow forwarding
-    become: true
-    shell: iptables -P FORWARD ACCEPT
-
-  # INSTALL PRIVATE SYNTHETIC NODE
-  #- name: Install and configure Dynatrace ActiveGate
-  #  import_tasks: playbooks/dynatrace_tasks.yaml
+  - name: Post install tasks
+    import_tasks: playbooks/postinstall_tasks.yaml

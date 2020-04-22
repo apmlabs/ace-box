@@ -16,7 +16,7 @@ master:
     - name: GITHUB_PERSONAL_ACCESS_TOKEN
       value: GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER
     - name: DOCKER_REGISTRY_URL
-      value: "localhost:32000"
+      value: DOCKER_REGISTRY_URL_PLACEHOLDER
     - name: DT_TENANT_URL
       value: DT_TENANT_URL_PLACEHOLDER
     - name: DT_API_TOKEN
@@ -38,6 +38,7 @@ master:
     - github-branch-source:2.5.8
     - job-dsl:1.76
     - pipeline-build-step:2.7
+    - docker-plugin:1.2.0
   JCasC:
     enabled: true
     defaultConfig: false
@@ -70,34 +71,35 @@ master:
           - kubernetes:
               containerCapStr: "10"
               jenkinsTunnel: "jenkins-agent:50000"
-              jenkinsUrl: "http://jenkins:80"
+              jenkinsUrl: "http://jenkins:8080"
               maxRequestsPerHostStr: "32"
               name: "kubernetes"
-              namespace: "cicd"
+              namespace: "ace"
               serverUrl: "https://kubernetes.default"
               templates:
               - containers:
-                - args: "^${computer.jnlpmac} ^${computer.name}"
+                - args: "cat"
+                  command: "/bin/sh -c"
                   envVars:
                   - envVar:
                       key: "JENKINS_URL"
-                      value: "http://jenkins.default.svc.cluster.local:80"
-                  image: "jenkins/jnlp-slave:3.27-1"
+                      value: "http://jenkins.ace.svc.cluster.local:8080"
+                  image: "jenkinsci/jnlp-slave"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
                     periodSeconds: 0
                     successThreshold: 0
                     timeoutSeconds: 0
-                  name: "jnlp"
+                  name: "jenkins-slave"
                   resourceLimitCpu: "512m"
                   resourceLimitMemory: "512Mi"
                   resourceRequestCpu: "512m"
                   resourceRequestMemory: "512Mi"
-                  workingDir: "/home/jenkins/agent"
+                  workingDir: "/home/jenkins"
                 hostNetwork: false
-                label: "jenkins-jenkins-slave "
-                name: "default"
+                label: "jenkins-slave "
+                name: "jenkins-slave"
                 nodeUsageMode: NORMAL
                 serviceAccount: "default"
                 yamlMergeStrategy: "override"
@@ -128,7 +130,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -232,7 +234,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -240,6 +242,18 @@ master:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
@@ -291,7 +305,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -336,7 +350,7 @@ master:
               - containers:
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "lachlanevenson/k8s-kubectl:v1.12.1"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0

@@ -1,24 +1,60 @@
-- name: Install microk8s
+- name: Microk8s - Install microk8s
   become: true
   command: snap install microk8s --classic --channel=1.18/stable 
   
-- name: Add vagrant to microk8s group
+- name: Microk8s - Add vagrant to microk8s group
   become: true
   command: usermod -a -G microk8s vagrant
 
-- name: Allow Priv
+- name: Microk8s - Allow Priviledged
   become: true
   shell: bash -c "echo \"--allow-privileged=true\" >> /var/snap/microk8s/current/args/kube-apiserver"
 
-- name: Alias to kubectl
+- name: Microk8s - Alias to kubectl
   shell: snap alias microk8s.kubectl kubectl
 
-- name: Enable dashboard, dns, storage, registry, helm
-  shell: /snap/bin/microk8s.enable dns dashboard storage registry
+- name: Microk8s - Enable dashboard, dns, storage, registry, helm
+  shell: "/snap/bin/microk8s.enable {{ microk8s_addons }}"
 
-- name: Start k8s
+- name: Microk8s - Start microk8s
   shell: /snap/bin/microk8s.start
 
-- name: And wait this
+- name: Microk8s - Wait for microk8s to be ready
   shell: /snap/bin/microk8s.status --wait-ready
 
+- name: Microk8s - Dashboard - Create directory for cert
+  when: microk8s_addons is search("dashboard")
+  become_user: vagrant
+  file:
+    path: /home/vagrant/certs
+    state: directory
+
+- name: Microk8s - Dashboard - Generate keys
+  when: microk8s_addons is search("dashboard")
+  become_user: vagrant
+  shell: openssl req -nodes -newkey rsa:2048 -keyout certs/dashboard.key -out certs/dashboard.csr -subj "/C=/ST=/L=/O=/OU=/CN=kubernetes-dashboard"
+
+- name: Microk8s - Dashboard - Generate cert
+  when: microk8s_addons is search("dashboard")
+  become_user: vagrant
+  shell: openssl x509 -req -sha256 -days 365 -in certs/dashboard.csr -signkey certs/dashboard.key -out certs/dashboard.crt
+
+- name: Microk8s - Dashboard - Delete old secret
+  when: microk8s_addons is search("dashboard")
+  shell: /snap/bin/microk8s.kubectl delete secret kubernetes-dashboard-certs -n kube-system
+
+- name: Microk8s - Dashboard - Create new secret
+  when: microk8s_addons is search("dashboard")
+  shell: /snap/bin/microk8s.kubectl create secret generic kubernetes-dashboard-certs --from-file=certs -n kube-system
+
+- name: Microk8s - Dashboard - Delete pod to reload cert
+  when: microk8s_addons is search("dashboard")
+  shell: /snap/bin/microk8s.kubectl -n kube-system delete pod -l k8s-app=kubernetes-dashboard
+
+- name: Microk8s - Dashboard - Create nodePort and expose on 31100
+  when: microk8s_addons is search("dashboard")
+  shell: "/snap/bin/microk8s.kubectl -n kube-system patch service kubernetes-dashboard -p '{\"spec\": {\"ports\": [{\"port\": 443,\"targetPort\": 8443,\"name\": \"https\",\"protocol\":\"TCP\",\"nodePort\":31100}], \"type\": \"NodePort\"}}'"
+
+- name: Microk8s - Dashboard - Allow skip authentication
+  when: microk8s_addons is search("dashboard")
+  shell: "/snap/bin/microk8s.kubectl -n kube-system patch deployment kubernetes-dashboard -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"kubernetes-dashboard\",\"args\": [\"--auto-generate-certificates\", \"--namespace=kube-system\", \"--enable-skip-login\"]}]}}}}'"
