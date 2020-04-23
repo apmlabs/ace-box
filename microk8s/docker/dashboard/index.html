@@ -9,6 +9,7 @@
   @import url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css);
   @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
 
+  html, body { height: 100%; }
   body {
     font-family: 'Lato', sans-serif;
     background: #353535;
@@ -185,34 +186,39 @@
     opacity: 1;
     color: #FFF;
   }
+  .leftColumn {position: absolute;top:0px;left: 0px;bottom: 0px;right: 50%;}
+                .rightColumn {position: absolute;top:0px;right: 0px;bottom: 0px;left: 50%;}
 </style>
-
+<script>
+  window.setInterval(function() {
+      document.getElementById('iframe1').src = document.getElementById('iframe1').src;
+      document.getElementById('iframe2').src = document.getElementById('iframe2').src;
+  }, 10000);    
+</script>
 <body>
   <div class="container">
     <div class="row">
       <div class="col-md-12 text-center">
-        <h2>Important links</h2>
+        <h2>ACE Box Links</h2>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="https://ace-box:31100/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/" class="btn btn-sm animated-button gibson-one">Microk8s dashboard</a> </div>
-      <div class="col-md-3 col-sm-3 col-xs-6"><a target="_blank" href="http://ace-box:31000/" class="btn btn-sm animated-button gibson-one">Jenkins</a> </div>
-      <div class="col-md-3 col-sm-3 col-xs-6"><a target="_blank" href="http://ace-box:31001/" class="btn btn-sm animated-button gibson-one">Gogs</a> </div>
+      <div class="col-md-4"> <a target="_blank" href="https://ace-box:31100/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/" class="btn btn-sm animated-button gibson-one">Microk8s dashboard</a> </div>
+      <div class="col-md-4"><a target="_blank" href="http://ace-box:31000/" class="btn btn-sm animated-button gibson-one">Jenkins</a> </div>
+      <div class="col-md-4"><a target="_blank" href="http://ace-box:31001/" class="btn btn-sm animated-button gibson-one">Gogs</a> </div>
     </div>
   </div>
 
-    <div class="container">
+    <div class="container-fluid h-100">
         <div class="row">
         <div class="col-md-12 text-center">
-            <h2 class="mrng-60-top">Services links</h2>
+            <h2 class="mrng-60-top">Simplenodeservice staging/production</h2>
         </div>
         </div>
-        <!--div class="row">
-            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31200" class="btn btn-sm animated-button gibson-three">Salaryapp, prod</a> </div>
-            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31100" class="btn btn-sm animated-button gibson-four">Salaryapp, staging</a> </div>
-            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31400" class="btn btn-sm animated-button gibson-three">Books crud, prod</a> </div>
-            <div class="col-md-3 col-sm-3 col-xs-6"> <a target="_blank" href="http://ace-box:31300" class="btn btn-sm animated-button gibson-four">Books crud, staging</a> </div>
-        </div-->
+        <div class="row h-100">
+            <div class="col-md-6 h-100"> <iframe id="iframe1" height="600px" width="100%" src="http://ace-box:31500/"></iframe> </div>
+            <div class="col-md-6 h-100"> <iframe id="iframe2" height="600px" width="100%" src="http://ace-box:31600/"></iframe> </div>
+        </div>
     </div>
 </body>
 

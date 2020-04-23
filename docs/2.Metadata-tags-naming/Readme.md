@@ -1,0 +1,2 @@
+# Metadata / tagging / naming
+This first lab is all about ecosystem metadata integration. How can we use metadata in such a way that it is being fed from other systems and is appropriately used in Dynatrace.

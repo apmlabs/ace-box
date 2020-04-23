@@ -1,3 +1,6 @@
+- name: Wait for registry to be ready
+  shell: /snap/bin/microk8s.kubectl -n container-registry rollout status deployment registry
+
 - name: Build ace dashboard
   become_user: vagrant
   shell: docker build -t localhost:32000/dashboard /vagrant/docker/dashboard && docker push localhost:32000/dashboard

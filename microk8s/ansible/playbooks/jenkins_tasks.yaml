@@ -2,12 +2,12 @@
   shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/jenkins-pvc.yml
   ignore_errors: yes
 
-# - name: Jenkins - Get registry clusterIP
-#   shell: kubectl get svc -n container-registry -o jsonpath='{.items[0].spec.clusterIP}'
-#   register: registry_ip
+- name: Jenkins - Get registry nodeport
+  shell: /snap/bin/microk8s.kubectl get svc registry -n container-registry -o jsonpath='{.spec.ports[0].nodePort}'
+  register: registry_port
 
 - name: Jenkins - Set environment variables
-  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|{{ acebox['specs']['priv_ip'] }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
+  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: feature_jenkins_setcreds == true
 
 - name: Jenkins - Empty environment variables
@@ -18,9 +18,9 @@
   shell: /snap/bin/microk8s.kubectl create clusterrolebinding jenkins --clusterrole cluster-admin --serviceaccount=jenkins:ace
   ignore_errors: yes
 
-- name: Jenkins - Prepull jenkins image
-  become_user: vagrant
-  shell: docker pull jenkins/jenkins:lts
+# - name: Jenkins - Prepull jenkins image
+#   become_user: vagrant
+#   shell: docker pull jenkins/jenkins:lts
 
 - name: Jenkins - Install jenkins
   become_user: vagrant
