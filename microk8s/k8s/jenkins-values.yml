@@ -104,6 +104,8 @@ master:
                 label: "jenkins-slave "
                 name: "jenkins-slave"
                 nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
                 serviceAccount: "default"
                 yamlMergeStrategy: "override"
               - containers:
@@ -172,6 +174,8 @@ master:
                 label: "maven"
                 name: "maven-docker-k8s-jmeter"
                 nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
                 volumes:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
@@ -209,6 +213,8 @@ master:
                 label: "git"
                 name: "Git"
                 nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
                 yamlMergeStrategy: "override"
               - containers:
                 - args: "cat"
@@ -276,6 +282,8 @@ master:
                 label: "nodejs"
                 name: "nodejs"
                 nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
                 volumes:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
@@ -345,6 +353,8 @@ master:
                 label: "golang2"
                 name: "golang2"
                 nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
                 volumes:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
@@ -402,6 +412,8 @@ master:
                 label: "kubegit"
                 name: "kubegit"
                 nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
                 yamlMergeStrategy: "override"
         credentials:
           system:
