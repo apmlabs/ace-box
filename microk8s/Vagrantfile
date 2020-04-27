@@ -36,9 +36,9 @@ Vagrant.configure("2") do |config|
         #ansible.galaxy_roles_path = "/etc/ansible/roles"
         #ansible.galaxy_command = "sudo ansible-galaxy install --role-file=%{role_file} --force"
       end
-      c.vm.provider "virtualbox" do |vb|
-        vb.memory = vmconfig["acebox"]["specs"]["mem"]
-        vb.cpus = vmconfig["acebox"]["specs"]["cpu"]
+      c.vm.provider vmconfig["vagrant"]["provider"] do |pr|
+        pr.memory = vmconfig["acebox"]["specs"]["mem"]
+        pr.cpus = vmconfig["acebox"]["specs"]["cpu"]
       end
       c.vm.post_up_message = "Please open http://ace-box:30001 and use links"
     end

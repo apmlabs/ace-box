@@ -40,7 +40,7 @@ dynatrace:
   paastoken:  ''
 git:
   username:   ''
-  pat:        ''
+  pat:        ''    # "repo" scope is sufficient
   email:      ''
   org:        ''    # Github org created
 acebox:
@@ -57,6 +57,8 @@ acebox:
     dashboard: true             # install ACE dashboard, defaults to false
   microk8s:
     addons: "dns dashboard storage registry"  # which addons to micrk8s to install (https://microk8s.io/docs/addons) WARN: will increase resource usage
+vagrant:
+  provider: "virtualbox"    # provider to use, set to "hyperv" for hyper-v, "virtualbox" for VirtualBox (default)
 ```
 
 ### Step 4 - Provision
