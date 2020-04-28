@@ -21,3 +21,4 @@ To run the ace-box, the following is required:
 - ansible installed (latest version)
 - Dynatrace tenant (prod or sprint, dev not recommended)
 - github account
+- a (new) github organization used for the application

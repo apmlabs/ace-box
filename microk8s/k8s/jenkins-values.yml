@@ -41,10 +41,11 @@ master:
     - docker-plugin:1.2.0
     - blueocean:1.23.0
     - configuration-as-code:1.39
+    - http_request:1.8.26
+    - pipeline-utility-steps:2.5.0
   JCasC:
     enabled: true
     defaultConfig: false
-    pluginVersion: "1.35"
     configScripts:
       jenkins-settings: |
         jenkins:
@@ -497,7 +498,7 @@ master:
                 }
                 definition {
                   cpsScm {
-                    scriptPath('deployProduction.Jenkinsfile')
+                    scriptPath('deployProd.Jenkinsfile')
                     scm {
                       git {
                           remote { 

@@ -32,12 +32,12 @@
 - name: Microk8s - Dashboard - Generate keys
   when: microk8s_addons is search("dashboard")
   become_user: vagrant
-  shell: openssl req -nodes -newkey rsa:2048 -keyout certs/dashboard.key -out certs/dashboard.csr -subj "/C=/ST=/L=/O=/OU=/CN=kubernetes-dashboard"
+  shell: openssl req -nodes -newkey rsa:2048 -keyout /home/vagrant/certs/dashboard.key -out /home/vagrant/certs/dashboard.csr -subj "/C=/ST=/L=/O=/OU=/CN=kubernetes-dashboard"
 
 - name: Microk8s - Dashboard - Generate cert
   when: microk8s_addons is search("dashboard")
   become_user: vagrant
-  shell: openssl x509 -req -sha256 -days 365 -in certs/dashboard.csr -signkey certs/dashboard.key -out certs/dashboard.crt
+  shell: openssl x509 -req -sha256 -days 365 -in /home/vagrant/certs/dashboard.csr -signkey /home/vagrant/certs/dashboard.key -out /home/vagrant/certs/dashboard.crt
 
 - name: Microk8s - Dashboard - Delete old secret
   when: microk8s_addons is search("dashboard")
@@ -45,7 +45,7 @@
 
 - name: Microk8s - Dashboard - Create new secret
   when: microk8s_addons is search("dashboard")
-  shell: /snap/bin/microk8s.kubectl create secret generic kubernetes-dashboard-certs --from-file=certs -n kube-system
+  shell: /snap/bin/microk8s.kubectl create secret generic kubernetes-dashboard-certs --from-file=/home/vagrant/certs -n kube-system
 
 - name: Microk8s - Dashboard - Delete pod to reload cert
   when: microk8s_addons is search("dashboard")

@@ -9,6 +9,7 @@
       - cloud-utils
       - parted
       - docker.io
+      - ansible
 
   - name: Disable swap and resize disk
     become: true

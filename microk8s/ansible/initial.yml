@@ -12,6 +12,7 @@
     feature_jenkins:            "{{ acebox['features']['jenkins'] | default(true) }}"
     feature_jenkins_setcreds:   "{{ acebox['features']['jenkins_setcreds'] | default(true) }}"
     feature_dashboard:          "{{ acebox['features']['dashboard'] | default(false) }}"
+    feature_demo:               "{{ acebox['features']['demo'] | default(false) }}"
     dynatrace_tenant_url:       "{{ dynatrace['tenant'] }}" #abc1234.live.dynatrace.com
     dynatrace_paas_token:       "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:        "{{ dynatrace['apitoken'] }}"

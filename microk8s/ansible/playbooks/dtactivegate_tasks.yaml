@@ -1,4 +1,4 @@
-- name: Install required packages 
+- name: ActiveGate - Install required packages 
   apt:
     name: "{{ packages }}"
     state: present
@@ -23,35 +23,36 @@
     - libxss1 
     - xdg-utils
 
-- name: Download chromium deb packages archive
+- name: ActiveGate - Download chromium deb packages archive
   get_url:
     url: https://s3.amazonaws.com/synthetic-packages/Chromium/deb/chromium-78.0.3904.108-0ubuntu0.16.04.1.tgz
     dest: /tmp/chromium.tgz
+    timeout: 300
 
-- name: Ensure chromium directory exists
+- name: ActiveGate - Ensure chromium directory exists
   file:
     path: /tmp/chromium
     state: directory
 
-- name: Extract chromium packages to tmp folder
+- name: ActiveGate - Extract chromium packages to tmp folder
   unarchive:
     src: /tmp/chromium.tgz
     dest: /tmp/chromium
     remote_src: yes
 
-- name: Find chromium codec packages
+- name: ActiveGate - Find chromium codec packages
   find:
     paths: /tmp/chromium
     patterns: '*chromium-codecs*.deb'
   register: chromiumcodec
 
-- name: Find chromium browser packages
+- name: ActiveGate - Find chromium browser packages
   find:
     paths: /tmp/chromium
     patterns: '*chromium-browser*.deb'
   register: chromiumbrowser
 
-- name: Install chromium .deb package
+- name: ActiveGate - Install chromium .deb package
   apt:
     state: present
     deb: "{{ item }}"
@@ -59,7 +60,7 @@
     - "{{ chromiumcodec.files[0].path }}"
     - "{{ chromiumbrowser.files[0].path }}"
 
-- name: Prevent chromium packages from being upgraded
+- name: ActiveGate - Prevent chromium packages from being upgraded
   dpkg_selections:
     name: "{{ item }}"
     selection: hold
@@ -67,15 +68,16 @@
     - chromium-browser
     - chromium-codecs-ffmpeg-extra
 
-- name: Download ActiveGate installer
+- name: ActiveGate - Download ActiveGate installer
   get_url:
     url: https://{{ dynatrace['tenant'] }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default
     dest: /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh
     mode: +x
+    timeout: 300
     headers:
       Authorization: "Api-token {{ dynatrace['paastoken'] }}"
 
-- name: Install synthetic-enabled ActiveGate
+- name: ActiveGate - Install synthetic-enabled ActiveGate
   command:
     cmd: /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh --enable-synthetic
     creates: /opt/dynatrace/synthetic/uninstall.sh  

@@ -1,6 +1,11 @@
 # ace-box - Provision
 This lab will explain you how to provision the ace-box
 
+## Step 0 - Designate a github org for the ace app and config
+We will be forking a repository that contains our demo application and the configuration files.
+Create a new github organization that will be used to fork this repo to. Alternatively repurpose an existing one.
+Keep note of this org as you will need it later.
+
 ## Step 1 - Clone the ace-box repository
 Make sure that you have the ace-box repository cloned locally
 
