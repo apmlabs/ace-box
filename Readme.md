@@ -16,9 +16,8 @@ It comes with the following:
 ## Prerequisites
 To run the ace-box, the following is required:
 - a workstation with at least **16GB of RAM** and **2 CPU cores (non-virtualized)**
-- virtualbox installed (latest version)
-- vagrant installed (latest version)
-- ansible installed (latest version)
+- virtualbox installed (6.1.x)
+- vagrant installed (2.2.7+)
 - Dynatrace tenant (prod or sprint, dev not recommended)
 - github account
 
