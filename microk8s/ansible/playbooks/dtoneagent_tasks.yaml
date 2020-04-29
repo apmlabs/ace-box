@@ -8,4 +8,4 @@
 
 - name: "Dynatrace OneAgent 3 - Install Dynatrace One-Agent Operator"
   become_user: vagrant
-  shell: /snap/bin/helm install dynatrace-oneagent-operator dynatrace/dynatrace-oneagent-operator -n dynatrace --set platform="kubernetes",oneagent.apiUrl="https://{{ dynatrace_tenant_url }}/api",secret.apiToken="{{ dynatrace_api_token }}",secret.paasToken="{{ dynatrace_paas_token }}"
+  shell: /snap/bin/helm install dynatrace-oneagent-operator dynatrace/dynatrace-oneagent-operator -n dynatrace --set platform="kubernetes",oneagent.apiUrl="{{ dynatrace_tenant_url }}/api",secret.apiToken="{{ dynatrace_api_token }}",secret.paasToken="{{ dynatrace_paas_token }}"

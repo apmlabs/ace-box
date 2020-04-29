@@ -1,5 +1,5 @@
 dynatrace:
-  tenant:     ''    # abc12345.live.dynatrace.com OR [managed-domain]/e/[environmentguid]
+  tenant:     ''    # https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid]
   apitoken:   ''
   paastoken:  ''
 git:

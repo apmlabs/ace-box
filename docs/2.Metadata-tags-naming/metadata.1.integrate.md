@@ -32,4 +32,4 @@ Owner=ace@dynatrace.com FriendlyName=simplenode SERVICE_TYPE=FRONTEND Project=si
 ```
 **Note that the file is being read as-is so ensure proper `key=value` seperated by `spaces` are in place, spaces in the key or value themselves are not possible**
 
-## Trigger the build pipeline
+## Trigger the build **pipeline**

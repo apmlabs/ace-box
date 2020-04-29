@@ -70,7 +70,7 @@
 
 - name: ActiveGate - Download ActiveGate installer
   get_url:
-    url: https://{{ dynatrace['tenant'] }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default
+    url: "{{ dynatrace['tenant'] }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default"
     dest: /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh
     mode: +x
     timeout: 300

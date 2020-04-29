@@ -21,5 +21,7 @@ stage('DT send deploy event') {
 }
 ```
 
+NOTE: you will have to also reference the ace library.
+
 ## Add test events
 Explore the jenkins ace library and add test start and stop events to the pipeline. You might have to add the tag match rules?

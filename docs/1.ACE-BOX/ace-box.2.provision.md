@@ -44,7 +44,6 @@ acebox:
 ## Step 4 - Provision
 Run the following commands to bring up the virtual machine
 ```
-$ vagrant init
 $ vagrant up
 ```
 Vagrant will perform the following:
