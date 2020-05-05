@@ -62,3 +62,6 @@ Vagrant will perform the following:
 
   ## Step 6 - Fork the maas-hot repo
   Navigate to the https://github.com/dynatrace-ace/maas-hot repository and fork it to the organization that you specified in the `config.yml` file. 
+
+  ## Step 7 - Clone the forked maas-hot repo
+  Clone the repository (that you just cloned into your own org) to your local machine.
