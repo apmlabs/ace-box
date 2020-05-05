@@ -15,6 +15,7 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
   - [Accessing ace-box dashboard](#accessing-ace-box-dashboard)
   - [SSH into the box](#ssh-into-the-box)
   - [Cleaning up](#cleaning-up)
+  - [Behind the scenes](#behind-the-scenes)
 
 
 ## Components
@@ -106,6 +107,7 @@ Vagrant will perform the following:
 2. Some users had issues with (old) customer vpn software that was installed - not even connected -  causing issues with the virtual network adaptors. If you are having issues provisioning the VM, uninstall them when possible
 3. If you are using a Windows workstation, ensure that Hyper-V native virtualization has been disabled as it clashes with virtualbox. Hyper-V support is on the roadmap. Check this [doc](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v) on how to disable Hyper-V
 4. If at any given time the provisioning fails, it is best to execute a `vagrant destroy` followed by a `vagrant up`
+5. During testing there were some cases where Jenkins plugins refused to install while provisioning which renders the installation useless for the other usecases. In that case, it is best to execute a `vagrant destroy` followed by a `vagrant up`
 
 ## Accessing ace-box dashboard
 At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://ace-box:30001/`. Alternatively the IP address can be used that was specified in the `config.yml` file.
@@ -132,3 +134,25 @@ Vagrant offers many commands to deal with the VM, check the below:
 | `vagrant suspend` | suspends the machine - i.e. sleep your workstation |
 | `vagrant resume` | resume a suspended vagrant machine |
 | `vagrant up` | starts and provisions the vagrant environment |
+| `vagrant box update` | update the base box from time to time to ensure it is the latest version. While provisioning a message will be shown that there are updates available |
+
+## Behind the scenes
+
+When running the `vagrant up` command the following takes place:
+1. The `Vagrantfile` is read
+2. Some required Vagrant plugins are installed
+3. The `config.yml` file is loaded
+4. An `ubuntu/xenial64` Virtual Machine is spun up based on the specs found in the `config.yml` file. If needed, the image gets downloaded
+5. Networking for the VM gets configured
+6. Once the VM has been spun up, Vagrant `ssh` into it and start the provisioning. `ansible_local` Vagrant provisioner is used which will install ansible on the VM.
+7. Package manager will update the vm and install VirtualBox Guest Additions.
+8. The provisioner does the following:
+   1. The `ansible/initial.yml` file is loaded.
+   2. Some init tasks are executed based on `ansible/playbooks/init_tasks.yaml` such as installing supporting packages and resizing disks
+   3. Microk8s and addons are installed based on `ansible/playbooks/microk8s_tasks.yaml`
+   4. Helm is installed based on `ansible/playbooks/helm_tasks.yaml`. Helm repos are also added
+   5. If enabled, OneAgent is installed based on `ansible/playbooks/dtoneagent_tasks.yaml`
+   6. If enabled, Jenkins is installed based on `ansible/playbooks/jenkins_tasks.yaml`. This uses the helm chart found in `k8s/jenkins-values.yml` which will not only install Jenkins but also perform plugin installation and set up our skeleton pipelines.
+   7. If enabled, An ACE dashboard is built and deployed as described in `ansible/playbooks/dashboard_tasks.yaml`
+   8. If enabled, an ActiveGate is installed based on `ansible/playbooks/dtactivegate_tasks.yaml`. This also installs all required packages.
+   9. Post installation tasks are also executed, as described in `ansible/playbooks/postinstall_tasks.yaml`. This includes configuring `iptables` for port forwarding
