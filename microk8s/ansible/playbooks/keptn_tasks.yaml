@@ -1,3 +1,44 @@
-- name: Keptn 1 - Download Keptn CLI
+- name: Keptn - Prereqs - microk8s.config
+  shell: /snap/bin/microk8s.config > kubeconfig
 
-- name: Keptn 2 - Install Keptn Quality Gates
+- name: Keptn - Prereqs - set KUBECONFIG
+  become_user: vagrant
+  shell: export KUBECONFIG=./kubeconfig
+
+- name: Keptn - Download Keptn CLI
+  unarchive:
+    src: "https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/{{ keptn_version }}_keptn-linux.tar"
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: +x
+
+#- name: Keptn Install metallb
+#  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml"
+
+- name: Keptn - Install Keptn Quality Gates
+  ##become_user: vagrant
+  shell: /usr/local/bin/keptn install --platform=kubernetes --use-case=quality-gates --creds=/vagrant/k8s/keptncreds.json --ingress-install-option=Reuse --domain 192.168.50.10.xip.io
+
+
+- name: Keptn - Expose Bridge
+  shell: /usr/local/bin/keptn configure bridge --action=expose
+
+
+- name: Keptn - Authenticate vagrant with Keptn
+  shell: cp -r /root/.keptn/ /home/vagrant && chown -R vagrant /home/vagrant/.keptn
+
+- set_fact:
+    dynatrace_tenant_nohttps: "{{ dynatrace_tenant_url | regex_replace('https://', '') }}"
+
+- name: Keptn - Create secret dynatrace
+  shell: /snap/bin/microk8s.kubectl -n keptn create secret generic dynatrace --from-literal="DT_TENANT={{ dynatrace_tenant_nohttps }}" --from-literal="DT_API_TOKEN={{ dynatrace_api_token }}"  --from-literal="DT_PAAS_TOKEN={{ dynatrace_api_token }}"
+
+- name: Keptn - Install Dynatrace service
+  shell: /snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-service/0.7.0/deploy/manifests/dynatrace-service/dynatrace-service.yaml
+
+- name: Keptn - Install Dynatrace SLI service
+  shell: /snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/0.4.0/deploy/service.yaml
+
+- name: Keptn - Configure monitoring Dynatrace
+  shell: /usr/local/bin/keptn configure monitoring dynatrace --suppress-websocket
+

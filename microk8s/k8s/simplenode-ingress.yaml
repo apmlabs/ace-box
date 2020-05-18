@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: simplenodeservice
+  name: simplenodeservice
+  namespace: staging
+spec:
+  rules:
+  - host: simplenode.staging.192.168.50.10.xip.io
+    http:
+      paths:
+      - backend:
+          serviceName: simplenodeservice
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: simplenodeservice
+  name: simplenodeservice
+  namespace: production
+spec:
+  rules:
+  - host: simplenode.production.192.168.50.10.xip.io
+    http:
+      paths:
+      - backend:
+          serviceName: simplenodeservice
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific

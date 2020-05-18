@@ -6,17 +6,22 @@
   #roles:
   #- role: Dynatrace.OneAgent
   vars:
+    acebox_mode:                       "{{ acebox['features']['mode'] | default('training') }}"
     feature_activegate:         "{{ acebox['features']['activegate'] | default(false) }}"
     feature_oneagent:           "{{ acebox['features']['oneagent'] | default(true) }}"
-    feature_gogs:               "{{ acebox['features']['gogs'] | default(true) }}"
+    feature_gitea:              "{{ acebox['features']['gitea'] | default(false) }}"
     feature_jenkins:            "{{ acebox['features']['jenkins'] | default(true) }}"
-    feature_jenkins_setcreds:   "{{ acebox['features']['jenkins_setcreds'] | default(true) }}"
     feature_dashboard:          "{{ acebox['features']['dashboard'] | default(false) }}"
-    feature_demo:               "{{ acebox['features']['demo'] | default(false) }}"
+    feature_keptn:              "{{ acebox['features']['keptn'] | default(false) }}"
     dynatrace_tenant_url:       "{{ dynatrace['tenant'] }}" #abc1234.live.dynatrace.com
     dynatrace_paas_token:       "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:        "{{ dynatrace['apitoken'] }}"
-    microk8s_addons:            "{{ microk8s['addons'] | default('dns dashboard storage registry') }}"
+    jenkins_setcreds:           "{{ acebox['config']['jenkins']['setcreds'] | default(true) }}"
+    keptn_version:              "{{ acebox['config']['keptn']['version'] | default('0.6.1')}}"
+    keptn_bridge_port:          "{{ acebox['config']['keptn']['bridge_port'] | default(31400)}}"
+    keptn_api_port:             "{{ acebox['config']['keptn']['api_port'] | default(31401)}}"
+    microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns dashboard storage registry') }}"
+    ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.xip.io"
   tasks:
   - name: Init install tasks
     import_tasks: playbooks/init_tasks.yaml
@@ -39,6 +44,10 @@
     import_tasks: playbooks/jenkins_tasks.yaml
     when: feature_jenkins == true
 
+  - name: Install and configure Gitea
+    import_tasks: playbooks/gitea_tasks.yaml
+    when: feature_gitea == true
+
   - name: Create ACE Dashboard
     import_tasks: playbooks/dashboard_tasks.yaml
     when: feature_dashboard == true
@@ -46,6 +55,10 @@
   - name: Install and configure Dynatrace ActiveGate
     import_tasks: playbooks/dtactivegate_tasks.yaml
     when: feature_activegate == true
+
+  - name: Install and configure Keptn
+    import_tasks: playbooks/keptn_tasks.yaml
+    when: feature_keptn == true
 
   - name: Post install tasks
     import_tasks: playbooks/postinstall_tasks.yaml

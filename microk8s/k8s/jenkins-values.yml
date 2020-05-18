@@ -4,8 +4,12 @@ master:
   image: "jenkins/jenkins"
   tag: "lts"
   adminPassword: "dynatrace"
-  serviceType: "NodePort"
-  nodePort: 31000
+  #serviceType: "NodePort"
+  #nodePort: 31000
+  serviceType: ClusterIP
+  ingress:
+    enabled: true
+    hostname: jenkins.192.168.50.10.xip.io
   containerEnv:
     - name: GITHUB_USER_EMAIL
       value: GITHUB_USER_EMAIL_PLACEHOLDER
@@ -21,6 +25,12 @@ master:
       value: DT_TENANT_URL_PLACEHOLDER
     - name: DT_API_TOKEN
       value: DT_API_TOKEN_PLACEHOLDER
+    - name: KEPTN_ENDPOINT
+      value: KEPTN_ENDPOINT_PLACEHOLDER
+    - name: KEPTN_BRIDGE
+      value: KEPTN_BRIDGE_PLACEHOLDER
+    - name: KEPTN_API_TOKEN
+      value: KEPTN_API_TOKEN_PLACEHOLDER
   csrf:
     defaultCrumbIssuer:
       enabled: false
@@ -71,6 +81,12 @@ master:
                 value: ${DT_TENANT_URL} #Load from Environment Variable
               - key: "DT_API_TOKEN"
                 value: ${DT_API_TOKEN} #Load from Environment Variable
+              - key: "KEPTN_ENDPOINT"
+                value: ${KEPTN_ENDPOINT} #Load from Environment Variable
+              - key: "KEPTN_BRIDGE"
+                value: ${KEPTN_BRIDGE} #Load from Environment Variable
+              - key: "KEPTN_API_TOKEN"
+                value: ${KEPTN_API_TOKEN} #Load from Environment Variable
           clouds:
           - kubernetes:
               containerCapStr: "10"
@@ -240,42 +256,6 @@ master:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "docker"
-                  ttyEnabled: true
-                  workingDir: "/home/jenkins/agent"
-                - args: "cat"
-                  command: "/bin/sh -c"
-                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
-                  livenessProbe:
-                    failureThreshold: 0
-                    initialDelaySeconds: 0
-                    periodSeconds: 0
-                    successThreshold: 0
-                    timeoutSeconds: 0
-                  name: "kubectl"
-                  ttyEnabled: true
-                  workingDir: "/home/jenkins/agent"
-                - args: "cat"
-                  command: "/bin/sh -c"
-                  image: "quay.io/dtacmworkshop/jmeter"
-                  livenessProbe:
-                    failureThreshold: 0
-                    initialDelaySeconds: 0
-                    periodSeconds: 0
-                    successThreshold: 0
-                    timeoutSeconds: 0
-                  name: "jmeter"
-                  ttyEnabled: true
-                  workingDir: "/home/jenkins/agent"
-                - args: "cat"
-                  command: "/bin/sh -c"
-                  image: "dynatraceacm/apline-curl"
-                  livenessProbe:
-                    failureThreshold: 0
-                    initialDelaySeconds: 0
-                    periodSeconds: 0
-                    successThreshold: 0
-                    timeoutSeconds: 0
-                  name: "curl"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                 idleMinutes: 10

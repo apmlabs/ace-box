@@ -6,6 +6,9 @@
   become: true
   command: usermod -a -G microk8s vagrant
 
+- name: reset ssh connection
+  meta: reset_connection
+
 - name: Microk8s - Allow Priviledged
   become: true
   shell: bash -c "echo \"--allow-privileged=true\" >> /var/snap/microk8s/current/args/kube-apiserver"
@@ -13,7 +16,7 @@
 - name: Microk8s - Alias to kubectl
   shell: snap alias microk8s.kubectl kubectl
 
-- name: Microk8s - Enable dashboard, dns, storage, registry, helm
+- name: "Microk8s - Enable addons {{ microk8s_addons }}"
   shell: "/snap/bin/microk8s.enable {{ microk8s_addons }}"
 
 - name: Microk8s - Start microk8s
@@ -51,9 +54,9 @@
   when: microk8s_addons is search("dashboard")
   shell: /snap/bin/microk8s.kubectl -n kube-system delete pod -l k8s-app=kubernetes-dashboard
 
-- name: Microk8s - Dashboard - Create nodePort and expose on 31100
-  when: microk8s_addons is search("dashboard")
-  shell: "/snap/bin/microk8s.kubectl -n kube-system patch service kubernetes-dashboard -p '{\"spec\": {\"ports\": [{\"port\": 443,\"targetPort\": 8443,\"name\": \"https\",\"protocol\":\"TCP\",\"nodePort\":31100}], \"type\": \"NodePort\"}}'"
+#- name: Microk8s - Dashboard - Create nodePort and expose on 31100
+#  when: microk8s_addons is search("dashboard")
+#  shell: "/snap/bin/microk8s.kubectl -n kube-system patch service kubernetes-dashboard -p '{\"spec\": {\"ports\": [{\"port\": 443,\"targetPort\": 8443,\"name\": \"https\",\"protocol\":\"TCP\",\"nodePort\":31100}], \"type\": \"NodePort\"}}'"
 
 - name: Microk8s - Dashboard - Allow skip authentication
   when: microk8s_addons is search("dashboard")

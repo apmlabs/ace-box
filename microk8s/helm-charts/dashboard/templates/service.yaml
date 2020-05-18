@@ -5,11 +5,11 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 80
       protocol: TCP
       targetPort: 80
-      nodePort: {{ .Values.nodeport }}
+      #nodePort: {{ .Values.nodeport }}
   selector:
     app: {{ .Chart.Name }}

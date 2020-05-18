@@ -1,72 +1,72 @@
-- name: ActiveGate - Install required packages 
-  apt:
-    name: "{{ packages }}"
-    state: present
-    update_cache: yes
-  vars:
-    packages:
-    - xvfb
-    - x11-xkb-utils 
-    - xfonts-100dpi
-    - xfonts-75dpi
-    - xfonts-scalable
-    - libasound2
-    - libatk-bridge2.0-0
-    - libatk1.0-0
-    - libc6:amd64
-    - libcairo2
-    - libcups2 
-    - libgdk-pixbuf2.0-0 
-    - libgtk-3-0 
-    - libnspr4 
-    - libnss3 
-    - libxss1 
-    - xdg-utils
+# - name: ActiveGate - Install required packages 
+#   apt:
+#     name: "{{ packages }}"
+#     state: present
+#     update_cache: yes
+#   vars:
+#     packages:
+#     - xvfb
+#     - x11-xkb-utils 
+#     - xfonts-100dpi
+#     - xfonts-75dpi
+#     - xfonts-scalable
+#     - libasound2
+#     - libatk-bridge2.0-0
+#     - libatk1.0-0
+#     - libc6:amd64
+#     - libcairo2
+#     - libcups2 
+#     - libgdk-pixbuf2.0-0 
+#     - libgtk-3-0 
+#     - libnspr4 
+#     - libnss3 
+#     - libxss1 
+#     - xdg-utils
 
-- name: ActiveGate - Download chromium deb packages archive
-  get_url:
-    url: https://s3.amazonaws.com/synthetic-packages/Chromium/deb/chromium-78.0.3904.108-0ubuntu0.16.04.1.tgz
-    dest: /tmp/chromium.tgz
-    timeout: 300
+# - name: ActiveGate - Download chromium deb packages archive
+#   get_url:
+#     url: https://s3.amazonaws.com/synthetic-packages/Chromium/deb/chromium-78.0.3904.108-0ubuntu0.16.04.1.tgz
+#     dest: /tmp/chromium.tgz
+#     timeout: 300
 
-- name: ActiveGate - Ensure chromium directory exists
-  file:
-    path: /tmp/chromium
-    state: directory
+# - name: ActiveGate - Ensure chromium directory exists
+#   file:
+#     path: /tmp/chromium
+#     state: directory
 
-- name: ActiveGate - Extract chromium packages to tmp folder
-  unarchive:
-    src: /tmp/chromium.tgz
-    dest: /tmp/chromium
-    remote_src: yes
+# - name: ActiveGate - Extract chromium packages to tmp folder
+#   unarchive:
+#     src: /tmp/chromium.tgz
+#     dest: /tmp/chromium
+#     remote_src: yes
 
-- name: ActiveGate - Find chromium codec packages
-  find:
-    paths: /tmp/chromium
-    patterns: '*chromium-codecs*.deb'
-  register: chromiumcodec
+# - name: ActiveGate - Find chromium codec packages
+#   find:
+#     paths: /tmp/chromium
+#     patterns: '*chromium-codecs*.deb'
+#   register: chromiumcodec
 
-- name: ActiveGate - Find chromium browser packages
-  find:
-    paths: /tmp/chromium
-    patterns: '*chromium-browser*.deb'
-  register: chromiumbrowser
+# - name: ActiveGate - Find chromium browser packages
+#   find:
+#     paths: /tmp/chromium
+#     patterns: '*chromium-browser*.deb'
+#   register: chromiumbrowser
 
-- name: ActiveGate - Install chromium .deb package
-  apt:
-    state: present
-    deb: "{{ item }}"
-  with_items:
-    - "{{ chromiumcodec.files[0].path }}"
-    - "{{ chromiumbrowser.files[0].path }}"
+# - name: ActiveGate - Install chromium .deb package
+#   apt:
+#     state: present
+#     deb: "{{ item }}"
+#   with_items:
+#     - "{{ chromiumcodec.files[0].path }}"
+#     - "{{ chromiumbrowser.files[0].path }}"
 
-- name: ActiveGate - Prevent chromium packages from being upgraded
-  dpkg_selections:
-    name: "{{ item }}"
-    selection: hold
-  with_items:
-    - chromium-browser
-    - chromium-codecs-ffmpeg-extra
+# - name: ActiveGate - Prevent chromium packages from being upgraded
+#   dpkg_selections:
+#     name: "{{ item }}"
+#     selection: hold
+#   with_items:
+#     - chromium-browser
+#     - chromium-codecs-ffmpeg-extra
 
 - name: ActiveGate - Download ActiveGate installer
   get_url:
@@ -77,7 +77,12 @@
     headers:
       Authorization: "Api-token {{ dynatrace['paastoken'] }}"
 
-- name: ActiveGate - Install synthetic-enabled ActiveGate
-  command:
-    cmd: /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh --enable-synthetic
+# - name: ActiveGate - Install synthetic-enabled ActiveGate
+#   command:
+#     cmd: /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh --enable-synthetic
+#     creates: /opt/dynatrace/synthetic/uninstall.sh  
+
+- name: ActiveGate - Install synthetic-enabled ActiveGate New Way
+  shell:
+    cmd: DYNATRACE_SYNTHETIC_AUTO_INSTALL=true /bin/sh /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh --enable-synthetic
     creates: /opt/dynatrace/synthetic/uninstall.sh  

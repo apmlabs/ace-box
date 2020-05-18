@@ -1,0 +1,14 @@
+
+- name: "Gitea 1 - Add helm repo"
+  become_user: vagrant
+  shell: /snap/bin/helm repo add k8s-land https://charts.k8s.land
+
+- name: "Gitea 2 - Install gitea using helm"
+  become_user: vagrant
+  shell: /snap/bin/helm install gitea k8s-land/gitea -f /vagrant/k8s/gitea-values.yml --namespace ace
+  ignore_errors: yes
+
+
+  # kubectl exec -it $(kubectl get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -- su - git -c "/usr/local/bin/gitea --custom-path /data/gitea/custom admin create-user --username kristof --password dynatrace --email sdfsdf@ssfgf.com --admin"
+
+

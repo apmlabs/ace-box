@@ -1,6 +1,0 @@
-
-  #need to update helm charts for proper Deployment definition
-  - name: Install Gogs local Git Server
-    become_user: vagrant
-    shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/gogs-values.yml --namespace services gogs incubator/gogs
-    ignore_errors: yes

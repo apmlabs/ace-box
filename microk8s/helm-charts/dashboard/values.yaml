@@ -1,2 +1,2 @@
-nodeport: 30001
+#nodeport: 30001
 replicasnum: 1

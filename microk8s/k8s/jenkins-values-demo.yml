@@ -1,0 +1,512 @@
+master:
+  # Used for label app.kubernetes.io/component
+  componentName: "jenkins-master"
+  image: "jenkins/jenkins"
+  tag: "lts"
+  adminPassword: "dynatrace"
+  serviceType: "NodePort"
+  nodePort: 31000
+  containerEnv:
+    - name: GITHUB_USER_EMAIL
+      value: GITHUB_USER_EMAIL_PLACEHOLDER
+    - name: GITHUB_ORGANIZATION
+      value: GITHUB_ORGANIZATION_PLACEHOLDER
+    - name: GITHUB_USER_NAME
+      value: GITHUB_USER_NAME_PLACEHOLDER
+    - name: GITHUB_PERSONAL_ACCESS_TOKEN
+      value: GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER
+    - name: DOCKER_REGISTRY_URL
+      value: DOCKER_REGISTRY_URL_PLACEHOLDER
+    - name: DT_TENANT_URL
+      value: DT_TENANT_URL_PLACEHOLDER
+    - name: DT_API_TOKEN
+      value: DT_API_TOKEN_PLACEHOLDER
+    - name: KEPTN_ENDPOINT
+      value: KEPTN_ENDPOINT_PLACEHOLDER
+    - name: KEPTN_BRIDGE
+      value: KEPTN_BRIDGE_PLACEHOLDER
+    - name: KEPTN_API_TOKEN
+      value: KEPTN_API_TOKEN_PLACEHOLDER
+  csrf:
+    defaultCrumbIssuer:
+      enabled: false
+      proxyCompatability: true
+  installPlugins:
+    - kubernetes:1.25.3
+    - kubernetes-credentials-provider:0.13
+    - workflow-job:2.36
+    - workflow-aggregator:2.6
+    - credentials-binding:1.22
+    - git:4.2.2
+    - google-oauth-plugin:1.0.0
+    - google-source-plugin:0.4
+    - performance:3.17
+    - github-branch-source:2.6.0
+    - job-dsl:1.77
+    - pipeline-build-step:2.12
+    - docker-plugin:1.2.0
+    - blueocean:1.23.0
+    - configuration-as-code:1.39
+    - http_request:1.8.26
+    - pipeline-utility-steps:2.5.0
+  JCasC:
+    enabled: true
+    defaultConfig: false
+    configScripts:
+      jenkins-settings: |
+        jenkins:
+          agentProtocols:
+          - "JNLP4-connect"
+          - "Ping"
+          authorizationStrategy:
+            loggedInUsersCanDoAnything:
+              allowAnonymousRead: false
+          systemMessage: Welcome to the ACE BOX CI\CD server.  This Jenkins is configured and managed 'as code'.
+          disableRememberMe: false
+          numExecutors: 2
+          globalNodeProperties:
+          - envVars:
+              env:
+              - key: "DOCKER_REGISTRY_URL"
+                value: ${DOCKER_REGISTRY_URL} #Load from Environment Variable
+              - key: "GITHUB_USER_EMAIL"
+                value: ${GITHUB_USER_EMAIL} #Load from Environment Variable
+              - key: "GITHUB_ORGANIZATION"
+                value: ${GITHUB_ORGANIZATION} #Load from Environment Variable
+              - key: "DT_TENANT_URL"
+                value: ${DT_TENANT_URL} #Load from Environment Variable
+              - key: "DT_API_TOKEN"
+                value: ${DT_API_TOKEN} #Load from Environment Variable
+              - key: "KEPTN_ENDPOINT"
+                value: ${KEPTN_ENDPOINT} #Load from Environment Variable
+              - key: "KEPTN_BRIDGE"
+                value: ${KEPTN_BRIDGE} #Load from Environment Variable
+              - key: "KEPTN_API_TOKEN"
+                value: ${KEPTN_API_TOKEN} #Load from Environment Variable
+          clouds:
+          - kubernetes:
+              containerCapStr: "10"
+              jenkinsTunnel: "jenkins-agent:50000"
+              jenkinsUrl: "http://jenkins:8080"
+              maxRequestsPerHostStr: "32"
+              name: "kubernetes"
+              namespace: "ace"
+              serverUrl: "https://kubernetes.default"
+              templates:
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  envVars:
+                  - envVar:
+                      key: "JENKINS_URL"
+                      value: "http://jenkins.ace.svc.cluster.local:8080"
+                  image: "jenkinsci/jnlp-slave"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jenkins-slave"
+                  resourceLimitCpu: "512m"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: "512m"
+                  resourceRequestMemory: "512Mi"
+                  workingDir: "/home/jenkins"
+                hostNetwork: false
+                label: "jenkins-slave "
+                name: "jenkins-slave"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                serviceAccount: "default"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "maven:3.3.9-jdk-8-alpine"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "maven"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                idleMinutes: 10
+                idleMinutesStr: "10"
+                label: "maven"
+                name: "maven-docker-k8s-jmeter"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                - persistentVolumeClaim:
+                    claimName: "maven-repo"
+                    mountPath: "/root/.m2/repository"
+                    readOnly: false
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/git"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "git"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "git"
+                name: "Git"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "node:8"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "nodejs"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                idleMinutes: 10
+                idleMinutesStr: "10"
+                label: "nodejs"
+                name: "nodejs"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/gobuilder"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "gobuilder"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "golang2"
+                name: "golang2"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/git"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "git"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "quay.io/dtacmworkshop/jmeter"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "kubegit"
+                name: "kubegit"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                yamlMergeStrategy: "override"
+        credentials:
+          system:
+            domainCredentials:
+              - credentials:
+                - usernamePassword:
+                    username: ${GITHUB_USER_NAME} #Load from Environment Variable
+                    password: ${GITHUB_PERSONAL_ACCESS_TOKEN} #Load from Environment Variable
+                    description: "Github Credentials for ACE"
+                    id: "git-creds-ace"
+                    scope: GLOBAL
+        unclassified:
+          globalLibraries:
+            libraries:
+            - name: "keptn-library"
+              retriever:
+                modernSCM:
+                  scm:
+                    git:
+                      remote: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"
+                      traits:
+                      - "gitBranchDiscovery"
+            - name: "ace"
+              retriever:
+                modernSCM:
+                  scm:
+                    git:
+                      remote: "https://github.com/dynatrace-ace/dynatrace-jenkins-library.git"
+                      traits:
+                      - "gitBranchDiscovery"
+        jobs:
+          - script: >
+              pipelineJob('1. Build') {
+                parameters {
+                  choiceParam('BUILD', ['1','2','3','4'], 'Select the build you want to deploy (affects application behavior, github.com/grabnerandi/simplenodeservice for more details)')
+                }
+                definition {
+                  cpsScm {
+                    scriptPath('build.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('2. Deploy') {
+                parameters {
+                  stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
+                  stringParam('TAG_STAGING', '', 'The image of the service to deploy.')
+                  stringParam('BUILD', '', 'The version of the service to deploy.')
+                }
+                definition {
+                  cpsScm {
+                    scriptPath('deployStaging.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('3. Test') {
+                parameters {
+                  stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
+                }
+                definition {
+                  cpsScm {
+                    scriptPath('test.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('4. Deploy production') {
+                parameters {
+                  stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
+                  stringParam('TAG_STAGING', '', 'The image of the service to deploy.')
+                  stringParam('BUILD', '', 'The version of the service to deploy.')
+                }
+                definition {
+                  cpsScm {
+                    scriptPath('deployProd.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+
+persistence:
+  enabled: true
+  existingClaim: "jenkins-pvc"
