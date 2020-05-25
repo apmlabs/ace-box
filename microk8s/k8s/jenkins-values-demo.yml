@@ -4,8 +4,12 @@ master:
   image: "jenkins/jenkins"
   tag: "lts"
   adminPassword: "dynatrace"
-  serviceType: "NodePort"
-  nodePort: 31000
+  #serviceType: "NodePort"
+  #nodePort: 31000
+  serviceType: ClusterIP
+  ingress:
+    enabled: true
+    hostname: jenkins.192.168.50.10.xip.io
   containerEnv:
     - name: GITHUB_USER_EMAIL
       value: GITHUB_USER_EMAIL_PLACEHOLDER
