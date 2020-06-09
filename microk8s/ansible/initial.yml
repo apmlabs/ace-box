@@ -6,22 +6,23 @@
   #roles:
   #- role: Dynatrace.OneAgent
   vars:
-    acebox_mode:                       "{{ acebox['features']['mode'] | default('training') }}"
-    feature_activegate:         "{{ acebox['features']['activegate'] | default(false) }}"
-    feature_oneagent:           "{{ acebox['features']['oneagent'] | default(true) }}"
-    feature_gitea:              "{{ acebox['features']['gitea'] | default(false) }}"
-    feature_jenkins:            "{{ acebox['features']['jenkins'] | default(true) }}"
-    feature_dashboard:          "{{ acebox['features']['dashboard'] | default(false) }}"
-    feature_keptn:              "{{ acebox['features']['keptn'] | default(false) }}"
-    dynatrace_tenant_url:       "{{ dynatrace['tenant'] }}" #abc1234.live.dynatrace.com
-    dynatrace_paas_token:       "{{ dynatrace['paastoken'] }}"
-    dynatrace_api_token:        "{{ dynatrace['apitoken'] }}"
-    jenkins_setcreds:           "{{ acebox['config']['jenkins']['setcreds'] | default(true) }}"
-    keptn_version:              "{{ acebox['config']['keptn']['version'] | default('0.6.1')}}"
-    keptn_bridge_port:          "{{ acebox['config']['keptn']['bridge_port'] | default(31400)}}"
-    keptn_api_port:             "{{ acebox['config']['keptn']['api_port'] | default(31401)}}"
+    acebox_mode:                      "{{ acebox['features']['mode'] | default('training') }}"
+    feature_activegate:               "{{ acebox['features']['activegate'] | default(false) }}"
+    feature_oneagent:                 "{{ acebox['features']['oneagent'] | default(true) }}"
+    feature_gitea:                    "{{ acebox['features']['gitea'] | default(false) }}"
+    feature_jenkins:                  "{{ acebox['features']['jenkins'] | default(true) }}"
+    feature_dashboard:                "{{ acebox['features']['dashboard'] | default(false) }}"
+    feature_keptn:                    "{{ acebox['features']['keptn'] | default(false) }}"
+    dynatrace_tenant_url:             "{{ dynatrace['tenant'] }}" 
+    dynatrace_paas_token:             "{{ dynatrace['paastoken'] }}"
+    dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
+    jenkins_setcreds:                 "{{ acebox['config']['jenkins']['setcreds'] | default(true) }}"
+    keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.6.2')}}"
+    keptn_dynatrace_service_version:      "{{ acebox['config']['keptn']['dynatrace_service_version'] | default('0.7.0')}}"
+    keptn_dynatrace_sli_service_version: "{{ acebox['config']['keptn']['dynatrace_sli_service_version'] | default('0.4.0')}}"
     microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns dashboard storage registry') }}"
-    ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.xip.io"
+    microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('xip.io') }}"
+    ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
   tasks:
   - name: Init install tasks
     import_tasks: playbooks/init_tasks.yaml
@@ -35,10 +36,6 @@
   - name: Install and configure Dynatrace OneAgent
     import_tasks: playbooks/dtoneagent_tasks.yaml
     when: feature_oneagent == true
-
-  - name: Add namespaces
-    shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/namespaces.yml
-    ignore_errors: yes
 
   - name: Install and configure jenkins
     import_tasks: playbooks/jenkins_tasks.yaml

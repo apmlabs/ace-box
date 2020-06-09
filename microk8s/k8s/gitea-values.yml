@@ -35,7 +35,7 @@ ingress:
   certManager: true
 
   ## When the ingress is enabled, a host pointing to this will be created
-  hostname: gitea.192.168.50.10.xip.io
+  hostname: GITEA_INGRESS_PLACEHOLDER
 
   ## Ingress annotations done as key:value pairs
   ## For a full list of possible ingress annotations, please see
@@ -196,7 +196,7 @@ config:
 ##  jwtSecret: "<random>"  # Generate with 'gitea generate secret JWT_SECRET'
 ##  lfsJwtSecret: "<random>"  # Generate with 'gitea generate secret LFS_JWT_SECRET'
 ##  internalToken: "<random>"  # Generate with 'gitea generate secret INTERNAL_TOKEN'
-  disableInstaller: false
+  disableInstaller: true
   offlineMode: false
   requireSignin: false
   disableRegistration: false

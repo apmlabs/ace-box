@@ -1,14 +1,24 @@
 
-- name: "Gitea 1 - Add helm repo"
+- name: Gitea - Add helm repo
   become_user: vagrant
   shell: /snap/bin/helm repo add k8s-land https://charts.k8s.land
 
-- name: "Gitea 2 - Install gitea using helm"
+- name: Gitea - Set placeholders
+  shell: sed -e "s|GITEA_INGRESS_PLACEHOLDER|gitea.{{ ingress_domain }}|"  /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
+
+- name: Gitea - Install gitea using helm
   become_user: vagrant
-  shell: /snap/bin/helm install gitea k8s-land/gitea -f /vagrant/k8s/gitea-values.yml --namespace ace
+  shell: /snap/bin/helm install gitea k8s-land/gitea -f /vagrant/k8s/gitea-values-gen.yml --namespace ace
   ignore_errors: yes
 
+- name: Gitea - Wait for gitea to be ready
+  shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
 
-  # kubectl exec -it $(kubectl get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -- su - git -c "/usr/local/bin/gitea --custom-path /data/gitea/custom admin create-user --username kristof --password dynatrace --email sdfsdf@ssfgf.com --admin"
+- name: Gitea - Create default user dynatrace
+  shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username dynatrace --password dynatrace --email gitea@ace.ace --admin --access-token"'
+  register: token_raw
 
+- set_fact:
+    gitea_access_token: "{{  token_raw.stdout | regex_search('Access token was successfully created... (.*)') | regex_replace ('Access token was successfully created... ', '') }}"
 
+- debug: var=gitea_access_token

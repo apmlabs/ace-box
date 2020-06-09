@@ -3,7 +3,12 @@ kind: Ingress
 metadata:
   labels:
     app: kubernetes-dashboard
-  name: kubernetes-dashboard
+  annotations:
+    ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.org/ssl-backends: "kubernetes-dashboard"
+    kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  name: dashboard-ingress
   namespace: kube-system
 spec:
   rules:
@@ -12,6 +17,6 @@ spec:
       paths:
       - backend:
           serviceName: kubernetes-dashboard
-          servicePort: 8443
+          servicePort: 443
         path: /
         pathType: ImplementationSpecific

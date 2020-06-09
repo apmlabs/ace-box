@@ -17,14 +17,14 @@
 
 - name: Keptn - Install Keptn Quality Gates
   ##become_user: vagrant
-  shell: /usr/local/bin/keptn install --platform=kubernetes --use-case=quality-gates --creds=/vagrant/k8s/keptncreds.json --ingress-install-option=Reuse --domain 192.168.50.10.xip.io
+  shell: /usr/local/bin/keptn install --platform=kubernetes --use-case=quality-gates --creds=/vagrant/k8s/keptncreds.json --ingress-install-option=Reuse --domain {{ ingress_domain }}
 
 
 - name: Keptn - Expose Bridge
   shell: /usr/local/bin/keptn configure bridge --action=expose
 
 
-- name: Keptn - Authenticate vagrant with Keptn
+- name: Keptn - Authenticate vagrant user with Keptn
   shell: cp -r /root/.keptn/ /home/vagrant && chown -R vagrant /home/vagrant/.keptn
 
 - set_fact:

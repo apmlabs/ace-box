@@ -7,7 +7,7 @@
   register: registry_port
 
 - name: Jenkins - Set environment variables TRAINING MODE
-  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER||" -e "s|KEPTN_BRIDGE_PLACEHOLDER||" /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
+  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER||" -e "s|KEPTN_BRIDGE_PLACEHOLDER||" -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: jenkins_setcreds == true and acebox_mode == 'training'
 
 - name: Jenkins - Empty environment variables
@@ -15,7 +15,7 @@
   when: jenkins_setcreds != true and acebox_mode == 'training'
 
 - name: Jenkins - Set environment variables DEMO MODE
-  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER|https://api.keptn.{{ ingress_domain }}|" -e "s|KEPTN_BRIDGE_PLACEHOLDER|https://bridge.keptn.{{ ingress_domain }}|" /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
+  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER|https://api.keptn.{{ ingress_domain }}|" -e "s|KEPTN_BRIDGE_PLACEHOLDER|https://bridge.keptn.{{ ingress_domain }}|" -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: acebox_mode == 'demo'
 
 - name: Jenkins - Allow jenkins to admin k8s

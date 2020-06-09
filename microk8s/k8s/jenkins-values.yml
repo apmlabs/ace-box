@@ -9,7 +9,7 @@ master:
   serviceType: ClusterIP
   ingress:
     enabled: true
-    hostname: jenkins.192.168.50.10.xip.io
+    hostName: JENKINS_INGRESS_PLACEHOLDER
   containerEnv:
     - name: GITHUB_USER_EMAIL
       value: GITHUB_USER_EMAIL_PLACEHOLDER
