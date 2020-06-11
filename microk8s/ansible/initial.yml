@@ -13,6 +13,7 @@
     feature_jenkins:                  "{{ acebox['features']['jenkins'] | default(true) }}"
     feature_dashboard:                "{{ acebox['features']['dashboard'] | default(false) }}"
     feature_keptn:                    "{{ acebox['features']['keptn'] | default(false) }}"
+    feature_cert_manager:             "{{ acebox['features']['cert_manager'] | default(false) }}"
     dynatrace_tenant_url:             "{{ dynatrace['tenant'] }}" 
     dynatrace_paas_token:             "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
@@ -20,9 +21,13 @@
     keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.6.2')}}"
     keptn_dynatrace_service_version:      "{{ acebox['config']['keptn']['dynatrace_service_version'] | default('0.7.0')}}"
     keptn_dynatrace_sli_service_version: "{{ acebox['config']['keptn']['dynatrace_sli_service_version'] | default('0.4.0')}}"
-    microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns dashboard storage registry') }}"
+    microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns storage registry ingress') }}"
     microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('xip.io') }}"
     ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
+    git_user:                   "{{ acebox['config']['git']['user'] | default('dynatrace') }}"
+    git_email:                  "{{ acebox['config']['git']['email'] | default('ace@ace.ace') }}"
+    git_org:                    "{{ acebox['config']['git']['org'] | default('ace') }}"
+    git_repo:                   "{{ acebox['config']['git']['repo'] | default('hot-repo') }}"
   tasks:
   - name: Init install tasks
     import_tasks: playbooks/init_tasks.yaml
@@ -32,6 +37,18 @@
 
   - name: Install and configure helm
     import_tasks: playbooks/helm.yaml
+  
+  - name: Install and configure cert-manager
+    import_tasks: playbooks/cert_manager_tasks.yaml
+    when: feature_cert_manager == true
+
+  - name: Install and configure Gitea
+    import_tasks: playbooks/gitea_tasks.yaml
+    when: feature_gitea == true
+
+  - name: Install and configure Keptn
+    import_tasks: playbooks/keptn_tasks.yaml
+    when: feature_keptn == true
 
   - name: Install and configure Dynatrace OneAgent
     import_tasks: playbooks/dtoneagent_tasks.yaml
@@ -41,10 +58,6 @@
     import_tasks: playbooks/jenkins_tasks.yaml
     when: feature_jenkins == true
 
-  - name: Install and configure Gitea
-    import_tasks: playbooks/gitea_tasks.yaml
-    when: feature_gitea == true
-
   - name: Create ACE Dashboard
     import_tasks: playbooks/dashboard_tasks.yaml
     when: feature_dashboard == true
@@ -52,10 +65,6 @@
   - name: Install and configure Dynatrace ActiveGate
     import_tasks: playbooks/dtactivegate_tasks.yaml
     when: feature_activegate == true
-
-  - name: Install and configure Keptn
-    import_tasks: playbooks/keptn_tasks.yaml
-    when: feature_keptn == true
 
   - name: Post install tasks
     import_tasks: playbooks/postinstall_tasks.yaml

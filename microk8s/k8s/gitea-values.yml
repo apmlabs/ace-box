@@ -7,7 +7,7 @@ tags:
 
 images:
   registry: docker.io
-  gitea: "gitea/gitea:latest"
+  gitea: "gitea/gitea:1.11.6"
   memcached: "memcached:1.5.19-alpine"
   pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
@@ -44,7 +44,7 @@ ingress:
   ## If tls is set to true, annotation ingress.kubernetes.io/secure-backends: "true" will automatically be set
   ## If certManager is set to true, annotation kubernetes.io/tls-acme: "true" will automatically be set
   annotations:
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    #cert-manager.io/issuer: letsencrypt-staging
     kubernetes.io/ingress.class: nginx
 
   ## The list of additional hostnames to be covered with this ingress record.
@@ -56,10 +56,10 @@ ingress:
   ## The tls configuration for the ingress
   ## see: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
   ## Uncomment below to enable tls / https for let's encrypt / cert-manager
-  tls:    
-   - hosts:    
-     - gitea.192.168.50.10.xip.io
-     secretName: gitea.tls 
+  #tls:    
+  # - hosts:    
+  #   - GITEA_INGRESS_PLACEHOLDER
+  #   secretName: gitea.local-tls 
 
   secrets:
   ## If you're providing your own certificates, please use this to add the certificates as secrets

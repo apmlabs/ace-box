@@ -10,6 +10,16 @@ master:
   ingress:
     enabled: true
     hostName: JENKINS_INGRESS_PLACEHOLDER
+    certManager: true
+    annotations:
+      kubernetes.io/ingress.class: "nginx"    
+      cert-manager.io/issuer: "letsencrypt-staging"
+      ingress.kubernetes.io/secure-backends: true
+      kubernetes.io/tls-acme: true
+    tls:    
+    - hosts:    
+      - JENKINS_INGRESS_PLACEHOLDER
+      secretName: jenkins.local-tls 
   containerEnv:
     - name: GITHUB_USER_EMAIL
       value: GITHUB_USER_EMAIL_PLACEHOLDER
@@ -19,6 +29,12 @@ master:
       value: GITHUB_USER_NAME_PLACEHOLDER
     - name: GITHUB_PERSONAL_ACCESS_TOKEN
       value: GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER
+    - name: GIT_REPO
+      value: GIT_REPO_PLACEHOLDER
+    - name: GIT_DOMAIN
+      value: GIT_DOMAIN_PLACEHOLDER
+    - name: GIT_PROTOCOL
+      value: http
     - name: DOCKER_REGISTRY_URL
       value: DOCKER_REGISTRY_URL_PLACEHOLDER
     - name: DT_TENANT_URL
@@ -77,6 +93,10 @@ master:
                 value: ${GITHUB_USER_EMAIL} #Load from Environment Variable
               - key: "GITHUB_ORGANIZATION"
                 value: ${GITHUB_ORGANIZATION} #Load from Environment Variable
+              - key: "GIT_REPO"
+                value: ${GIT_REPO} #Load from Environment Variable
+              - key: "GIT_DOMAIN"
+                value: ${GIT_DOMAIN} #Load from Environment Variable
               - key: "DT_TENANT_URL"
                 value: ${DT_TENANT_URL} #Load from Environment Variable
               - key: "DT_API_TOKEN"
@@ -418,7 +438,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                            url('${GIT_REPO}') 
                           }
                           branch('*/master')
                       }
@@ -440,7 +460,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                            url('${GIT_REPO}') 
                           }
                           branch('*/master')
                       }
@@ -460,7 +480,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                            url('${GIT_REPO}') 
                           }
                           branch('*/master')
                       }
@@ -482,7 +502,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('https://github.com/${GITHUB_ORGANIZATION}/maas-hot.git') 
+                            url('${GIT_REPO}') 
                           }
                           branch('*/master')
                       }

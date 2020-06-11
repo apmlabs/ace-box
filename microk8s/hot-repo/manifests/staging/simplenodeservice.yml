@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplenodeservice
+  labels:
+    app: simplenodeservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplenodeservice
+  template:
+    metadata:
+      labels:
+        app: simplenodeservice
+        version: v1
+    spec:
+      containers:
+      - name: simplenodeservice
+        image: localhost:32000/ace/simplenodeservice:1.0.0-6
+        env:
+        - name: JAVA_OPTS
+          value: -Xms128m -Xmx512m -XX:PermSize=128m -XX:MaxPermSize=128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+        - name: DT_TAGS
+          value: "DT_TAGS_PLACEHOLDER"
+        - name: DT_CUSTOM_PROP
+          value: "Owner=ace@dynatrace.com FriendlyName=simplenode SERVICE_TYPE=FRONTEND Project=simpleproject DesignDocument=https://simple-corp.com/stories/simplenodeservice Tier=1 Class=Gold purpose=ACE SCM=https://github.com/kristofre-maashot/maas-hot.git Branch=origin/master Build=1 Image=localhost:32000/ace/simplenodeservice:1.0.0-6 keptn_project=simplenodeproject keptn_service=simplenodeservice keptn_stage=staging "
+        resources:
+          limits:
+            cpu: 500m
+            memory: 2048Mi
+          requests:
+            cpu: 400m
+            memory: 768Mi
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 15
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simplenodeservice
+  labels:
+    app: simplenodeservice
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    nodePort: 31500
+  selector:
+    app: simplenodeservice
+  type: NodePort

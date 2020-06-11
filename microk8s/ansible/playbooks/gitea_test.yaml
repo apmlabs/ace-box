@@ -15,22 +15,22 @@
 #   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
 - hosts: localhost
   vars:
-    gitea_user: "kristof9"
+    git_org: "test"
+    gitea_domain: "gitea.192.168.50.10.nip.io"
+    gitea_access_token: "dfa2ef4ec4f0cea0d1bb294e00d6fc50a090db85"
   tasks:
-  - name: Gitea - Create default user dynatrace
-    shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username {{ gitea_user }} --password dynatrace --email {{ gitea_user }}@ace.ace --admin --access-token"'
-    register: token_raw
+  - name: Gitea - Wait for API to be up
+    uri:
+      url: "https://{{ gitea_domain }}/api/v1/admin/orgs?access_token={{ gitea_access_token }}"
+      status_code: 200
+      validate_certs: no
+    register: result
+    until: result.status == 200
+    retries: 5
+    delay: 1
 
-  - debug: var=token_raw
-
-  - set_fact:
-      token_joined: "{{ token_raw.stdout_lines | join }}"
-
-  - set_fact:
-      gitea_access_token: "{{  token_raw.stdout | regex_search('Access token was successfully created... (.*)') | regex_replace ('Access token was successfully created... ', '') }}"
-
-  - debug: var=gitea_access_token
-  
+  - debug: var=result
+  #https://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=d88f9098d244b137fb1c24c9e6eee9cf7d09634f"
 # kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username kristof --password dynatrace --email sdfsdf@ssfgf.com --admin"'
 
 

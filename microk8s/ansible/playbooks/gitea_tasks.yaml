@@ -3,8 +3,11 @@
   become_user: vagrant
   shell: /snap/bin/helm repo add k8s-land https://charts.k8s.land
 
+- set_fact:
+    gitea_domain: "gitea.{{ ingress_domain }}"
+
 - name: Gitea - Set placeholders
-  shell: sed -e "s|GITEA_INGRESS_PLACEHOLDER|gitea.{{ ingress_domain }}|"  /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
+  shell: sed -e "s|GITEA_INGRESS_PLACEHOLDER|{{ gitea_domain }}|"  /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
 
 - name: Gitea - Install gitea using helm
   become_user: vagrant
@@ -14,11 +17,62 @@
 - name: Gitea - Wait for gitea to be ready
   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
 
-- name: Gitea - Create default user dynatrace
-  shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username dynatrace --password dynatrace --email gitea@ace.ace --admin --access-token"'
+- name: "Gitea - Create default user {{ git_user }}"
+  shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username {{ git_user }} --password {{ git_user }} --email {{ git_email }} --admin --access-token"'
   register: token_raw
 
 - set_fact:
     gitea_access_token: "{{  token_raw.stdout | regex_search('Access token was successfully created... (.*)') | regex_replace ('Access token was successfully created... ', '') }}"
 
 - debug: var=gitea_access_token
+
+# The wait is needed as sometimes the API is not up even though Gitea deployment is ready
+- name: Gitea - Wait for API to be up
+  uri:
+    url: "http://{{ gitea_domain }}/api/v1/admin/orgs?access_token={{ gitea_access_token }}"
+    status_code: 200
+    validate_certs: no
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 1
+
+- name: "Gitea - Create org {{ git_org }}"
+  shell: "curl -k -d '{\"full_name\":\"{{ git_org }}\", \"visibility\":\"public\", \"username\":\"{{ git_org }}\"}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/orgs?access_token={{ gitea_access_token }}\""
+
+- name: "Gitea - Create repo {{ git_repo }}"
+  shell: "curl -k -d '{\"name\":\"{{ git_repo }}\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
+
+- name: "Gitea - Git config"
+  shell: "git config --global user.email \"{{ git_email }}\" && git config --global user.name \"{{ git_user }}\" && git config --global http.sslverify false"
+
+- name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}"
+  shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
+
+- name: "Gitea - Add files"
+  shell: cp -r /vagrant/hot-repo/ /home/vagrant/
+
+- name: "Gitea - Git add/commit"
+  shell: cd /home/vagrant/hot-repo && git add . && git commit -m "Initial commit, enjoy"
+
+- name: "Gitea - Git push"
+  shell: "cd /home/vagrant/hot-repo && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
+
+#curl -k -d '{"name":"hot", "private":false, "auto-init":true}' -H "Content-Type: application/json" -X POST "https://gitea.192.168.50.10.nip.io/api/v1/org/ace/repos?access_token=d88f9098d244b137fb1c24c9e6eee9cf7d09634f"
+
+#curl -k -d '{"full_name":"ace", "visibility":"public", "username":"ace"}' -H "Content-Type: application/json" -X POST "https://gitea.192.168.50.10.nip.io/api/v1/orgs?access_token=d88f9098d244b137fb1c24c9e6eee9cf7d09634f"
+
+#curl -k -H "accept: application/json" -X GET "https://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=7cc5edd099a81420dc42b25752799fc0eb2935dc"
+
+
+# git init /vagrant/hot-repo/
+# git add .
+
+# git config --global user.email "gitea@ace.ace"
+# git config --global user.name "dynatrace"
+# git config --global http.sslverify false
+# git config credential.helper store
+# git commit -m "First commit, enjoy"
+
+# git remote add origin https://gitea.192.168.50.10.nip.io/ace/hot
+# git push -u origin master
