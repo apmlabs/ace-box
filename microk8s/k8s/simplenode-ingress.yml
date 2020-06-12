@@ -7,7 +7,7 @@ metadata:
   namespace: staging
 spec:
   rules:
-  - host: simplenode.staging.192.168.50.10.xip.io
+  - host: simplenode.staging.DOMAIN_PLACEHOLDER
     http:
       paths:
       - backend:
@@ -25,7 +25,7 @@ metadata:
   namespace: production
 spec:
   rules:
-  - host: simplenode.production.192.168.50.10.xip.io
+  - host: simplenode.production.DOMAIN_PLACEHOLDER
     http:
       paths:
       - backend:

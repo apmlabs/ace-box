@@ -24,10 +24,11 @@ ACE-BOX comes with the following components
 |----|-------|
 | microk8s | 1.18 |
 | jenkins | lts (222.3 at time of writing) |
-| helm | 2 |
+| helm | 3 |
 | oneagent | latest |
 | activegate for private synthetic node | latest |
 | ace dashboard | built on the spot |
+| gitea local git server | 1.11.6 |
 
 ## Prerequisites
 To run the ace-box, the following is required:
@@ -56,32 +57,46 @@ You need to create a config file called `config.yml` that contains the informati
 
 **Note2:** If you had forked this repo and want to update it with your own changes, a `gitignore` entry has been added for the config.yml file so you do not accidentally spill your tokens :-).
 
+The below config.yml example will spin up an ace-box with all features in a demo mode (everything pre-configured).
+
 ```
 dynatrace:
   tenant:     ''    # https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid]
   apitoken:   ''    # full scope
   paastoken:  ''
-git:
-  username:   ''    # Github username
-  pat:        ''    # Gitub Personal access token created as part of prerequisites, "repo" scope is sufficient. 
-  email:      ''    # Github email
-  org:        ''    # Github org created as part of prerequisites
 acebox:
   specs:
-    cpu: 2                      # number of cpu vcores (default: 2)
-    mem: 8192                   # memory assignment in MB (default: 8192)
-    priv_ip: "192.168.50.10"    # private IP  (default: "192.168.50.10", DO NOT CHANGE)
-    disk: "50GB"                # disk size (default: "50GB")
+    cpu: 3                      # number of cpu vcores
+    mem: 8196                   # memory assignment in MB
+    priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
+    disk: "50GB"
   features:
-    oneagent: true              # install Dynatrace OneAgent (default: true)
-    activegate: true            # install Dynatrace ActiveGate for Private Synthetic, (default: true)
-    jenkins: true               # install Jenkins (default: true)
-    jenkins_setcreds: true      # automatically set git and dynatrace credentials in Jenkins (default: true)
-    dashboard: true             # install ACE dashboard (default: true)
-  microk8s:
-    addons: "dns dashboard storage registry"  # which addons to micrk8s to install (https://microk8s.io/docs/addons) WARN: will increase resource usage (default: "dns dashboard storage registry")
-vagrant:
-  provider: "virtualbox"        # provider to use, only "virtualbox" is supported as of now
+    oneagent: true              # install Dynatrace OneAgent, defaults to true
+    activegate:  true            # install Dynatrace ActiveGate for Private Synthetic, defaults to false
+    jenkins: true               # install Jenkins, defaults to true
+    jenkins_setcreds: true      # automatically set git and dynatrace credentials in Jenkins
+    gitea: true                 # install gitea local github (broken ATM), defaults to false
+    dashboard: true             # install ACE dashboard, defaults to false
+    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+    keptn: true                 # install keptn, defaults to false
+  config:
+    keptn:
+      version: "0.6.2"
+      dynatrace_service_version: "0.7.1"
+      dynatrace_sli_service_version: "0.4.2"
+    jenkins:
+      set_creds: true
+      set_jenkinslib: true
+      jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"
+      keptn_lib_url: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"
+    microk8s:
+      domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
+      addons: "dns storage registry ingress "
+    git:
+      user: "dynatrace"         # user that will be created to log in to gitea, password is the same, defaults to "dynatrace"
+      email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
+      org: "ace"                # org that will be created on gitea, defaults to "ace"
+      repo: "hot-repo"          # repo that will be created on gitea, defaults to "hot-repo"
 ```
 
 ### Step 4 - Provision
@@ -100,6 +115,8 @@ Vagrant will perform the following:
   
 **This process will take some time, grab a coffee**
 
+**Note:** The first time you will need to enter your passord at least once.
+
 **Note:** Windows users will be asked to confirm security notifications a couple of times during the provisioning process, so keep an eye out for them.
 
 ### Troubleshooting
@@ -110,17 +127,7 @@ Vagrant will perform the following:
 5. During testing there were some cases where Jenkins plugins refused to install while provisioning which renders the installation useless for the other usecases. In that case, it is best to execute a `vagrant destroy` followed by a `vagrant up`
 
 ## Accessing ace-box dashboard
-At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://ace-box:30001/`. Alternatively the IP address can be used that was specified in the `config.yml` file.
-
-These are the services currently exposed (you should be able to reach them by opening a browser on your workstation)
-| Service | Address |
-|----|-------|
-| ace dashboard | http://ace-box:30001 |
-| jenkins | http://ace-box:31000 |
-| kubernetes dashboard | https://ace-box:31100 |
-| simplenode staging | http://ace-box:31500 (not yet running after provisioning) |
-| simplenode prod | http://ace-box:31600 (not yet running after provisioning) |
-
+At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.
 
 ## SSH into the box
 Inside the `microk8s` folder, execute `vagrant ssh` to gain access to the VM
@@ -138,7 +145,7 @@ Vagrant offers many commands to deal with the VM, check the below:
 
 ## Behind the scenes
 
-When running the `vagrant up` command the following takes place:
+When running the çvagrant up` command the following takes place:
 1. The `Vagrantfile` is read
 2. Some required Vagrant plugins are installed
 3. The `config.yml` file is loaded
@@ -156,3 +163,6 @@ When running the `vagrant up` command the following takes place:
    7. If enabled, An ACE dashboard is built and deployed as described in `ansible/playbooks/dashboard_tasks.yaml`
    8. If enabled, an ActiveGate is installed based on `ansible/playbooks/dtactivegate_tasks.yaml`. This also installs all required packages.
    9. Post installation tasks are also executed, as described in `ansible/playbooks/postinstall_tasks.yaml`. This includes configuring `iptables` for port forwarding
+
+## Triggering a pipeline run
+If you installed the ace-box in `demo` mode, you can navigate to `Jenkins` and trigger the `1. Build` pipeline.

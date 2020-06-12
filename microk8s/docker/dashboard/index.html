@@ -4,224 +4,57 @@
 <head>
   <title>ACE BOX Dashboard</title>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="Tooltip.css" />
+  <link rel="stylesheet" href="https://assets.dynatrace.com/groundhog/v6.1.1/css/main.css" />
+  
 </head>
-<style type="text/css">
-  @import url(https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css);
-  @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
-
-  html, body { height: 100%; }
-  body {
-    font-family: 'Lato', sans-serif;
-    background: #353535;
-    color: #FFF;
-  }
-
-  h2 {
-    color: #BDC3C7;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .mrng-60-top {
-    margin-top: 60px;
-  }
-
-  /* Global Button Styles */
-  a.animated-button:link,
-  a.animated-button:visited {
-    position: relative;
-    display: block;
-    margin: 30px auto 0;
-    padding: 14px 15px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    text-transform: uppercase;
-    overflow: hidden;
-    letter-spacing: .08em;
-    border-radius: 0;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
-    -webkit-transition: all 1s ease;
-    -moz-transition: all 1s ease;
-    -o-transition: all 1s ease;
-    transition: all 1s ease;
-  }
-
-  a.animated-button:link:after,
-  a.animated-button:visited:after {
-    content: "";
-    position: absolute;
-    height: 0%;
-    left: 50%;
-    top: 50%;
-    width: 150%;
-    z-index: -1;
-    -webkit-transition: all 0.75s ease 0s;
-    -moz-transition: all 0.75s ease 0s;
-    -o-transition: all 0.75s ease 0s;
-    transition: all 0.75s ease 0s;
-  }
-
-  a.animated-button:link:hover,
-  a.animated-button:visited:hover {
-    color: #FFF;
-    text-shadow: none;
-  }
-
-  a.animated-button:link:hover:after,
-  a.animated-button:visited:hover:after {
-    height: 450%;
-  }
-
-  a.animated-button:link,
-  a.animated-button:visited {
-    position: relative;
-    display: block;
-    margin: 30px auto 0;
-    padding: 14px 15px;
-    color: #fff;
-    font-size: 14px;
-    border-radius: 0;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    text-transform: uppercase;
-    overflow: hidden;
-    letter-spacing: .08em;
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
-    -webkit-transition: all 1s ease;
-    -moz-transition: all 1s ease;
-    -o-transition: all 1s ease;
-    transition: all 1s ease;
-  }
-
-  /* Gibson Buttons */
-
-  a.animated-button.gibson-one {
-    border: 2px solid #65b37a;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-one:after {
-    opacity: 0;
-    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-size: 10px 10px;
-    -moz-transform: translateX(-50%) translateY(-50%) rotate(25deg);
-    -ms-transform: translateX(-50%) translateY(-50%) rotate(25deg);
-    -webkit-transform: translateX(-50%) translateY(-50%) rotate(25deg);
-    transform: translateX(-50%) translateY(-50%) rotate(25deg);
-  }
-
-  a.animated-button.gibson-one:hover:after {
-    height: 600% !important;
-    opacity: 1;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-two {
-    border: 2px solid #65b37a;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-two:after {
-    opacity: 0;
-    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-size: 10px 10px;
-    -moz-transform: translateX(-50%) translateY(-50%) rotate(-25deg);
-    -ms-transform: translateX(-50%) translateY(-50%) rotate(-25deg);
-    -webkit-transform: translateX(-50%) translateY(-50%) rotate(-25deg);
-    transform: translateX(-50%) translateY(-50%) rotate(-25deg);
-  }
-
-  a.animated-button.gibson-two:hover:after {
-    height: 600% !important;
-    opacity: 1;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-three {
-    border: 2px solid #65b37a;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-three:after {
-    opacity: 0;
-    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-size: 10px 10px;
-    -moz-transform: translateX(-50%) translateY(-50%) rotate(90deg);
-    -ms-transform: translateX(-50%) translateY(-50%) rotate(90deg);
-    -webkit-transform: translateX(-50%) translateY(-50%) rotate(90deg);
-    transform: translateX(-50%) translateY(-50%) rotate(90deg);
-  }
-
-  a.animated-button.gibson-three:hover:after {
-    height: 600% !important;
-    opacity: 1;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-four {
-    border: 2px solid #65b37a;
-    color: #FFF;
-  }
-
-  a.animated-button.gibson-four:after {
-    opacity: 0;
-    background-image: -webkit-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-image: -moz-linear-gradient(transparent 50%, rgba(101, 179, 122, 0.2) 50%);
-    background-size: 10px 10px;
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -ms-transform: translateX(-50%) translateY(-50%));
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
-  }
-
-  a.animated-button.gibson-four:hover:after {
-    height: 600% !important;
-    opacity: 1;
-    color: #FFF;
-  }
-  .leftColumn {position: absolute;top:0px;left: 0px;bottom: 0px;right: 50%;}
-                .rightColumn {position: absolute;top:0px;right: 0px;bottom: 0px;left: 50%;}
-</style>
 <script>
   window.setInterval(function() {
       document.getElementById('iframe1').src = document.getElementById('iframe1').src;
       document.getElementById('iframe2').src = document.getElementById('iframe2').src;
   }, 10000);    
 </script>
-<body>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 text-center">
-        <h2>ACE Box Links</h2>
+<body class="theme--blue">
+  <div class="nav has-no-secondary">
+    <a class="nav__brand" href="/">
+        <img class="nav__logo" src="http://assets.dynatrace.com/global/logos/dynatrace-logo.svg" alt="dynatrace logo">
+    </a>
+    <nav id="nav-bar-example1" class="nav__bar">
+        <ul class="nav__list nav__list--primary">
+          <li class="nav__item">
+              <a class="nav__link" href="index.html">ACE-BOX</a>
+          </li>
+          <li class="nav__item">
+            <a class="nav__link" target="_blank" href="http://jenkins.DOMAIN_PLACEHOLDER/">Jenkins</a>
+          </li>
+          <li class="nav__item">
+            <a class="nav__link" href="http://gitea.DOMAIN_PLACEHOLDER/">Gitea</a>
+          </li>
+          <li class="nav__item">
+            <a class="nav__link" target="_blank" href="https://bridge.keptn.DOMAIN_PLACEHOLDER/">Keptn Bridge</a>
+          </li>
+          <li class="nav__item">
+            <a class="nav__link" target="_blank" href="https://api.keptn.DOMAIN_PLACEHOLDER/swagger-ui">Keptn API</a>
+          </li>
+        </ul>
+    </nav>
+</div>
+<div class="section homepage__cta section--bg section--light section--contenttop section--bgcover section--masthead">
+    <ul style="padding-left: 10px;">
+      <li>Jenkins: <a href="http://jenkins.DOMAIN_PLACEHOLDER/">http://jenkins.DOMAIN_PLACEHOLDER/</a> | user = admin | pass = dynatrace </li>
+      <li>Gitea: <a href="http://gitea.DOMAIN_PLACEHOLDER/">http://gitea.DOMAIN_PLACEHOLDER/</a> | user = GITEA_USER_PLACEHOLDER | pass = GITEA_USER_PLACEHOLDER | personal access token = GITEA_PAT_PLACEHOLDER</li>
+      <li>Keptn API: <a href="https://api.keptn.DOMAIN_PLACEHOLDER/swagger-ui">https://api.keptn.DOMAIN_PLACEHOLDER/swagger-ui</a> | api token = KEPTN_API_TOKEN_PLACEHOLDER</li>
+      <li>Keptn Bridge: <a href="https://bridge.keptn.DOMAIN_PLACEHOLDER/">https://bridge.keptn.DOMAIN_PLACEHOLDER/</a></li>
+    </ul>
+      
+      <div class="column column--1-of-2" style="padding-left: 10px; padding-right: 10px;">
+        <iframe id="iframe1" height="600px" width="100%" src="http://simplenode.staging.DOMAIN_PLACEHOLDER/"></iframe>
       </div>
-    </div>
-    <div class="row">
-      <!--div class="col-md-2"> <a target="_blank" href="https://ace-box:31100/" class="btn btn-sm animated-button gibson-one">Microk8s dashboard</a> </div-->
-      <div class="col-md-2"><a target="_blank" href="http://jenkins.DOMAIN_PLACEHOLDER/" class="btn btn-sm animated-button gibson-one">Jenkins</a> </div>
-      <div class="col-md-2"><a target="_blank" href="http://gitea.DOMAIN_PLACEHOLDER/" class="btn btn-sm animated-button gibson-one">Gitea</a> </div>
-      <div class="col-md-2"><a target="_blank" href="https://bridge.keptn.DOMAIN_PLACEHOLDER/" class="btn btn-sm animated-button gibson-one">Keptn Bridge</a> </div>
-      <div class="col-md-2"><a target="_blank" href="https://bridge.keptn.DOMAIN_PLACEHOLDER/swagger-ui" class="btn btn-sm animated-button gibson-one">Keptn API</a> </div>
-    </div>
-  </div>
-
-    <div class="container-fluid h-100">
-        <div class="row">
-        <div class="col-md-12 text-center">
-            <h2 class="mrng-60-top">Simplenodeservice staging/production</h2>
-        </div>
-        </div>
-        <div class="row h-100">
-            <div class="col-md-6 h-100"> <iframe id="iframe1" height="600px" width="100%" src="http://simplenode.staging.DOMAIN_PLACEHOLDER/"></iframe> </div>
-            <div class="col-md-6 h-100"> <iframe id="iframe2" height="600px" width="100%" src="http://simplenode.production.DOMAIN_PLACEHOLDER/"></iframe> </div>
-        </div>
-    </div>
+      <div class="column column--1-of-2" style="padding-left: 10px; padding-right: 10px;">
+        <iframe id="iframe1" height="600px" width="100%" src="http://simplenode.production.DOMAIN_PLACEHOLDER/"></iframe>
+      </div>
+</div>
+  <script type="text/javascript" src="https://assets.dynatrace.com/groundhog/v6.1.1/js/main.js"></script>
 </body>
 
 </html>

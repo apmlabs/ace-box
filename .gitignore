@@ -13,3 +13,4 @@ config.yml
 *.tgz
 kubeconfig
 
+microk8s/ansible/kubeconfig

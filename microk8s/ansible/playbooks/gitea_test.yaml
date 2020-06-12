@@ -15,21 +15,20 @@
 #   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
 - hosts: localhost
   vars:
-    git_org: "test"
-    gitea_domain: "gitea.192.168.50.10.nip.io"
+    git_user: "dynatrace"
+    ingress_domain: "192.168.50.10.nip.io"
     gitea_access_token: "dfa2ef4ec4f0cea0d1bb294e00d6fc50a090db85"
   tasks:
-  - name: Gitea - Wait for API to be up
-    uri:
-      url: "https://{{ gitea_domain }}/api/v1/admin/orgs?access_token={{ gitea_access_token }}"
-      status_code: 200
-      validate_certs: no
-    register: result
-    until: result.status == 200
-    retries: 5
-    delay: 1
+  - name: Dashboard - build index.html
+    shell: > 
+      sed 
+      -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
+      -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
+      -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
+      -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
+      /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html 
 
-  - debug: var=result
+  #- debug: var=result
   #https://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=d88f9098d244b137fb1c24c9e6eee9cf7d09634f"
 # kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username kristof --password dynatrace --email sdfsdf@ssfgf.com --admin"'
 

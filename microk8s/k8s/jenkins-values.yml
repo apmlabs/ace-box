@@ -97,6 +97,8 @@ master:
                 value: ${GIT_REPO} #Load from Environment Variable
               - key: "GIT_DOMAIN"
                 value: ${GIT_DOMAIN} #Load from Environment Variable
+              - key: "GIT_PROTOCOL"
+                value: ${GIT_PROTOCOL} #Load from Environment Variable
               - key: "DT_TENANT_URL"
                 value: ${DT_TENANT_URL} #Load from Environment Variable
               - key: "DT_API_TOKEN"
@@ -438,7 +440,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_REPO}') 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
                           }
                           branch('*/master')
                       }
@@ -460,7 +462,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_REPO}') 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
                           }
                           branch('*/master')
                       }
@@ -480,7 +482,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_REPO}') 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
                           }
                           branch('*/master')
                       }
@@ -502,7 +504,7 @@ master:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_REPO}') 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
                           }
                           branch('*/master')
                       }

@@ -7,7 +7,11 @@
     gitea_domain: "gitea.{{ ingress_domain }}"
 
 - name: Gitea - Set placeholders
-  shell: sed -e "s|GITEA_INGRESS_PLACEHOLDER|{{ gitea_domain }}|"  /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
+  shell: >
+    sed 
+    -e "s|GITEA_INGRESS_PLACEHOLDER|{{ gitea_domain }}|"  
+    -e "s|GITEA_VERSION_PLACEHOLDER|{{ gitea_version }}|"  
+    /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
 
 - name: Gitea - Install gitea using helm
   become_user: vagrant

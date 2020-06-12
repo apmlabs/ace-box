@@ -69,14 +69,20 @@
   shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/namespaces.yml
   ignore_errors: yes
 
-- name: Microk8s - Grant viewer role to service accounts
+- name: Microk8s - Grant viewer role to service accounts ace namespace
   shell: /snap/bin/microk8s.kubectl -n ace create rolebinding default-view --clusterrole=view --serviceaccount=ace:default
   ignore_errors: yes
 
-- name: Microk8s - Grant viewer role to service accounts
+- name: Microk8s - Grant viewer role to service accounts staging namespace
   shell: /snap/bin/microk8s.kubectl -n staging create rolebinding default-view --clusterrole=view --serviceaccount=staging:default
   ignore_errors: yes
 
-- name: Microk8s - Grant viewer role to service accounts
+- name: Microk8s - Grant viewer role to service accounts production namespace
   shell: /snap/bin/microk8s.kubectl -n production create rolebinding default-view --clusterrole=view --serviceaccount=production:default
   ignore_errors: yes
+
+- name: Microk8s - Set domain for simplenode Ingress
+  shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/k8s/simplenode-ingress.yml > /vagrant/k8s/simplenode-ingress-gen.yml
+
+- name: Microk8s - Apply Ingress for simplenode
+  shell: /snap/bin/microk8s.kubectl apply -f /vagrant/k8s/simplenode-ingress-gen.yml
