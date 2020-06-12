@@ -5,9 +5,11 @@
 */.vagrant/
 microk8s/*.log
 config.yml
-kubeconfig
 
 #Generated files
 *gen.yml
+*gen.yaml
+*gen.html
 *.tgz
-microk8s/ansible/kubeconfig
+kubeconfig
+

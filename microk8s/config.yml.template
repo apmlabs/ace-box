@@ -2,15 +2,10 @@ dynatrace:
   tenant:     ''    # https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid]
   apitoken:   ''    # full scope
   paastoken:  ''
-git:
-  username:   ''    # Github username
-  pat:        ''    # Gitub Personal access token created as part of prerequisites, "repo" scope is sufficient. 
-  email:      ''    # Github email
-  org:        ''    # Github org created as part of prerequisites
 acebox:
   specs:
     cpu: 3                      # number of cpu vcores
-    mem: 8192                   # memory assignment in MB
+    mem: 8196                   # memory assignment in MB
     priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
     disk: "50GB"
   features:
@@ -18,17 +13,25 @@ acebox:
     activegate:  true            # install Dynatrace ActiveGate for Private Synthetic, defaults to false
     jenkins: true               # install Jenkins, defaults to true
     jenkins_setcreds: true      # automatically set git and dynatrace credentials in Jenkins
+    gitea: true                 # install gitea local github (broken ATM), defaults to false
     dashboard: true             # install ACE dashboard, defaults to false
     mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
-    keptn: false                 # install keptn, defaults to false
+    keptn: true                 # install keptn, defaults to false
   config:
     keptn:
       version: "0.6.2"
-      mode: "qg"
+      dynatrace_service_version: "0.7.1"
+      dynatrace_sli_service_version: "0.4.2"
     jenkins:
       set_creds: true
       set_jenkinslib: true
+      jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"
+      keptn_lib_url: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"
     microk8s:
-      addons: "dns dashboard storage registry ingress "
-vagrant:
-  provider: "virtualbox"        # FUTURE USE provider to use, set to "hyperv" for hyper-v, "virtualbox" for VirtualBox (default)
+      domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
+      addons: "dns storage registry ingress "
+    git:
+      user: "dynatrace"         # user that will be created to log in to gitea, password is the same, defaults to "dynatrace"
+      email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
+      org: "ace"                # org that will be created on gitea, defaults to "ace"
+      repo: "hot-repo"          # repo that will be created on gitea, defaults to "hot-repo"

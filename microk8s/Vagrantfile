@@ -40,7 +40,6 @@ Vagrant.configure("2") do |config|
         pr.memory = vmconfig["acebox"]["specs"]["mem"]
         pr.cpus = vmconfig["acebox"]["specs"]["cpu"]
       end
-      c.vm.post_up_message = "Please open http://ace-box:30001 and use links"
+      c.vm.post_up_message = "Please open http://dashboard.#{vmconfig["acebox"]["specs"]["priv_ip"]}.#{vmconfig["acebox"]["config"]["microk8s"]["domain_ext"]} and use links"
     end
-  
   end 

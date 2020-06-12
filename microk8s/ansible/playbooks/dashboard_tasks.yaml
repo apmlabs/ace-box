@@ -1,5 +1,11 @@
-- name: Wait for registry to be ready
+- name: Dashboard - Wait for registry to be ready
   shell: /snap/bin/microk8s.kubectl -n container-registry rollout status deployment registry
+
+- name: Dashboard - Set domain
+  shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
+
+- name: Dashboard - Set domain for helm chart
+  shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/helm-charts/dashboard/values.yaml > /vagrant/helm-charts/dashboard/values-gen.yaml
 
 - name: Build ace dashboard
   become_user: vagrant
@@ -7,5 +13,5 @@
 
 - name: Run ace dashboard
   become_user: vagrant
-  shell: /snap/bin/helm upgrade -i ace-dashboard /vagrant/helm-charts/dashboard --namespace ace
+  shell: /snap/bin/helm upgrade -i ace-dashboard /vagrant/helm-charts/dashboard -f /vagrant/helm-charts/dashboard/values-gen.yaml --namespace ace
   ignore_errors: yes    
