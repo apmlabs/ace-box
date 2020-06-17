@@ -1,13 +1,117 @@
+- name: ActiveGate - Check if installer has already been downloaded
+  stat:
+      path: "{{ activegate_download_location }}"
+  register: ag_available
+
 - name: ActiveGate - Download ActiveGate installer
   get_url:
     url: "{{ dynatrace['tenant'] }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default"
-    dest: /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh
+    dest: "{{ activegate_download_location }}"
     mode: +x
     timeout: 300
     headers:
       Authorization: "Api-token {{ dynatrace['paastoken'] }}"
+  when: not ag_available.stat.exists
 
 - name: ActiveGate - Install synthetic-enabled ActiveGate
   shell:
-    cmd: DYNATRACE_SYNTHETIC_AUTO_INSTALL=true /bin/sh /tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh --enable-synthetic
+    cmd: DYNATRACE_SYNTHETIC_AUTO_INSTALL=true /bin/sh "{{ activegate_download_location }}" --enable-synthetic
     creates: /opt/dynatrace/synthetic/uninstall.sh  
+
+- name: ActiveGate - Get all Synthetic nodes
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/nodes"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    return_content: no
+    status_code: 200, 201, 204
+  register: nodesresponse
+  when: acebox_mode == 'demo'
+
+- name: ActiveGate - Set synthetic node entityId
+  set_fact:
+    dt_node_id: "{{ item }}"
+  loop: "{{ nodesresponse.json | json_query(synthetic_nodes_query) }}"
+  vars:
+    synthetic_nodes_query: "nodes[?hostname=='{{ ansible_facts.fqdn }}'].entityId"
+  when: acebox_mode == 'demo' and item != ""
+
+- name: get IP geolocation data
+  ipinfoio_facts:
+
+- name: ActiveGate - Get all private locations
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/locations?type=PRIVATE"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    return_content: no
+    status_code: 200, 201, 204
+  register: privatelocresponse
+  when: acebox_mode == 'demo'
+
+- name: ActiveGate - Set synthetic location id
+  set_fact:
+    location_id: "{{ item }}"
+  loop: "{{ privatelocresponse.json | json_query(synthetic_locations_query) }}"
+  vars:
+    synthetic_locations_query: "locations[?name=='Private Location ACEBOX'].entityId"
+  when: acebox_mode == 'demo' and item != ""
+
+- name: ActiveGate - Create private synthetic location
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/locations"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    body_format: json
+    body: '{
+          "type": "PRIVATE",
+          "name": "Private Location ACEBOX",
+          "latitude": "51.2194",
+          "longitude": "4.4025",
+          "nodes": [
+            "{{ dt_node_id }}"
+          ]
+          }'
+    return_content: no
+    status_code: 200, 201, 204
+  register: newsyntheticlocresponse
+  when: acebox_mode == 'demo' and location_id is not defined
+
+- name: ActiveGate - Update private synthetic location
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/locations/{{ location_id }}"
+    method: PUT
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    body_format: json
+    body: '{
+          "type": "PRIVATE",
+          "name": "Private Location ACEBOX",
+          "latitude": "51.2194",
+          "longitude": "4.4025",
+          "nodes": [
+            "{{ dt_node_id }}"
+          ]
+          }'
+    return_content: no
+    status_code: 200, 201, 204
+  when: acebox_mode == 'demo' and location_id is defined
+
+- name: "ActiveGate - Register new DT synthetic location id {{ newsyntheticlocresponse.json.entityId }}"
+  set_fact: 
+    dynatrace_synthetic_location_id: "{{ newsyntheticlocresponse.json.entityId}} "
+  when: acebox_mode == 'demo' and newsyntheticlocresponse.json.entityId is defined 
+
+- name: "ActiveGate - Register existing DT synthetic location id {{ location_id }}"
+  set_fact: 
+    dynatrace_synthetic_location_id: "{{ location_id }}"
+  when: acebox_mode == 'demo' and location_id is defined
+
+- debug: var=dynatrace_synthetic_location_id

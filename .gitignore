@@ -14,3 +14,5 @@ config.yml
 kubeconfig
 
 microk8s/ansible/kubeconfig
+
+Dynatrace-ActiveGate-Linux-x86-latest.sh

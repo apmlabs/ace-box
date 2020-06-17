@@ -22,7 +22,7 @@ pipeline {
         label 'kubegit'
     }
     stages {
-        stage('Update Deployment and Service specification') {
+        stage('Update spec') {
             steps {
                 script {
                     env.DT_CUSTOM_PROP = readFile("manifests/staging/dt_meta").trim()
@@ -42,7 +42,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to staging namespace') {
+        stage('Deploy to staging') {
             steps {
                 checkout scm
                 container('kubectl') {
@@ -66,22 +66,21 @@ pipeline {
                 }
             }
         }
-        /*stage('DT create synthetic monitor') {
+        stage('DT create synthetic monitor') {
             steps {
                 container("kubectl") {
                     script {
                         // Get IP of service
-                        env.SERVICE_IP = "ace-box"
-                        env.SERVICE_PORT = sh(script: 'kubectl -n staging get svc ${APP_NAME} -o \'jsonpath={.spec.ports[0].nodePort}\'', , returnStdout: true).trim()
+                        env.SERVICE_IP = sh(script: 'kubectl get Ingress simplenodeservice -n staging -o jsonpath=\'{.spec.rules[0].host}\'', , returnStdout: true).trim()
                     }
                 }
                 container("curl") {
                     script {
                         def status = dt_createUpdateSyntheticTest (
                             testName : "simpleproject.staging.${env.APP_NAME}",
-                            url : "http://${SERVICE_IP}:${SERVICE_PORT}/",
+                            url : "http://${SERVICE_IP}/",
                             method : "GET",
-                            location : "SYNTHETIC_LOCATION-9BEE224A756A7713"
+                            location : "${env.DT_SYNTHETIC_LOCATION}"
                         )
                     }
                 }
@@ -93,14 +92,14 @@ pipeline {
                     script {
                         def status = dt_createUpdateAppDetectionRule (
                             dtAppName : "simpleproject.staging.${env.APP_NAME}",
-                            pattern : "http://${SERVICE_IP}:${SERVICE_PORT}",
+                            pattern : "http://${SERVICE_IP}",
                             applicationMatchType: "CONTAINS",
                             applicationMatchTarget: "URL"
                         )
                     }
                 }
             }
-        }*/
+        }
         stage('Run tests') {
             steps {
                 build job: "3. Test",

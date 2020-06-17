@@ -1,4 +1,4 @@
-  - name: Install snapd and disk utils
+  - name: Install apt packages
     apt:
       name: "{{ packages }}"
       state: present
@@ -10,6 +10,7 @@
       - parted
       - docker.io
       - ansible
+      - python-jmespath
 
   - name: Disable swap and resize disk
     become: true

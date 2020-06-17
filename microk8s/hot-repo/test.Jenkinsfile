@@ -38,7 +38,7 @@ pipeline {
                 }
             }
         }
-        stage('DT send test start event') {
+        stage('DT Test Start') {
             steps {
                 container("curl") {
                     script {
@@ -85,7 +85,7 @@ pipeline {
                 }
             }
         }
-        stage('DT send test stop event') {
+        stage('DT Test Stop') {
             steps {
                 container("curl") {
                     script {
@@ -118,23 +118,33 @@ pipeline {
             }
         }
 
-        stage('Manual approval') {
+        stage('Release approval') {
             // no agent, so executors are not used up when waiting for approvals
             agent none
             steps {
                 script {
-                    try {
-                        timeout(time:3, unit:'MINUTES') {
-                            env.APPROVE_PROD = input message: 'Promote to Production', ok: 'Continue', parameters: [choice(name: 'APPROVE_PROD', choices: 'YES\nNO', description: 'Deploy from STAGING to PRODUCTION?')]
-                            if (env.APPROVE_PROD == 'YES'){
-                                env.DPROD = true
-                            } else {
+                    switch(currentBuild.result) {
+                        case "SUCCESS": 
+                            env.DPROD = true;
+                            break;
+                        case "UNSTABLE": 
+                            try {
+                                timeout(time:3, unit:'MINUTES') {
+                                    env.APPROVE_PROD = input message: 'Promote to Production', ok: 'Continue', parameters: [choice(name: 'APPROVE_PROD', choices: 'YES\nNO', description: 'Deploy from STAGING to PRODUCTION?')]
+                                    if (env.APPROVE_PROD == 'YES'){
+                                        env.DPROD = true
+                                    } else {
+                                        env.DPROD = false
+                                    }
+                                }
+                            } catch (error) {
                                 env.DPROD = false
+                                echo 'Timeout has been reached! Deploy to PRODUCTION automatically stopped'
                             }
-                        }
-                    } catch (error) {
-                        env.DPROD = false
-                        echo 'Timeout has been reached! Deploy to PRODUCTION automatically stopped'
+                            break;
+                        case "FAILURE":
+                            env.DPROD = false;
+                            break;
                     }
                 }
             }

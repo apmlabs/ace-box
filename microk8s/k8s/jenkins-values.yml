@@ -41,6 +41,8 @@ master:
       value: DT_TENANT_URL_PLACEHOLDER
     - name: DT_API_TOKEN
       value: DT_API_TOKEN_PLACEHOLDER
+    - name: DT_SYNTHETIC_LOCATION
+      value: DT_SYNTHETIC_LOCATION_PLACEHOLDER
     - name: KEPTN_ENDPOINT
       value: KEPTN_ENDPOINT_PLACEHOLDER
     - name: KEPTN_BRIDGE
@@ -103,6 +105,8 @@ master:
                 value: ${DT_TENANT_URL} #Load from Environment Variable
               - key: "DT_API_TOKEN"
                 value: ${DT_API_TOKEN} #Load from Environment Variable
+              - key: "DT_SYNTHETIC_LOCATION"
+                value: ${DT_SYNTHETIC_LOCATION} #Load from Environment Variable
               - key: "KEPTN_ENDPOINT"
                 value: ${KEPTN_ENDPOINT} #Load from Environment Variable
               - key: "KEPTN_BRIDGE"

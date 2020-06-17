@@ -29,15 +29,24 @@
     git_org:                    "{{ acebox['config']['git']['org'] | default('ace') }}"
     git_repo:                   "{{ acebox['config']['git']['repo'] | default('hot-repo') }}"
     gitea_version:               "{{ acebox['config']['git']['version'] | default('1.11.6') }}"
+    activegate_download_location: "{{ acebox['config']['activegate']['download_location'] | default('/tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh') }}"
   tasks:
   - name: Init install tasks
     import_tasks: playbooks/init_tasks.yaml
 
   - name: Install and configure microk8s
     import_tasks: playbooks/microk8s_tasks.yaml
+  
+  - name: Install and configure Dynatrace ActiveGate
+    import_tasks: playbooks/dtactivegate_tasks.yaml
+    when: feature_activegate == true
 
   - name: Install and configure helm
     import_tasks: playbooks/helm.yaml
+  
+  - name: Install and configure Dynatrace OneAgent
+    import_tasks: playbooks/dtoneagent_tasks.yaml
+    when: feature_oneagent == true
   
   - name: Install and configure cert-manager
     import_tasks: playbooks/cert_manager_tasks.yaml
@@ -51,10 +60,6 @@
     import_tasks: playbooks/keptn_tasks.yaml
     when: feature_keptn == true
 
-  - name: Install and configure Dynatrace OneAgent
-    import_tasks: playbooks/dtoneagent_tasks.yaml
-    when: feature_oneagent == true
-
   - name: Install and configure jenkins
     import_tasks: playbooks/jenkins_tasks.yaml
     when: feature_jenkins == true
@@ -62,10 +67,6 @@
   - name: Create ACE Dashboard
     import_tasks: playbooks/dashboard_tasks.yaml
     when: feature_dashboard == true
-
-  - name: Install and configure Dynatrace ActiveGate
-    import_tasks: playbooks/dtactivegate_tasks.yaml
-    when: feature_activegate == true
 
   - name: Post install tasks
     import_tasks: playbooks/postinstall_tasks.yaml
