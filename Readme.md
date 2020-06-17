@@ -21,10 +21,10 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
 ## Components
 ACE-BOX comes with the following components
 
-| Component | version |
+| Component | Version |
 |----|-------|
 | microk8s | 1.18 |
-| jenkins | lts (222.3 at time of writing) |
+| jenkins | lts (222.4 at time of writing) |
 | helm | 3 |
 | oneagent | latest |
 | activegate for private synthetic node | latest |
@@ -161,9 +161,9 @@ When running the çvagrant up` command the following takes place:
    3. Microk8s and addons are installed based on `ansible/playbooks/microk8s_tasks.yaml`
    4. Helm is installed based on `ansible/playbooks/helm_tasks.yaml`. Helm repos are also added
    5. If enabled, OneAgent is installed based on `ansible/playbooks/dtoneagent_tasks.yaml`
-   6. If enabled, Jenkins is installed based on `ansible/playbooks/jenkins_tasks.yaml`. This uses the helm chart found in `k8s/jenkins-values.yml` which will not only install Jenkins but also perform plugin installation and set up our skeleton pipelines.
+   6. If enabled, Jenkins is installed based on `ansible/playbooks/jenkins_tasks.yaml`. This uses the helm chart found in `k8s/jenkins-values.yml` which will not only install Jenkins but also perform plugin installation and set up our skeleton pipelines. When run in the demo mode, it will also set up all integrations
    7. If enabled, An ACE dashboard is built and deployed as described in `ansible/playbooks/dashboard_tasks.yaml`
-   8. If enabled, an ActiveGate is installed based on `ansible/playbooks/dtactivegate_tasks.yaml`. This also installs all required packages.
+   8. If enabled, an Private Synthetic ActiveGate is installed based on `ansible/playbooks/dtactivegate_tasks.yaml`. This also installs all required packages.
    9. Post installation tasks are also executed, as described in `ansible/playbooks/postinstall_tasks.yaml`. This includes configuring `iptables` for port forwarding
 
 ## Triggering a pipeline run
