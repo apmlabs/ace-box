@@ -134,14 +134,14 @@ Inside the `microk8s` folder, execute `vagrant ssh` to gain access to the VM
 
 ## Cleaning up
 Vagrant offers many commands to deal with the VM, check the below:
-| Command | Result |
-|----|-------|
-| `vagrant destroy` | stops and deletes all traces of the vagrant machine |
-| `vagrant halt` | stops the vagrant machine - i.e. shutting down your workstation |
-| `vagrant suspend` | suspends the machine - i.e. sleep your workstation |
-| `vagrant resume` | resume a suspended vagrant machine |
-| `vagrant up` | starts and provisions the vagrant environment |
-| `vagrant box update` | update the base box from time to time to ensure it is the latest version. While provisioning a message will be shown that there are updates available |
+Command  | Result 
+-------- | -------
+`vagrant destroy` | stops and deletes all traces of the vagrant machine |
+`vagrant halt` | stops the vagrant machine - i.e. shutting down your workstation |
+`vagrant suspend` | suspends the machine - i.e. sleep your workstation |
+`vagrant resume` | resume a suspended vagrant machine |
+`vagrant up` | starts and provisions the vagrant environment |
+`vagrant box update` | update the base box from time to time to ensure it is the latest version. While provisioning a message will be shown that there are updates available |
 
 ## Behind the scenes
 
