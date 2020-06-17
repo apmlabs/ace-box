@@ -20,6 +20,7 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
 
 ## Components
 ACE-BOX comes with the following components
+
 | Component | version |
 |----|-------|
 | microk8s | 1.18 |
@@ -134,6 +135,7 @@ Inside the `microk8s` folder, execute `vagrant ssh` to gain access to the VM
 
 ## Cleaning up
 Vagrant offers many commands to deal with the VM, check the below:
+
 Command  | Result 
 -------- | -------
 `vagrant destroy` | stops and deletes all traces of the vagrant machine |
