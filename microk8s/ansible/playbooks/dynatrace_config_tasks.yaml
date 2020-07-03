@@ -472,4 +472,93 @@
     return_content: no
     status_code: 200, 201, 204
   when: ra_id != ""
+
+
+- name: Get all Calculated Service Metrics
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/config/v1/calculatedMetrics/service"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    return_content: no
+    status_code: 200, 201, 204
+  register: csmresponse
+
+- name: Set Calculated Service Metric for simplenode.staging
+  set_fact:
+    csm_simplenode_id: "{{ item }}"
+  loop: "{{ csmresponse.json | json_query(autoTag_query) }}"
+  vars:
+    autoTag_query: "values[?name=='simplenode.staging'].id"
+  when: item != ""
+
+
+- name: Create calc:service.simplenode.staging
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/config/v1/calculatedMetrics/service"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    body_format: json
+    body: '{
+      "tsmMetricKey": "calc:service.simplenode.staging",
+      "name": "simplenode.staging",
+      "enabled": true,
+      "metricDefinition": {
+        "metric": "RESPONSE_TIME",
+        "requestAttribute": null
+      },
+      "unit": "MICRO_SECOND",
+      "unitDisplayName": "",
+      "entityId": "SERVICE-6B5362A1398963FF",
+      "managementZones": [],
+      "conditions": [],
+      "dimensionDefinition": {
+        "name": "method",
+        "dimension": "{Request:Name}",
+        "placeholders": [],
+        "topX": 10,
+        "topXDirection": "DESCENDING",
+        "topXAggregation": "AVERAGE"
+      }
+          }'
+    return_content: no
+    status_code: 200, 201, 204
+  when: csm_simplenode_id is not defined
+
+- name: Update calc:service.simplenode.staging
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/config/v1/calculatedMetrics/service{{ csm_simplenode_id }}"
+    method: PUT
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    body_format: json
+    body: '{
+      "tsmMetricKey": "calc:service.simplenode.staging",
+      "name": "simplenode.staging",
+      "enabled": true,
+      "metricDefinition": {
+        "metric": "RESPONSE_TIME",
+        "requestAttribute": null
+      },
+      "unit": "MICRO_SECOND",
+      "unitDisplayName": "",
+      "entityId": "SERVICE-6B5362A1398963FF",
+      "managementZones": [],
+      "conditions": [],
+      "dimensionDefinition": {
+        "name": "method",
+        "dimension": "{Request:Name}",
+        "placeholders": [],
+        "topX": 10,
+        "topXDirection": "DESCENDING",
+        "topXAggregation": "AVERAGE"
+      }
+          }'
+    return_content: no
+    status_code: 200, 201, 204
+  when: csm_simplenode_id is defined
     
