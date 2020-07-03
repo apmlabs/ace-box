@@ -54,12 +54,13 @@ master:
       enabled: false
       proxyCompatability: true
   installPlugins:
-    - kubernetes:1.26.1
+    - command-launcher:1.4
+    - kubernetes:1.26.2
     - kubernetes-credentials-provider:0.15
     - workflow-job:2.39
     - workflow-aggregator:2.6
     - credentials-binding:1.23
-    - git:4.2.2
+    - git:4.3.0
     - google-oauth-plugin:1.0.0
     - google-source-plugin:0.4
     - performance:3.17
@@ -67,10 +68,10 @@ master:
     - job-dsl:1.77
     - pipeline-build-step:2.12
     - docker-plugin:1.2.0
-    - blueocean:1.23.0
+    - blueocean:1.23.2
     - configuration-as-code:1.41
     - http_request:1.8.26
-    - pipeline-utility-steps:2.6.0
+    - pipeline-utility-steps:2.6.1
   JCasC:
     enabled: true
     defaultConfig: false
