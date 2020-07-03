@@ -530,7 +530,7 @@
 
 - name: Update calc:service.simplenode.staging
   uri:
-    url: "{{ dynatrace_tenant_url }}/api/config/v1/calculatedMetrics/service{{ csm_simplenode_id }}"
+    url: "{{ dynatrace_tenant_url }}/api/config/v1/calculatedMetrics/service/{{ csm_simplenode_id }}"
     method: PUT
     headers:
       Content-Type: "application/json"
