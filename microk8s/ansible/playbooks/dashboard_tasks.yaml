@@ -8,7 +8,8 @@
     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
-    /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html 
+    -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
+    /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
 
 - name: Dashboard - Set domain for helm chart
   shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/helm-charts/dashboard/values.yaml > /vagrant/helm-charts/dashboard/values-gen.yaml
