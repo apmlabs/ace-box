@@ -20,7 +20,7 @@ var port = process.env.PORT || 8080,
 // Here are some global config entries that change the behavior of the app
 // ======================================================================
 var buildNumber = 1;
-var minSleep = 500;
+var minSleep = 175;
 var requestCount = 0;
 var inProduction = false;
 var invokeRequestCount = 0;
@@ -59,7 +59,7 @@ var init = function(newBuildNumber) {
 	}
 	
 	if(inProduction) {
-		minSleep = 300; // we just simulate that production is a bit faster than staging, e.g: better hardware!
+		minSleep = 100; // we just simulate that production is a bit faster than staging, e.g: better hardware!
 	}
 
 	// here are some "problems" we simulate for different builds. Builds are identified via Env Variable BUILD_NUMBER;
@@ -78,11 +78,12 @@ var init = function(newBuildNumber) {
 
 	switch(buildNumber) {
 		case 2:
-			failInvokeRequestPercentage = 50;
+			//failInvokeRequestPercentage = 50;
+			minSleep = 250;
 			break;
 		case 4: 
+			minSleep = minSleep * 2;
 			if(inProduction) {
-				minSleep = minSleep * 2;
 				failInvokeRequestPercentage = 20;
 			}
 			break;
@@ -117,13 +118,13 @@ var SEVERITY_WARNING = "Warning";
 var SEVERITY_ERROR = "Error";
 
 var log = function(severity, entry) {
-	// console.log(entry);
 	if (severity === SEVERITY_DEBUG) {
 		// dont log debug
 	} else {
 		var logEntry = new Date().toISOString() + ' - ' + severity + " - " + entry + '\n';
-		// fs.appendFileSync('./serviceoutput.log', new Date().toISOString() + ' - ' + severity + " - " + entry + '\n');
-		logstream.write(logEntry);
+		//logstream.write(logEntry);
+		//console.log is better suited for containers
+		console.log(logEntry);
 	}
 };
 
@@ -132,9 +133,9 @@ var log = function(severity, entry) {
 // ======================================================================
 function sleep(time) {
 	if(time < minSleep) time = minSleep;
-    var stop = new Date().getTime();
+	var stop = new Date().getTime();
     while(new Date().getTime() < stop + time) {
-        ;
+		;
     }
 }
 
@@ -165,7 +166,7 @@ var server = http.createServer(async function (req, res) {
 	if (requests.length > requestTrimThreshold) {
 		requests = requests.slice(0, requests.length - requestTrimSize);
 	}
-
+	log(SEVERITY_INFO, req.method + ' - ' + req.url);
 
     if (req.method === 'POST') {
         var body = '';
@@ -190,8 +191,8 @@ var server = http.createServer(async function (req, res) {
 
         // sleep a bit :-)
 		var sleeptime = parseInt(url.query["sleep"]);
-		if(sleeptime === 0) sleeptime = minSleep;
-		log(SEVERITY_DEBUG, "Sleeptime: " + sleeptime);
+		if(sleeptime === 0 || isNaN(sleeptime) ) sleeptime = minSleep;
+		log(SEVERITY_INFO, "Sleeptime: " + sleeptime);
 		sleep(sleeptime);
 
 		// figure out which API call they want to execute

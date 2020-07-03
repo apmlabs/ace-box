@@ -1,0 +1,8 @@
+- name: Gitlab - Add helm repo
+  become_user: vagrant
+  shell: /snap/bin/helm repo add gitlab https://charts.gitlab.io/ && helm repo update
+
+- name: Gitlab - Install using helm
+  become_user: vagrant
+  shell: /snap/bin/helm install gitlab gitlab/gitlab -f /vagrant/k8s/gitlab-values-gen.yml --namespace ace
+  ignore_errors: yes

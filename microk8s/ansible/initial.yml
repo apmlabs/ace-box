@@ -18,16 +18,19 @@
     jenkins_setcreds:                 "{{ acebox['config']['jenkins']['setcreds'] | default(true) }}"
     jenkins_helm_chart_version:       "{{ acebox['config']['jenkins']['helm_chart_version'] | default('1.27.0') }}"
     jenkins_version:                  "{{ acebox['config']['jenkins']['version'] | default('lts') }}"
+    jenkins_ace_lib_url:              "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/dynatrace-ace/ace-jenkins-extensions.git') }}"
+    jenkins_keptn_lib_url:            "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/keptn-sandbox/keptn-jenkins-library.git') }}"
     keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.6.2')}}"
     keptn_dynatrace_service_version:      "{{ acebox['config']['keptn']['dynatrace_service_version'] | default('0.7.0')}}"
     keptn_dynatrace_sli_service_version: "{{ acebox['config']['keptn']['dynatrace_sli_service_version'] | default('0.4.0')}}"
-    microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns storage registry ingress') }}"
-    microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('xip.io') }}"
+    microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns storage registry ingress ') }}"
+    microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('nip.io') }}"
     ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
     git_user:                   "{{ acebox['config']['git']['user'] | default('dynatrace') }}"
+    git_password:               "{{ acebox['config']['git']['password'] | default('dynatrace') }}"
     git_email:                  "{{ acebox['config']['git']['email'] | default('ace@ace.ace') }}"
     git_org:                    "{{ acebox['config']['git']['org'] | default('ace') }}"
-    git_repo:                   "{{ acebox['config']['git']['repo'] | default('hot-repo') }}"
+    git_repo:                   "{{ acebox['config']['git']['repo'] | default('ace') }}"
     gitea_version:               "{{ acebox['config']['git']['version'] | default('1.11.6') }}"
     activegate_download_location: "{{ acebox['config']['activegate']['download_location'] | default('/tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh') }}"
   tasks:
@@ -39,14 +42,18 @@
   
   - name: Install and configure Dynatrace ActiveGate
     import_tasks: playbooks/dtactivegate_tasks.yaml
-    when: feature_activegate == true
+    when: feature_activegate == true or acebox_mode == "demo"
+  
+  - name: Configure Dynatrace tenant
+    import_tasks: playbooks/dynatrace_config_tasks.yaml
+    when: acebox_mode == "demo"
 
   - name: Install and configure helm
     import_tasks: playbooks/helm.yaml
   
   - name: Install and configure Dynatrace OneAgent
     import_tasks: playbooks/dtoneagent_tasks.yaml
-    when: feature_oneagent == true
+    when: feature_oneagent == true or acebox_mode == "demo"
   
   - name: Install and configure cert-manager
     import_tasks: playbooks/cert_manager_tasks.yaml
@@ -54,19 +61,19 @@
 
   - name: Install and configure Gitea
     import_tasks: playbooks/gitea_tasks.yaml
-    when: feature_gitea == true
+    when: feature_gitea == true or acebox_mode == "demo"
 
   - name: Install and configure Keptn
     import_tasks: playbooks/keptn_tasks.yaml
-    when: feature_keptn == true
+    when: feature_keptn == true or acebox_mode == "demo"
 
   - name: Install and configure jenkins
     import_tasks: playbooks/jenkins_tasks.yaml
-    when: feature_jenkins == true
+    when: feature_jenkins == true or acebox_mode == "demo"
 
   - name: Create ACE Dashboard
     import_tasks: playbooks/dashboard_tasks.yaml
-    when: feature_dashboard == true
+    when: feature_dashboard == true or acebox_mode == "demo"
 
   - name: Post install tasks
     import_tasks: playbooks/postinstall_tasks.yaml

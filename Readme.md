@@ -58,7 +58,21 @@ You need to create a config file called `config.yml` that contains the informati
 
 **Note2:** If you had forked this repo and want to update it with your own changes, a `gitignore` entry has been added for the config.yml file so you do not accidentally spill your tokens :-).
 
+#### Demo mode
+
 The below config.yml example will spin up an ace-box with all features in a demo mode (everything pre-configured).
+This file is also available as `microk8s/config.yml.demotmpl`. You can just rename it to `microk8s/config.yml` and modify it accordingly.
+In demo mode, the following gets installed and configured:
+- Microk8s 
+- Helm 
+- Dynatrace Acitve Gate for Private Synthetic gets installed and automatically configured in the Dynatrace tenant as a Private Location
+- Dynatrace OneAgent operator gets installed via Helm
+- Gitea gets installed, a user gets created and a repository created
+- Keptn Quality Gates gets installed
+- Jenkins gets installed with all the plugins that are needed, pipeline libraries get added for interaction with keptn and Dynatrace, pipelines get created and linked to the gitea repository
+- A dashboard gets built and deployed with links to all the components as well as credentials
+- A kubernetes ingress gets configured for all applications so it is easy to navigate
+- Dynatrace tag rules and request attributes get set up via the API
 
 ```
 dynatrace:
@@ -72,6 +86,28 @@ acebox:
     priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
     disk: "50GB"
   features:
+    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+  config:
+    microk8s:
+      domain_ext: "nip.io"      
+```
+
+#### Training mode
+
+
+
+```
+dynatrace:
+  tenant:     ''    # https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid]
+  apitoken:   ''    # full scope
+  paastoken:  ''
+acebox:
+  specs:
+    cpu: 2                      # number of cpu vcores
+    mem: 8192                   # memory assignment in MB
+    priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
+    disk: "50GB"
+  features:
     oneagent: true              # install Dynatrace OneAgent, defaults to true
     activegate:  true            # install Dynatrace ActiveGate for Private Synthetic, defaults to false
     jenkins: true               # install Jenkins, defaults to true
@@ -80,12 +116,15 @@ acebox:
     dashboard: true             # install ACE dashboard, defaults to false
     mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
     keptn: true                 # install keptn, defaults to false
+    cert_manager: false         # install cert manager for automatic lets encrypt generation, useless for private IPs so disabled by default
   config:
     keptn:
       version: "0.6.2"
       dynatrace_service_version: "0.7.1"
       dynatrace_sli_service_version: "0.4.2"
     jenkins:
+      helm_chart_version: "1.27.0"
+      version: "lts"
       set_creds: true
       set_jenkinslib: true
       jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"
@@ -94,10 +133,14 @@ acebox:
       domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
       addons: "dns storage registry ingress "
     git:
+      version: "1.11.6"         # version of gitea to install, defaults to 1.11.6
       user: "dynatrace"         # user that will be created to log in to gitea, password is the same, defaults to "dynatrace"
+      password: "dynatrace"     # password for the user that will be automatically created, defaults to "dynatrace"
       email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
       org: "ace"                # org that will be created on gitea, defaults to "ace"
-      repo: "hot-repo"          # repo that will be created on gitea, defaults to "hot-repo"
+      repo: "ace"          # repo that will be created on gitea, defaults to "hot-repo"
+    activegate:
+      download_location: "/vagrant/ansible/Dynatrace-ActiveGate-Linux-x86-latest.sh" # overwrite where the oneagent will be downloaded, subsequent vagrant up can be sped up that way
 ```
 
 ### Step 4 - Provision
@@ -105,14 +148,8 @@ Run the following commands to bring up the virtual machine
 ```
 $ vagrant up
 ```
-Vagrant will perform the following:
-- Create an Ubuntu VM
-- Give the Ubuntu VM the name ace-box and give it an IP
-- Use Ansible to install:
-    - Dynatrace OneAgent via Ansible Role
-    - Microk8s + dashboard (exposed on nodePort 31100, https) and allow to skip token for dashboard
-    - Jenkins (exposed on nodePort 31000)
-    - A dashboard with handy links (exposed on nodePort 30001)
+
+Check [Behind the scenes](#behind-the-scenes) for more detail about what happens now
   
 **This process will take some time, grab a coffee**
 
@@ -147,7 +184,7 @@ Command  | Result
 
 ## Behind the scenes
 
-When running the çvagrant up` command the following takes place:
+When running the `vagrant up` command the following takes place:
 1. The `Vagrantfile` is read
 2. Some required Vagrant plugins are installed
 3. The `config.yml` file is loaded

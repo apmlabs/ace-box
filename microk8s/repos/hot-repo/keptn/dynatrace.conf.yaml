@@ -7,8 +7,11 @@ attachRules:
     - SERVICE
     tags:
     - context: CONTEXTLESS
-      key: app
+      key: keptn_service
       value: $SERVICE
     - context: CONTEXTLESS
-      key: environment
+      key: keptn_stage
       value: $STAGE
+    - context: CONTEXTLESS
+      key: keptn_project
+      value: $PROJECT

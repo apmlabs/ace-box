@@ -49,28 +49,32 @@ master:
       value: KEPTN_BRIDGE_PLACEHOLDER
     - name: KEPTN_API_TOKEN
       value: KEPTN_API_TOKEN_PLACEHOLDER
+    - name: ACE_LIB
+      value: ACE_LIB_PLACEHOLDER
+    - name: KEPTN_LIB
+      value: KEPTN_LIB_PLACEHOLDER
   csrf:
     defaultCrumbIssuer:
       enabled: false
       proxyCompatability: true
   installPlugins:
-    - kubernetes:1.25.3
-    - kubernetes-credentials-provider:0.13
-    - workflow-job:2.36
+    - kubernetes:1.26.1
+    - kubernetes-credentials-provider:0.15
+    - workflow-job:2.39
     - workflow-aggregator:2.6
-    - credentials-binding:1.22
+    - credentials-binding:1.23
     - git:4.2.2
     - google-oauth-plugin:1.0.0
     - google-source-plugin:0.4
     - performance:3.17
-    - github-branch-source:2.6.0
+    - github-branch-source:2.8.2
     - job-dsl:1.77
     - pipeline-build-step:2.12
     - docker-plugin:1.2.0
     - blueocean:1.23.0
-    - configuration-as-code:1.39
+    - configuration-as-code:1.41
     - http_request:1.8.26
-    - pipeline-utility-steps:2.5.0
+    - pipeline-utility-steps:2.6.0
   JCasC:
     enabled: true
     defaultConfig: false
@@ -113,6 +117,10 @@ master:
                 value: ${KEPTN_BRIDGE} #Load from Environment Variable
               - key: "KEPTN_API_TOKEN"
                 value: ${KEPTN_API_TOKEN} #Load from Environment Variable
+              - key: "ACE_LIB"
+                value: ${ACE_LIB} #Load from Environment Variable
+              - key: "KEPTN_LIB"
+                value: ${KEPTN_LIB} #Load from Environment Variable
           clouds:
           - kubernetes:
               containerCapStr: "10"
@@ -440,7 +448,7 @@ master:
                 modernSCM:
                   scm:
                     git:
-                      remote: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"
+                      remote: "${KEPTN_LIB}"
                       traits:
                       - "gitBranchDiscovery"
             - name: "ace"
@@ -448,7 +456,7 @@ master:
                 modernSCM:
                   scm:
                     git:
-                      remote: "https://github.com/dynatrace-ace/dynatrace-jenkins-library.git"
+                      remote: "${ACE_LIB}"
                       traits:
                       - "gitBranchDiscovery"
         jobs:

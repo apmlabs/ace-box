@@ -1,0 +1,15 @@
+dynatrace:
+  tenant:     ''    # https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid]
+  apitoken:   ''    # full scope
+  paastoken:  ''
+acebox:
+  specs:
+    cpu: 3                      # number of cpu vcores
+    mem: 8196                   # memory assignment in MB
+    priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
+    disk: "50GB"
+  features:
+    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+  config:
+    microk8s:
+      domain_ext: "nip.io"      

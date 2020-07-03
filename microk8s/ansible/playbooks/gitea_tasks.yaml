@@ -22,7 +22,7 @@
   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
 
 - name: "Gitea - Create default user {{ git_user }}"
-  shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username {{ git_user }} --password {{ git_user }} --email {{ git_email }} --admin --access-token"'
+  shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username {{ git_user }} --password {{ git_password }} --email {{ git_email }} --admin --access-token"'
   register: token_raw
 
 - set_fact:
@@ -53,30 +53,26 @@
 - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}"
   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
 
-- name: "Gitea - Add files"
-  shell: cp -r /vagrant/hot-repo/ /home/vagrant/
+- name: "Gitea - Add files to {{ git_repo }}"
+  shell: "cp -R /vagrant/repos/hot-repo/* /home/vagrant/{{ git_repo }}"
 
-- name: "Gitea - Git add/commit"
-  shell: cd /home/vagrant/hot-repo && git add . && git commit -m "Initial commit, enjoy"
+- name: "Gitea - Git add/commit for {{ git_repo }}"
+  shell: "cd /home/vagrant/{{ git_repo }} && git add . && git commit -m \"Initial commit, enjoy\""
 
-- name: "Gitea - Git push"
-  shell: "cd /home/vagrant/hot-repo && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
+- name: "Gitea - Git push for {{ git_repo }}"
+  shell: "cd /home/vagrant/{{ git_repo }} && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
 
-#curl -k -d '{"name":"hot", "private":false, "auto-init":true}' -H "Content-Type: application/json" -X POST "https://gitea.192.168.50.10.nip.io/api/v1/org/ace/repos?access_token=d88f9098d244b137fb1c24c9e6eee9cf7d09634f"
+- name: "Gitea - Create repo docs"
+  shell: "curl -k -d '{\"name\":\"docs\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
 
-#curl -k -d '{"full_name":"ace", "visibility":"public", "username":"ace"}' -H "Content-Type: application/json" -X POST "https://gitea.192.168.50.10.nip.io/api/v1/orgs?access_token=d88f9098d244b137fb1c24c9e6eee9cf7d09634f"
+- name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs"
+  shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 
 
-#curl -k -H "accept: application/json" -X GET "https://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=7cc5edd099a81420dc42b25752799fc0eb2935dc"
+- name: "Gitea - Add files to docs"
+  shell: "cp -R /vagrant/repos/docs/* /home/vagrant/docs"
 
+- name: "Gitea - Git add/commit for docs"
+  shell: "cd /home/vagrant/docs && git add . && git commit -m \"Initial commit, enjoy\""
 
-# git init /vagrant/hot-repo/
-# git add .
-
-# git config --global user.email "gitea@ace.ace"
-# git config --global user.name "dynatrace"
-# git config --global http.sslverify false
-# git config credential.helper store
-# git commit -m "First commit, enjoy"
-
-# git remote add origin https://gitea.192.168.50.10.nip.io/ace/hot
-# git push -u origin master
+- name: "Gitea - Git push for docs"
+  shell: "cd /home/vagrant/docs && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 

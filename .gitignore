@@ -4,13 +4,15 @@
 # Vagrant stuff
 */.vagrant/
 microk8s/*.log
-config.yml
+*config.yml
 
 #Generated files
 *gen.yml
 *gen.yaml
 *gen.html
 *.tgz
+*.tgz.sig
+*.pem
 kubeconfig
 
 microk8s/ansible/kubeconfig

@@ -4,8 +4,8 @@ dynatrace:
   paastoken:  ''
 acebox:
   specs:
-    cpu: 3                      # number of cpu vcores
-    mem: 8196                   # memory assignment in MB
+    cpu: 4                      # number of cpu vcores
+    mem: 12288                   # memory assignment in MB
     priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
     disk: "50GB"
   features:
@@ -17,12 +17,15 @@ acebox:
     dashboard: true             # install ACE dashboard, defaults to false
     mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
     keptn: true                 # install keptn, defaults to false
+    cert_manager: false         # install cert manager for automatic lets encrypt generation, useless for private IPs so disabled by default
   config:
     keptn:
       version: "0.6.2"
       dynatrace_service_version: "0.7.1"
       dynatrace_sli_service_version: "0.4.2"
     jenkins:
+      helm_chart_version: "1.27.0"
+      version: "lts"
       set_creds: true
       set_jenkinslib: true
       jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"
@@ -31,7 +34,11 @@ acebox:
       domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
       addons: "dns storage registry ingress "
     git:
+      version: "1.11.6"         # version of gitea to install, defaults to 1.11.6
       user: "dynatrace"         # user that will be created to log in to gitea, password is the same, defaults to "dynatrace"
+      password: "dynatrace"     # password for the user that will be automatically created, defaults to "dynatrace"
       email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
       org: "ace"                # org that will be created on gitea, defaults to "ace"
-      repo: "hot-repo"          # repo that will be created on gitea, defaults to "hot-repo"
+      repo: "ace"          # repo that will be created on gitea, defaults to "hot-repo"
+    activegate:
+      download_location: "/vagrant/ansible/Dynatrace-ActiveGate-Linux-x86-latest.sh" # overwrite where the oneagent will be downloaded, subsequent vagrant up can be sped up that way
