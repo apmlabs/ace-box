@@ -20,7 +20,7 @@ var port = process.env.PORT || 8080,
 // Here are some global config entries that change the behavior of the app
 // ======================================================================
 var buildNumber = 1;
-var minSleep = 175;
+var minSleep = 200;
 var requestCount = 0;
 var inProduction = false;
 var invokeRequestCount = 0;
@@ -79,7 +79,7 @@ var init = function(newBuildNumber) {
 	switch(buildNumber) {
 		case 2:
 			//failInvokeRequestPercentage = 50;
-			minSleep = 250;
+			minSleep = 600;
 			break;
 		case 4: 
 			minSleep = minSleep * 2;
