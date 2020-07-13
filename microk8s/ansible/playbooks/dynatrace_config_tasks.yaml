@@ -503,27 +503,53 @@
       Authorization: "Api-token {{ dynatrace_api_token }}"
     body_format: json
     body: '{
-      "tsmMetricKey": "calc:service.simplenode.staging",
-      "name": "simplenode.staging",
-      "enabled": true,
-      "metricDefinition": {
-        "metric": "RESPONSE_TIME",
-        "requestAttribute": null
-      },
-      "unit": "MICRO_SECOND",
-      "unitDisplayName": "",
-      "entityId": "SERVICE-6B5362A1398963FF",
-      "managementZones": [],
-      "conditions": [],
-      "dimensionDefinition": {
-        "name": "method",
-        "dimension": "{Request:Name}",
-        "placeholders": [],
-        "topX": 10,
-        "topXDirection": "DESCENDING",
-        "topXAggregation": "AVERAGE"
-      }
-          }'
+        "tsmMetricKey": "calc:service.simplenode.staging",
+        "name": "simplenode.staging",
+        "enabled": true,
+        "metricDefinition": {
+          "metric": "RESPONSE_TIME",
+          "requestAttribute": null
+        },
+        "unit": "MICRO_SECOND",
+        "unitDisplayName": "",
+        "managementZones": [],
+        "conditions": [
+          {
+            "attribute": "SERVICE_TAG",
+            "comparisonInfo": {
+              "type": "TAG",
+              "comparison": "EQUALS",
+              "value": {
+                "context": "CONTEXTLESS",
+                "key": "app",
+                "value": "simplenodeservice"
+              },
+              "negate": false
+            }
+          },
+          {
+            "attribute": "SERVICE_TAG",
+            "comparisonInfo": {
+              "type": "TAG",
+              "comparison": "EQUALS",
+              "value": {
+                "context": "CONTEXTLESS",
+                "key": "environment",
+                "value": "staging"
+              },
+              "negate": false
+            }
+          }
+        ],
+        "dimensionDefinition": {
+          "name": "method",
+          "dimension": "{Request:Name}",
+          "placeholders": [],
+          "topX": 10,
+          "topXDirection": "DESCENDING",
+          "topXAggregation": "AVERAGE"
+        }
+      }'
     return_content: no
     status_code: 200, 201, 204
   when: csm_simplenode_id is not defined
@@ -537,27 +563,53 @@
       Authorization: "Api-token {{ dynatrace_api_token }}"
     body_format: json
     body: '{
-      "tsmMetricKey": "calc:service.simplenode.staging",
-      "name": "simplenode.staging",
-      "enabled": true,
-      "metricDefinition": {
-        "metric": "RESPONSE_TIME",
-        "requestAttribute": null
-      },
-      "unit": "MICRO_SECOND",
-      "unitDisplayName": "",
-      "entityId": "SERVICE-6B5362A1398963FF",
-      "managementZones": [],
-      "conditions": [],
-      "dimensionDefinition": {
-        "name": "method",
-        "dimension": "{Request:Name}",
-        "placeholders": [],
-        "topX": 10,
-        "topXDirection": "DESCENDING",
-        "topXAggregation": "AVERAGE"
-      }
-          }'
+        "tsmMetricKey": "calc:service.simplenode.staging",
+        "name": "simplenode.staging",
+        "enabled": true,
+        "metricDefinition": {
+          "metric": "RESPONSE_TIME",
+          "requestAttribute": null
+        },
+        "unit": "MICRO_SECOND",
+        "unitDisplayName": "",
+        "managementZones": [],
+        "conditions": [
+          {
+            "attribute": "SERVICE_TAG",
+            "comparisonInfo": {
+              "type": "TAG",
+              "comparison": "EQUALS",
+              "value": {
+                "context": "CONTEXTLESS",
+                "key": "app",
+                "value": "simplenodeservice"
+              },
+              "negate": false
+            }
+          },
+          {
+            "attribute": "SERVICE_TAG",
+            "comparisonInfo": {
+              "type": "TAG",
+              "comparison": "EQUALS",
+              "value": {
+                "context": "CONTEXTLESS",
+                "key": "environment",
+                "value": "staging"
+              },
+              "negate": false
+            }
+          }
+        ],
+        "dimensionDefinition": {
+          "name": "method",
+          "dimension": "{Request:Name}",
+          "placeholders": [],
+          "topX": 10,
+          "topXDirection": "DESCENDING",
+          "topXAggregation": "AVERAGE"
+        }
+      }'
     return_content: no
     status_code: 200, 201, 204
   when: csm_simplenode_id is defined
