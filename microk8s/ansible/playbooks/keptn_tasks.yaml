@@ -15,32 +15,31 @@
 #- name: Keptn Install metallb
 #  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml"
 
-- name: Keptn - Install Keptn Quality Gates
+- name: Keptn - Install Keptn Quality Gates using helm
+  become_user: vagrant
+  shell: helm upgrade keptn keptn --install --wait --version={{ keptn_version }} --create-namespace --namespace=keptn --repo="https://storage.googleapis.com/keptn-installer"
+
+#- name: Keptn - Install Keptn Quality Gates
   ##become_user: vagrant
-  shell: /usr/local/bin/keptn install --platform=kubernetes --use-case=quality-gates --creds=/vagrant/k8s/keptncreds.json --ingress-install-option=Reuse --domain {{ ingress_domain }}
+#  shell: /usr/local/bin/keptn install --platform=kubernetes --use-case=quality-gates --creds=/vagrant/k8s/keptncreds.json 
 
+- name: Keptn - Set placeholders
+  shell: >
+    sed 
+    -e "s|INGRESS_PLACEHOLDER|{{ ingress_domain }}|"   
+    /vagrant/k8s/keptn-ingress.yml > /vagrant/k8s/keptn-ingress-gen.yml
 
-- name: Keptn - Expose Bridge
-  shell: /usr/local/bin/keptn configure bridge --action=expose
+- name: Keptn - Apply ingress
+  shell: "/snap/bin/microk8s.kubectl apply -f /vagrant/k8s/keptn-ingress-gen.yml"
 
+#- name: Keptn - Expose Bridge
+#  shell: /usr/local/bin/keptn configure bridge --action=expose
 
-- name: Keptn - Authenticate vagrant user with Keptn
-  shell: cp -r /root/.keptn/ /home/vagrant && chown -R vagrant /home/vagrant/.keptn
+#- name: Keptn - Authenticate vagrant user with Keptn
+#  shell: cp -r /root/.keptn/ /home/vagrant && chown -R vagrant /home/vagrant/.keptn
 
 - set_fact:
     dynatrace_tenant_nohttps: "{{ dynatrace_tenant_url | regex_replace('https://', '') }}"
-
-- name: Keptn - Create secret dynatrace
-  shell: /snap/bin/microk8s.kubectl -n keptn create secret generic dynatrace --from-literal="DT_TENANT={{ dynatrace_tenant_nohttps }}" --from-literal="DT_API_TOKEN={{ dynatrace_api_token }}"  --from-literal="DT_PAAS_TOKEN={{ dynatrace_api_token }}"
-
-- name: Keptn - Install Dynatrace service
-  shell: /snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-service/0.7.0/deploy/manifests/dynatrace-service/dynatrace-service.yaml
-
-- name: Keptn - Install Dynatrace SLI service
-  shell: /snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/0.4.0/deploy/service.yaml
-
-- name: Keptn - Configure monitoring Dynatrace
-  shell: /usr/local/bin/keptn configure monitoring dynatrace --suppress-websocket
 
 - name: Keptn - Register API token
   shell: /snap/bin/microk8s.kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode
@@ -50,4 +49,38 @@
     keptn_api_token: "{{ keptn_api_token_raw.stdout }}"
 
 - debug: var=keptn_api_token
+
+- name: Keptn - Register Bridge password
+  shell: /snap/bin/microk8s.kubectl get secret bridge-credentials -n keptn -o jsonpath={.data.BASIC_AUTH_PASSWORD} | base64 -d
+  register: keptn_bridge_password_raw
+
+- set_fact:
+    keptn_bridge_password: "{{ keptn_bridge_password_raw.stdout }}"
+
+- debug: var=keptn_bridge_password
+
+- name: Keptn - Register Bridge user
+  shell: /snap/bin/microk8s.kubectl get secret bridge-credentials -n keptn -o jsonpath={.data.BASIC_AUTH_USERNAME} | base64 -d
+  register: keptn_bridge_user_raw
+
+- set_fact:
+    keptn_bridge_user: "{{ keptn_bridge_user_raw.stdout }}"
+
+- debug: var=keptn_bridge_user
+
+- name: Keptn - Create secret dynatrace
+  shell: /snap/bin/microk8s.kubectl -n keptn create secret generic dynatrace --from-literal="DT_TENANT={{ dynatrace_tenant_nohttps }}" --from-literal="DT_API_TOKEN={{ dynatrace_api_token }}"  --from-literal="DT_PAAS_TOKEN={{ dynatrace_api_token }}" --from-literal="KEPTN_API_URL=http://keptn.{{ ingress_domain }}/api" --from-literal="KEPTN_API_TOKEN={{ keptn_api_token }}"
+
+- name: Keptn - Install Dynatrace service
+  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-service/{{ keptn_dynatrace_service_version }}/deploy/service.yaml"
+
+- name: Keptn - Install Dynatrace SLI service
+  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/{{ keptn_dynatrace_sli_service_version }}/deploy/service.yaml"
+
+#- name: Keptn - Configure monitoring Dynatrace
+#  shell: /usr/local/bin/keptn configure monitoring dynatrace --suppress-websocket
+
+- name: Keptn - Authenticate CLI
+  become_user: vagrant
+  shell: "/usr/local/bin/keptn auth --api-token {{ keptn_api_token }} --endpoint http://keptn.{{ ingress_domain }}/api"
 

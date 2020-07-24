@@ -8,6 +8,8 @@
     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
+    -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
+    -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"
     -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
     /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
 

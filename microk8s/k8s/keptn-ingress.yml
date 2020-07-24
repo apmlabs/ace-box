@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: keptn-ingress
+  namespace: keptn
+spec:
+  rules:
+  - host: keptn.INGRESS_PLACEHOLDER
+    http:
+      paths:
+      - backend:
+          serviceName: api-gateway-nginx
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
