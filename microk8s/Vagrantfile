@@ -18,7 +18,7 @@ require 'yaml'
 vmconfig = YAML.load_file('config.yml')
 
 Vagrant.configure("2") do |config|
-    config.vm.box = "ubuntu/xenial64"
+    config.vm.box = "ubuntu/bionic64"
     config.hostmanager.enabled = true
     config.hostmanager.include_offline = true
     config.hostmanager.manage_host = true
