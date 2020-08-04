@@ -15,6 +15,9 @@
 - name: Microk8s - Alias to kubectl
   shell: snap alias microk8s.kubectl kubectl
 
+- name: Microk8s - Wait for microk8s to be ready
+  shell: /snap/bin/microk8s.status --wait-ready
+
 - name: "Microk8s - Enable addons {{ microk8s_addons }}"
   shell: "/snap/bin/microk8s.enable {{ microk8s_addons }}"
 
