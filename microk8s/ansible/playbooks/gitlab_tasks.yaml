@@ -2,7 +2,16 @@
   become_user: vagrant
   shell: /snap/bin/helm repo add gitlab https://charts.gitlab.io/ && helm repo update
 
+- set_fact:
+    gitlab_domain: "gitlab.{{ ingress_domain }}"
+
+- name: Gitlab - Set placeholders
+  shell: >
+    sed 
+    -e "s|DOMAIN_PLACEHOLDER|{{ gitlab_domain }}|"  
+    /vagrant/k8s/gitlab-values.yml > /vagrant/k8s/gitlab-values-gen.yml
+
 - name: Gitlab - Install using helm
   become_user: vagrant
-  shell: /snap/bin/helm install gitlab gitlab/gitlab -f /vagrant/k8s/gitlab-values-gen.yml --namespace ace
+  shell: /snap/bin/helm install gitlab gitlab/gitlab -f /vagrant/k8s/gitlab-values-gen.yml --create-namespace --namespace gitlab
   ignore_errors: yes

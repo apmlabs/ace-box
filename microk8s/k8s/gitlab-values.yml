@@ -40,14 +40,14 @@ global:
       allowClusterRoles: true
     ## doc/charts/globals.md#configure-host-settings
     hosts:
-      domain: "192.168.50.10.nip.io"
-      #hostSuffix:
+      domain: "DOMAIN_PLACEHOLDER"
       https: false
       #externalIP:
       #ssh: ~
       #gitlab: {}
       #minio: {}
-      #registry: {}
+      #registry:
+        #https: true
       #tls: {}
   
     ## doc/charts/globals.md#configure-ingress-settings
@@ -56,8 +56,8 @@ global:
       configureCertmanager: false
       annotations: {}
       enabled: true
-      tls: {}
-      #   enabled: true
+      tls:
+        enabled: false
       #   secretName:
   
     gitlab:
@@ -507,11 +507,29 @@ global:
     extraEnv: {}
      # SOME_KEY: some_value
      # SOME_OTHER_KEY: some_other_value
+
+runners:
+  privileged: true
 prometheus:
     install: false
-
 nginx-ingress:
     enabled: false
-
 certmanager: 
     install: false
+gitlab:
+  webservice:
+    replicaCount: 1
+  gitlab-shell:
+    replicaCount: 1
+registry:
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    cpu:
+      targetAverageUtilization: 75
+gitlab-runner:
+  runners:
+    image: ubuntu:18.04
+    privileged: true
+#     cache:
+#       s3CacheInsecure: true
