@@ -441,7 +441,7 @@ master:
                 }
                 definition {
                   cpsScm {
-                    scriptPath('build.Jenkinsfile')
+                    scriptPath('jenkins/build.Jenkinsfile')
                     scm {
                       git {
                           remote { 
@@ -463,7 +463,7 @@ master:
                 }
                 definition {
                   cpsScm {
-                    scriptPath('deployStaging.Jenkinsfile')
+                    scriptPath('jenkins/deployStaging.Jenkinsfile')
                     scm {
                       git {
                           remote { 
@@ -483,7 +483,7 @@ master:
                 }
                 definition {
                   cpsScm {
-                    scriptPath('test.Jenkinsfile')
+                    scriptPath('jenkins/test.Jenkinsfile')
                     scm {
                       git {
                           remote { 
@@ -505,7 +505,7 @@ master:
                 }
                 definition {
                   cpsScm {
-                    scriptPath('deployProd.Jenkinsfile')
+                    scriptPath('jenkins/deployProd.Jenkinsfile')
                     scm {
                       git {
                           remote { 
