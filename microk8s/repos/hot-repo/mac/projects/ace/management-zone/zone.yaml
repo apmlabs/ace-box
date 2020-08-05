@@ -1,0 +1,6 @@
+config:
+    - myfirstmanagementzoneconfig: "myfirstmanagementzone.json"
+
+myfirstmanagementzoneconfig:
+    - name: "myfirstmanagementzone"
+    - environment: "staging"

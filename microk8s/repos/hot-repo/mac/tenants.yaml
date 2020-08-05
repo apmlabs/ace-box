@@ -1,0 +1,4 @@
+ace:
+  - name: "ace"
+  - tenant-url: "https://gcp25389.sprint.dynatracelabs.com"
+  - env-token-name: "DT_API_TOKEN"
