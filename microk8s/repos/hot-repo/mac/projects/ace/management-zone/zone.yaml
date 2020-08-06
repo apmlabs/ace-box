@@ -1,6 +1,11 @@
 config:
-    - myfirstmanagementzoneconfig: "myfirstmanagementzone.json"
+    - management-zone-staging: "management-zone.json"
+    - management-zone-prod-config: "management-zone.json"
 
-myfirstmanagementzoneconfig:
+management-zone-staging:
     - name: "myfirstmanagementzone"
     - environment: "staging"
+
+management-zone-prod-config:
+    - name: "management-zone-prod"
+    - environment: "production"

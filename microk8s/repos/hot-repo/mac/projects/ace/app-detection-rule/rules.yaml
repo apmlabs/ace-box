@@ -1,0 +1,24 @@
+
+config:
+  - app-detect-simplenode-staging: "rule.json"
+  - app-detect-simplenode-prod: "rule.json"
+  
+app-detect-simplenode-staging:
+  - name: "/ace/application/app-simplenode-staging.name"
+  - applicationId: "/ace/application/app-simplenode-staging.id"
+  - pattern: "http://simplenode.staging.192.168.50.10.nip.io"
+
+app-detect-simplenode-prod:
+  - name: "/ace/application/app-simplenode-prod.name"
+  - applicationId: "/ace/application/app-simplenode-prod.id"
+  - pattern: "http://simplenode.production.192.168.50.10.nip.io"
+
+# Below examples to apply certain configuration on a tenant basis
+# rule.dev:
+# - pattern: "https://account-dev.dynatracelabs.com/admin"
+
+# rule.hardening:
+# - pattern: "https://account-sprint.dynatracelabs.com/admin"
+
+# rule.prod:
+# - pattern: "https://account.dynatrace.com/admin"
