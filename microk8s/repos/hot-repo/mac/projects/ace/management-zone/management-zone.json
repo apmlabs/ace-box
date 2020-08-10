@@ -5,7 +5,6 @@
             "type": "PROCESS_GROUP",
             "enabled": true,
             "propagationTypes": [
-                "PROCESS_GROUP_TO_HOST",
                 "PROCESS_GROUP_TO_SERVICE"
             ],
             "conditions": [

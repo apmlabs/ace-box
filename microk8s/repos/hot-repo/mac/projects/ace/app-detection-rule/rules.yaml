@@ -13,6 +13,7 @@ app-detect-simplenode-prod:
   - applicationId: "/ace/application/app-simplenode-prod.id"
   - pattern: "http://simplenode.production.192.168.50.10.nip.io"
 
+  
 # Below examples to apply certain configuration on a tenant basis
 # rule.dev:
 # - pattern: "https://account-dev.dynatracelabs.com/admin"

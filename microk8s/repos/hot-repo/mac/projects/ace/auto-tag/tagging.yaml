@@ -1,0 +1,10 @@
+config:
+    - tagging-staging: "tagging.json"
+  
+tagging-staging:
+    - name: "mac-staging"
+    - namespace: "staging"
+
+tagging-prod:
+    - name: "mac-prod"
+    - namespace: "production"
