@@ -10,12 +10,15 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
     - [Step 1 - Clone the ace-box repository](#step-1---clone-the-ace-box-repository)
     - [Step 2 - change directory to microk8s](#step-2---change-directory-to-microk8s)
     - [Step 3 - create a config file](#step-3---create-a-config-file)
+      - [Demo mode](#demo-mode)
+      - [Training mode](#training-mode)
     - [Step 4 - Provision](#step-4---provision)
     - [Troubleshooting](#troubleshooting)
   - [Accessing ace-box dashboard](#accessing-ace-box-dashboard)
   - [SSH into the box](#ssh-into-the-box)
   - [Cleaning up](#cleaning-up)
   - [Behind the scenes](#behind-the-scenes)
+  - [Triggering a pipeline run](#triggering-a-pipeline-run)
 
 
 ## Components
@@ -163,6 +166,8 @@ Check [Behind the scenes](#behind-the-scenes) for more detail about what happens
 3. If you are using a Windows workstation, ensure that Hyper-V native virtualization has been disabled as it clashes with virtualbox. Hyper-V support is on the roadmap. Check this [doc](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v) on how to disable Hyper-V
 4. If at any given time the provisioning fails, it is best to execute a `vagrant destroy` followed by a `vagrant up`
 5. During testing there were some cases where Jenkins plugins refused to install while provisioning which renders the installation useless for the other usecases. In that case, it is best to execute a `vagrant destroy` followed by a `vagrant up`
+6. On Windows machines the following error might occur `Stderr: VBoxManage.exe: error: Failed to open/create the internal network 'HostInterfaceNetworking-VirtualBox Host-Only Ethernet Adapter #2' (VERR_INTNET_FLT_IF_NOT_FOUND)`. It was found that disabling and enabling the network adaptor solved the issue
+7. On Windows machines it might be that a `vagrant ssh` `gives vagrant@127.0.0.1: Permission denied (publickey,gssapi-keyex,gssapi-with-mic)` or similar. A common cause is that a privatekey file has too many people with access. This was seen when the repo was cloned in a subfolder of the C drive on Dynatrace laptops. It is suggested to use a subfolder of your home directory.
 
 ## Accessing ace-box dashboard
 At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.
