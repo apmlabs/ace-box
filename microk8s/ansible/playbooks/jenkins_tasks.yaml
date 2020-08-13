@@ -24,7 +24,7 @@
     -e "s|ACE_LIB_PLACEHOLDER||" 
     -e "s|KEPTN_LIB_PLACEHOLDER||" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER||" 
-    -e "s|JENKINS_INGRESS_PLACEHOLDER||" 
+    -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" 
     /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: jenkins_setcreds == true and acebox_mode == 'training'
 
