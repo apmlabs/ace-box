@@ -1,0 +1,224 @@
+{
+    "displayName": "{{ .name }}",
+    "rules": [
+        {
+            "severityLevel": "AVAILABILITY",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ANY",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl_PSG",
+                        "value": null
+                    },
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl_ES",
+                        "value": null
+                    },
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl_Ser",
+                        "value": null
+                    },
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl_Cas",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 15
+        },
+        {
+            "severityLevel": "ERROR",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ANY",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 60
+        },
+        {
+            "severityLevel": "RESOURCE_CONTENTION",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ANY",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 10
+        },
+        {
+            "severityLevel": "CUSTOM_ALERT",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ANY",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 0
+        },
+        {
+            "severityLevel": "AVAILABILITY",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ALL",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl:Emergency",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 0
+        },
+        {
+            "severityLevel": "PERFORMANCE",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ANY",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 60
+        },
+        {
+            "severityLevel": "ERROR",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ANY",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl_Ser",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 15
+        },
+        {
+            "severityLevel": "PERFORMANCE",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ALL",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl:Emergency",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 20
+        },
+        {
+            "severityLevel": "AVAILABILITY",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ALL",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "DYOC-102",
+                        "value": null
+                    },
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 30
+        },
+        {
+            "severityLevel": "AVAILABILITY",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ALL",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "mission-control",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 30
+        },
+        {
+            "severityLevel": "MONITORING_UNAVAILABLE",
+            "tagFilter": {
+                "includeMode": "NONE",
+                "tagFilters": []
+            },
+            "delayInMinutes": 0
+        },
+        {
+            "severityLevel": "PERFORMANCE",
+            "tagFilter": {
+                "includeMode": "INCLUDE_ALL",
+                "tagFilters": [
+                    {
+                        "context": "CONTEXTLESS",
+                        "key": "Cl_HAProxy",
+                        "value": null
+                    }
+                ]
+            },
+            "delayInMinutes": 1
+        }
+    ],
+    "managementZoneId": null,
+    "mzId": null,
+    "eventTypeFilters": [
+        {
+            "customEventFilter": {
+                "customTitleFilter": {
+                    "enabled": true,
+                    "value": "[TeamWoGr]",
+                    "operator": "CONTAINS",
+                    "negate": true,
+                    "caseInsensitive": true
+                }
+            }
+        },
+        {
+            "customEventFilter": {
+                "customTitleFilter": {
+                    "enabled": true,
+                    "value": "[ACE][Log]",
+                    "operator": "CONTAINS",
+                    "negate": true,
+                    "caseInsensitive": true
+                }
+            }
+        },
+        {
+            "customEventFilter": {
+                "customTitleFilter": {
+                    "enabled": true,
+                    "value": "[FDI]",
+                    "operator": "CONTAINS",
+                    "negate": true,
+                    "caseInsensitive": true
+                }
+            }
+        }
+    ]
+}

@@ -1,8 +1,8 @@
 {
-    "applicationIdentifier": "{{ .applicationId }}",
-    "filterConfig": {
-      "pattern": "{{ .pattern }}",
-      "applicationMatchType": "BEGINS_WITH",
-      "applicationMatchTarget": "URL"
-    }
+  "applicationIdentifier": "{{ .applicationId }}",
+  "filterConfig": {
+    "pattern": "{{ .pattern }}",
+    "applicationMatchType": "BEGINS_WITH",
+    "applicationMatchTarget": "URL"
   }
+}

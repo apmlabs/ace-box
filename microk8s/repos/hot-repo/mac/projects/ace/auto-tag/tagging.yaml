@@ -1,5 +1,6 @@
 config:
     - tagging-staging: "tagging.json"
+    - tagging-prod: "tagging.json"
   
 tagging-staging:
     - name: "mac-staging"

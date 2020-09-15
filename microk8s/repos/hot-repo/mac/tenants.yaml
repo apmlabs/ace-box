@@ -1,4 +1,4 @@
 ace:
-  - name: "ace"
-  - tenant-url: "ENTER YOUR TENANT HERE"
-  - env-token-name: "DT_API_TOKEN"
+  - name: "ace" #name to reference it by
+  - tenant-url: "ENTER YOUR TENANT HERE" #tenant URL - Including https:// NO trailing slash - e.g.: https://tenant.live.dynatrace.com
+  - env-token-name: "DT_API_TOKEN" #environment variable that contains the API token

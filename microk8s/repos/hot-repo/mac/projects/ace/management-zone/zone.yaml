@@ -1,6 +1,6 @@
 config:
     - management-zone-staging: "management-zone.json"
-    - management-zone-prod-config: "management-zone.json"
+    - management-zone-prod: "management-zone.json"
 
 management-zone-staging:
     - environment: "staging"
@@ -9,3 +9,4 @@ management-zone-staging:
 management-zone-prod:
     - environment: "production"
     - name: "mac-mz-production"
+

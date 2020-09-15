@@ -1,7 +1,7 @@
 {
     "name": "{{ .name }}",
     "realUserMonitoringEnabled": true,
-    "costControlUserSessionPercentage": 100,
+    "costControlUserSessionPercentage": 10,
     "loadActionKeyPerformanceMetric": "VISUALLY_COMPLETE",
     "xhrActionKeyPerformanceMetric": "VISUALLY_COMPLETE",
     "loadActionApdexSettings": {
