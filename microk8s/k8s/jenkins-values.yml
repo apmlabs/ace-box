@@ -371,7 +371,7 @@ master:
               - containers:
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "dynatraceace/ace-cicd-tools:v1.2"
+                  image: "dynatraceace/ace-cicd-tools:v1.3"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
