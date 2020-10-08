@@ -9,7 +9,7 @@ pipeline {
 			steps {
                 container('ace') {
                     script{
-                        sh "mac -dry-run -t=$TENANTS_FILE mac/projects"
+                        sh "mac -v -dry-run -t=$TENANTS_FILE mac/projects"
                     }
                 }
 			}
@@ -18,11 +18,10 @@ pipeline {
 			steps {
                 container('ace') {
                     script {
-				        sh "mac -t=$TENANTS_FILE -p=ace mac/projects"
+				        sh "mac -v -t=$TENANTS_FILE -p=ace mac/projects"
                     }
                 }
 			}
-		}
-        
+		}       
     }
 }
