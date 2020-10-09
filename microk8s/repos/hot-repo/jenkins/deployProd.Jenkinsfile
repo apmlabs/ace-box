@@ -103,7 +103,7 @@ pipeline {
                 }
             }
         }
-        stage('DT create synthetic monitor') {
+        /*stage('DT create synthetic monitor') {
             steps {
                 container("kubectl") {
                     script {
@@ -168,7 +168,7 @@ pipeline {
               }
             }
          }
-       }
+       }*/
     }
 }
 
