@@ -93,7 +93,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }     
         stage('Deploy to staging') {
             steps {
                 checkout scm

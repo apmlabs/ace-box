@@ -3,4 +3,4 @@ config:
   
 acebox:
     - name: "ACE-BOX"
-    - nodeId: "693650705"
+    - nodeId: "{{ .Env.SYNTH_NODE_ID }}"
