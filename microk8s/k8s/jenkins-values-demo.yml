@@ -53,6 +53,8 @@ master:
       value: ACE_LIB_PLACEHOLDER
     - name: KEPTN_LIB
       value: KEPTN_LIB_PLACEHOLDER
+    - name: SYNTH_NODE_ID
+      value: "SYNTH_NODE_ID_PLACEHOLDER"
   csrf:
     defaultCrumbIssuer:
       enabled: false
@@ -122,6 +124,8 @@ master:
                 value: ${ACE_LIB} #Load from Environment Variable
               - key: "KEPTN_LIB"
                 value: ${KEPTN_LIB} #Load from Environment Variable
+              - key: "SYNTH_NODE_ID"
+                value: ${SYNTH_NODE_ID} #Load from Environment Variable
           clouds:
           - kubernetes:
               containerCapStr: "10"
@@ -379,7 +383,7 @@ master:
               - containers:
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "dynatraceace/ace-cicd-tools:v1.3"
+                  image: "dynatraceace/ace-cicd-tools:v1.4"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0

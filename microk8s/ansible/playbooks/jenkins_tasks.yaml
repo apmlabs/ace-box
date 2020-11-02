@@ -25,6 +25,7 @@
     -e "s|KEPTN_LIB_PLACEHOLDER||" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER||" 
     -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" 
+    -e "s|SYNTH_NODE_ID_PLACEHOLDER||" 
     /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: jenkins_setcreds == true and acebox_mode == 'training'
 
@@ -44,6 +45,7 @@
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER||" 
     -e "s|KEPTN_ENDPOINT_PLACEHOLDER||" 
     -e "s|KEPTN_BRIDGE_PLACEHOLDER||"
+    -e "s|SYNTH_NODE_ID_PLACEHOLDER||" 
     /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: jenkins_setcreds != true and acebox_mode == 'training'
 
@@ -71,7 +73,8 @@
     -e "s|GIT_REPO_PLACEHOLDER|{{ git_repo }}|" 
     -e "s|GIT_DOMAIN_PLACEHOLDER|{{ gitea_domain }}|" 
     -e "s|ACE_LIB_PLACEHOLDER|{{ jenkins_ace_lib_url }}|" 
-    -e "s|KEPTN_LIB_PLACEHOLDER|{{ jenkins_keptn_lib_url }}|" 
+    -e "s|KEPTN_LIB_PLACEHOLDER|{{ jenkins_keptn_lib_url }}|"
+    -e "s|SYNTH_NODE_ID_PLACEHOLDER|{{ dt_node_id }}|"  
     /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: acebox_mode == 'demo'
 
