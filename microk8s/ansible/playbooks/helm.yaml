@@ -13,8 +13,8 @@
 
 - name: Helm - enable Stable Repo
   become_user: vagrant
-  command: /snap/bin/helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-
+  command: /snap/bin/helm repo add stable https://charts.helm.sh/stable
+  
 - name: Helm - enable Incubator Repo
   become_user: vagrant
-  shell: /snap/bin/helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+  shell: /snap/bin/helm repo add incubator https://charts.helm.sh/incubator
