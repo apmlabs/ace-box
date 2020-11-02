@@ -45,9 +45,9 @@
     include_tasks: playbooks/dtactivegate_tasks.yaml
     when: feature_activegate or acebox_mode == "demo"
   
-  - name: Configure Dynatrace tenant
-    include_tasks: playbooks/dynatrace_config_tasks.yaml
-    when: acebox_mode == "demo"
+  # - name: Configure Dynatrace tenant
+  #   include_tasks: playbooks/dynatrace_config_tasks.yaml
+  #   when: acebox_mode == "demo"
 
   - name: Install and configure helm
     include_tasks: playbooks/helm.yaml

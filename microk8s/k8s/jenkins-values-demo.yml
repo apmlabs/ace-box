@@ -568,6 +568,23 @@ master:
                   }
                 }
               }
+          - script: >
+              pipelineJob('Monitoring as Code') {
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/mac.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
 
 persistence:
   enabled: true
