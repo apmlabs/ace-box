@@ -60,22 +60,22 @@ master:
       enabled: false
       proxyCompatability: true
   installPlugins:
-    - command-launcher:1.4
-    - kubernetes:1.26.2
+    - command-launcher:1.5
+    - kubernetes:1.27.3
     - kubernetes-credentials-provider:0.15
-    - workflow-job:2.39
+    - workflow-job:2.40
     - workflow-aggregator:2.6
-    - credentials-binding:1.23
-    - git:4.3.0
-    - google-oauth-plugin:1.0.0
+    - credentials-binding:1.24
+    - git:4.4.5
+    - google-oauth-plugin:1.0.2
     - google-source-plugin:0.4
-    - performance:3.17
-    - github-branch-source:2.8.2
+    - performance:3.18
+    - github-branch-source:2.9.1
     - job-dsl:1.77
-    - pipeline-build-step:2.12
-    - docker-plugin:1.2.0
+    - pipeline-build-step:2.13
+    - docker-plugin:1.2.1
     - blueocean:1.23.2
-    - configuration-as-code:1.41
+    - configuration-as-code:1.45
     - http_request:1.8.26
     - pipeline-utility-steps:2.6.1
   JCasC:
@@ -383,7 +383,7 @@ master:
               - containers:
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "dynatraceace/ace-cicd-tools:v1.4"
+                  image: "dynatraceace/ace-cicd-tools:v1.5"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
