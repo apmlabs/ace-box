@@ -35,17 +35,26 @@ pipeline {
             }
         }
     
-        stage('Deploy to staging') {
-            steps {
-                build job: "2. Deploy",
-                wait: false,
-                parameters: [
-                    string(name: 'APP_NAME', value: "${env.APP_NAME}"),
-                    string(name: 'TAG_STAGING', value: "${env.TAG}"),
-                    string(name: 'BUILD', value: "${env.BUILD}")
-                ]
+        stage('Deploy and observe') {
+            parallel {
+                stage('Deploy to staging'){
+                    steps {
+                        build job: "2. Deploy",
+                        wait: false,
+                        parameters: [
+                            string(name: 'APP_NAME', value: "${env.APP_NAME}"),
+                            string(name: 'TAG_STAGING', value: "${env.TAG}"),
+                            string(name: 'BUILD', value: "${env.BUILD}")
+                        ]
+                    }
+                }
+                stage('Monitoring as Code') {
+                    steps {
+                        build job: "Monitoring as Code",
+                        wait: false
+                    }
+                }
             }
-        }  
-        
+        }
     }
 }
