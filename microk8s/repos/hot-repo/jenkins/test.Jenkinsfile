@@ -59,8 +59,7 @@ pipeline {
         stage('Run performance test') {
             steps {
                 script {
-                    env.testStartTime = java.time.LocalDateTime.now().toString()
-                    //keptn.markEvaluationStartTime
+                    keptn.markEvaluationStartTime()
                 }
                 checkout scm
                 container('jmeter') {
@@ -107,7 +106,7 @@ pipeline {
         stage('Keptn Evaluation') {
             steps {
                 script {
-                    def keptnContext = keptn.sendStartEvaluationEvent starttime:"${env.testStartTime}", endtime:"" 
+                    def keptnContext = keptn.sendStartEvaluationEvent starttime:"", endtime:"" 
                     echo keptnContext
                     result = keptn.waitForEvaluationDoneEvent setBuildResult:true, waitTime:3
 
