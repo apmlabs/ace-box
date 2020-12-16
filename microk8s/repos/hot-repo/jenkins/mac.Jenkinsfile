@@ -1,4 +1,4 @@
-TENANTS_FILE = "mac/tenants.yaml"
+ENVS_FILE = "mac/tenants.yaml"
 
 pipeline {
     agent {
@@ -9,7 +9,7 @@ pipeline {
 			steps {
                 container('ace') {
                     script{
-                        sh "mac -v -dry-run -t=$TENANTS_FILE -p=infrastructure mac/projects"
+                        sh "monaco -v -dry-run -e=$ENVS_FILE -p=infrastructure mac/projects"
                     }
                 }
 			}
@@ -18,7 +18,7 @@ pipeline {
 			steps {
                 container('ace') {
                     script {
-				        sh "mac -v -t=$TENANTS_FILE -p=infrastructure mac/projects"
+				        sh "monaco -v -e=$ENVS_FILE -p=infrastructure mac/projects"
                     }
                 }
 			}
@@ -27,7 +27,7 @@ pipeline {
 			steps {
                 container('ace') {
                     script{
-                        sh "mac -v -dry-run -t=$TENANTS_FILE -p=ace mac/projects"
+                        sh "monaco -v -dry-run -e=$ENVS_FILE -p=ace mac/projects"
                     }
                 }
 			}
@@ -36,7 +36,7 @@ pipeline {
 			steps {
                 container('ace') {
                     script {
-				        sh "mac -v -t=$TENANTS_FILE -p=ace mac/projects"
+				        sh "monaco -v -e=$ENVS_FILE -p=ace mac/projects"
                     }
                 }
 			}
