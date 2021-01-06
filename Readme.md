@@ -11,6 +11,8 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
     - [Step 2 - change directory to microk8s](#step-2---change-directory-to-microk8s)
     - [Step 3 - create a config file](#step-3---create-a-config-file)
       - [Demo mode](#demo-mode)
+      - [Features](#features)
+      - [Config](#config)
       - [Training mode](#training-mode)
     - [Step 4 - Provision](#step-4---provision)
     - [Troubleshooting](#troubleshooting)
@@ -95,9 +97,73 @@ acebox:
       domain_ext: "nip.io"      
 ```
 
+#### Features
+
+The ace-box comes with a certain number of features that can be enabled and disabled at time of provisioning. Adding and removing features will impact resource consumption of the virtual machine and thus will impact host performance. Features are managed in the `acebox/features` block in the `config.yml` file. Below is an overview of features that can be added to `config.yml`:
+
+```
+  features:
+    oneagent: true              # install Dynatrace OneAgent, defaults to true
+    activegate:  false          # install Dynatrace ActiveGate for Private Synthetic, defaults to false
+    jenkins: true               # install Jenkins, defaults to true
+    jenkins_setcreds: false     # automatically set git and dynatrace credentials in Jenkins
+    gitea: true                 # install gitea local github (broken ATM), defaults to false
+    dashboard: true             # install ACE dashboard, defaults to false
+    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+    keptn: false                # install keptn, defaults to false
+    gitlab: true                # install gitlab, defaults to false
+    activegatekube: true        # EXPERIMENTAL: install a kubernetes activegate, defaults to false
+```
+
+Setting `mode` to `demo` will overwrite the following:
+```
+  features:
+    oneagent: true              # install Dynatrace OneAgent, defaults to true
+    activegate:  true           # install Dynatrace ActiveGate for Private Synthetic, defaults to false
+    jenkins: true               # install Jenkins, defaults to true
+    gitea: true                 # install gitea local github (broken ATM), defaults to false
+    dashboard: true             # install ACE dashboard, defaults to false
+    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+    keptn: true                 # install keptn, defaults to false
+```
+
+Behavior can be verified in [initial.yml](microk8s/ansible/initial.yml)
+
+#### Config
+
+Additionally to controling the features that are enabled on the ace-box, it is also possible to overwrite the default configuration in the `acebox/config` section:
+```
+  config:
+    keptn:                                      # WARNING: when overwriting keptn services versions, make sure they are compatible with keptn base version!
+      version: "0.7.2"                          # overwrite keptn version
+      dynatrace_service_version: "0.7.1"        # overwrite keptn dynatrace service version
+      dynatrace_sli_service_version: "0.4.2"    # overwrite keptn dynatrace sli service version
+    jenkins:
+      helm_chart_version: "1.27.0"              # overwrite jenkins helm chart version
+      version: "lts"                            # overwrite jenkins version, defaults to lts
+      set_creds: true                           # placeholder for future
+      set_jenkinslib: true                      # placeholder for future
+      jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"  # url for ACE Jenkins library
+      keptn_lib_url: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"     # url for Jenkins Keptn library
+    microk8s:
+      domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
+      addons: "dns storage registry ingress "   # microk8s addons to enable, WARNING may break ace-box functionality
+    git:
+      version: "1.11.6"         # version of gitea to install, defaults to 1.11.6
+      user: "dynatrace"         # user that will be created to log in to gitea, defaults to "dynatrace"
+      password: "dynatrace"     # password for the user that will be automatically created, defaults to "dynatrace"
+      email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
+      org: "ace"                # org that will be created on gitea, defaults to "ace"
+      repo: "ace"               # repo that will be created on gitea, defaults to "hot-repo"
+    activegate:
+      download_location: "/vagrant/ansible/Dynatrace-ActiveGate-Linux-x86-latest.sh" # overwrite where the oneagent will be downloaded, storing it inside /vagrant/* will speed up subsequent destroy and up commands as the AG does not have to be re-downloaded
+```
+
+Behavior can be verified in [initial.yml](microk8s/ansible/initial.yml)
+
 #### Training mode
 
-
+Training mode can be used to have more control over the features and configuration of the ace-box. 
 
 ```
 dynatrace:
@@ -114,12 +180,12 @@ acebox:
     oneagent: true              # install Dynatrace OneAgent, defaults to true
     activegate:  true            # install Dynatrace ActiveGate for Private Synthetic, defaults to false
     jenkins: true               # install Jenkins, defaults to true
-    jenkins_setcreds: true      # automatically set git and dynatrace credentials in Jenkins
     gitea: true                 # install gitea local github (broken ATM), defaults to false
     dashboard: true             # install ACE dashboard, defaults to false
-    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+    mode: "training"                # select mode for ace-box. choose between "training" (default) and "demo"
     keptn: true                 # install keptn, defaults to false
-    cert_manager: false         # install cert manager for automatic lets encrypt generation, useless for private IPs so disabled by default
+    gitlab: false
+    activegatekube:  false
   config:
     keptn:
       version: "0.6.2"
