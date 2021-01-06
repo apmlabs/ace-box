@@ -55,6 +55,8 @@ master:
       value: KEPTN_LIB_PLACEHOLDER
     - name: SYNTH_NODE_ID
       value: "SYNTH_NODE_ID_PLACEHOLDER"
+    - name: KUBE_BEARER_TOKEN
+      value: KUBE_BEARER_TOKEN_PLACEHOLDER
   csrf:
     defaultCrumbIssuer:
       enabled: false
@@ -126,6 +128,8 @@ master:
                 value: ${KEPTN_LIB} #Load from Environment Variable
               - key: "SYNTH_NODE_ID"
                 value: ${SYNTH_NODE_ID} #Load from Environment Variable
+              - key: "KUBE_BEARER_TOKEN"
+                value: ${KUBE_BEARER_TOKEN} #Load from Environment Variable
           clouds:
           - kubernetes:
               containerCapStr: "10"

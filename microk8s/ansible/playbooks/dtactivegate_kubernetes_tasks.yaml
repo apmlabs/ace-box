@@ -23,3 +23,16 @@
 
 - name: "Dynatrace Activegate Kubernetes - Deploy"
   shell: "/snap/bin/microk8s.kubectl apply -f /vagrant/k8s/dtactivegate_kubernetes_gen.yml"
+
+#https://www.dynatrace.com/support/help/technology-support/cloud-platforms/kubernetes/monitoring/monitor-kubernetes-clusters-with-dynatrace/
+- name: "Dynatrace Activegate Kubernetes - Create service account and cluster role " 
+  shell: "/snap/bin/microk8s.kubectl apply -f https://www.dynatrace.com/support/help/codefiles/kubernetes/kubernetes-monitoring-service-account.yaml"
+
+- name: "Dynatrace Activegate Kubernetes - Get bearer token " 
+  shell: "/snap/bin/microk8s.kubectl get secret $(kubectl get sa dynatrace-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.token}' -n dynatrace | base64 --decode"
+  register: token_raw
+
+- set_fact:
+    kube_bearer_token: "{{  token_raw.stdout }}"
+
+- debug: var=kube_bearer_token
