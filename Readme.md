@@ -10,9 +10,8 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
     - [Step 1 - Clone the ace-box repository](#step-1---clone-the-ace-box-repository)
     - [Step 2 - change directory to microk8s](#step-2---change-directory-to-microk8s)
     - [Step 3 - create a config file](#step-3---create-a-config-file)
+      - [config.yml settings](#configyml-settings)
       - [Demo mode](#demo-mode)
-      - [Features](#features)
-      - [Config](#config)
       - [Training mode](#training-mode)
     - [Step 4 - Provision](#step-4---provision)
     - [Troubleshooting](#troubleshooting)
@@ -63,6 +62,50 @@ You need to create a config file called `config.yml` that contains the informati
 
 **Note2:** If you had forked this repo and want to update it with your own changes, a `gitignore` entry has been added for the config.yml file so you do not accidentally spill your tokens :-).
 
+#### config.yml settings
+
+The ace-box comes with a certain number of features and settings that can be set/enabled/disabled at provisioning. Adding and removing features will change the resource consumption. Most settings have default values and do not need to be set explicitly, but they can be overwritten if needed.
+
+Default behaviour can be verified in [initial.yml](microk8s/ansible/initial.yml)
+
+Flag  | Description | Required | Default 
+-------- | ------- | ------- | ------- |
+dynatrace.tenant | Dynatrace environment to point to. https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid] | ***yes*** | not set
+dynatrace.apitoken | API token. Best to give all scopes | ***yes*** | not set
+dynatrace.paastoken | PaaS token for OneAgent and ActiveGate installation | ***yes*** | not set
+acebox.specs.cpu | Number of virtual CPU cores for VM. Minimal 3 | ***yes*** | not set
+acebox.specs.mem | Memory assignment for VM in MB. Minimal 8196 | ***yes*** | not set
+acebox.specs.priv_ip | Private IP for VM. Set to 192.168.50.10 | ***yes*** | not set
+acebox.specs.disk | Disk size of VM. Set to 50GB | ***yes*** | not set
+acebox.features.mode | Mode for ace-box. Choose between `training` or `demo` | no | training
+acebox.features.oneagent | Install OneAgent | no | true
+acebox.features.activegate | Install Private Synthetic ActiveGate | no | false
+acebox.features.activegatekube | EXPERIMENTAL: Deploy ActiveGate on Kubernetes | no | false
+acebox.features.jenkins | Install Jenkins | no | true
+acebox.features.gitea | Install Gitea local git server | no | false
+acebox.features.dashboard | Install ACE dashboard | no | false
+acebox.features.keptn | Install Keptn Quality Gates | no | false
+acebox.features.gitlab | Install Gitlab | no | false
+acebox.config.keptn.version | Keptn version to install | no | 0.7.2
+acebox.config.keptn.dynatrace_service_version | Keptn Dynatrace Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.10.0
+acebox.config.keptn.dynatrace_sli_service_version | Keptn Dynatrace SLI Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.7.0
+acebox.config.keptn.keptn_jmeter_ext_service_version | Keptn Jmeter Extended Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.2.0
+acebox.config.keptn.jenkins.helm_chart_version | Version of the Jenkins helm chart to use (is not equal to Jenkins version) | no | 1.27.0
+acebox.config.keptn.version | Version of Jenkins to deploy | no | lts
+acebox.config.keptn.set_creds | placeholder for future | no | n/a
+acebox.config.keptn.set_jenkinslib | placeholder for future | no | n/a
+acebox.config.keptn.jenkins_lib_url | URL for ACE Jenkins library | no | https://github.com/dynatrace-ace/ace-jenkins-extensions.git
+acebox.config.keptn.keptn_lib_url | URL for Jenkins Keptn library | no | https://github.com/keptn-sandbox/keptn-jenkins-library.git
+acebox.config.microk8s.domain_ext | domain extension for ace-box, can be set to `nip.io` or `xip.io` | ***yes*** | nip.io
+acebox.config.microk8s.addons | microk8s addons to enable. **WARNING** may break ace-box functionality | no | dns storage registry ingress 
+acebox.config.git.version | version of gitea to install | no | 1.11.6
+acebox.config.git.user | default login for gitea | no | dynatrace
+acebox.config.git.password | default password for gitea | no | dynatrace
+acebox.config.git.email | email address assigned to gitea user for account creation purposes, can be fake email | no | ace@ace.ace 
+acebox.config.git.org | organization name created on gitea during install | no | ace 
+acebox.config.git.repo | repository name created on gitea during install | no | ace 
+acebox.config.activegate.download_location | overwrite where the oneagent will be downloaded, storing it inside /vagrant/* will speed up subsequent destroy and up commands as the AG does not have to be re-downloaded | no | not set
+
 #### Demo mode
 
 The below config.yml example will spin up an ace-box with all features in a demo mode (everything pre-configured).
@@ -86,131 +129,32 @@ dynatrace:
   paastoken:  ''
 acebox:
   specs:
-    cpu: 3                      # number of cpu vcores
-    mem: 8196                   # memory assignment in MB
-    priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
+    cpu: 3                      
+    mem: 8196                   
+    priv_ip: "192.168.50.10"    
     disk: "50GB"
   features:
-    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
+    mode: "demo"                
   config:
     microk8s:
       domain_ext: "nip.io"      
 ```
 
-#### Features
-
-The ace-box comes with a certain number of features that can be enabled and disabled at time of provisioning. Adding and removing features will impact resource consumption of the virtual machine and thus will impact host performance. Features are managed in the `acebox/features` block in the `config.yml` file. Below is an overview of features that can be added to `config.yml`:
-
-```
-  features:
-    oneagent: true              # install Dynatrace OneAgent, defaults to true
-    activegate:  false          # install Dynatrace ActiveGate for Private Synthetic, defaults to false
-    jenkins: true               # install Jenkins, defaults to true
-    jenkins_setcreds: false     # automatically set git and dynatrace credentials in Jenkins
-    gitea: true                 # install gitea local github (broken ATM), defaults to false
-    dashboard: true             # install ACE dashboard, defaults to false
-    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
-    keptn: false                # install keptn, defaults to false
-    gitlab: true                # install gitlab, defaults to false
-    activegatekube: true        # EXPERIMENTAL: install a kubernetes activegate, defaults to false
-```
-
 Setting `mode` to `demo` will overwrite the following:
-```
-  features:
-    oneagent: true              # install Dynatrace OneAgent, defaults to true
-    activegate:  true           # install Dynatrace ActiveGate for Private Synthetic, defaults to false
-    jenkins: true               # install Jenkins, defaults to true
-    gitea: true                 # install gitea local github (broken ATM), defaults to false
-    dashboard: true             # install ACE dashboard, defaults to false
-    mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
-    keptn: true                 # install keptn, defaults to false
-```
+Flag  | Description | Set to
+-------- | ------- | ------- |
+acebox.specs.features.activegate | Install Private Synthetic ActiveGate | true
+acebox.specs.features.activegatekube | EXPERIMENTAL: Deploy ActiveGate on Kubernetes | true
+acebox.specs.features.jenkins | Install Jenkins | true
+acebox.specs.features.gitea | Install Gitea local git server | true
+acebox.specs.features.dashboard | Install ACE dashboard | true
+acebox.specs.features.keptn | Install Keptn Quality Gates | true
+acebox.specs.features.gitlab | Install Gitlab | true
 
-Behavior can be verified in [initial.yml](microk8s/ansible/initial.yml)
-
-#### Config
-
-Additionally to controling the features that are enabled on the ace-box, it is also possible to overwrite the default configuration in the `acebox/config` section:
-```
-  config:
-    keptn:                                      # WARNING: when overwriting keptn services versions, make sure they are compatible with keptn base version!
-      version: "0.7.2"                          # overwrite keptn version
-      dynatrace_service_version: "0.7.1"        # overwrite keptn dynatrace service version
-      dynatrace_sli_service_version: "0.4.2"    # overwrite keptn dynatrace sli service version
-    jenkins:
-      helm_chart_version: "1.27.0"              # overwrite jenkins helm chart version
-      version: "lts"                            # overwrite jenkins version, defaults to lts
-      set_creds: true                           # placeholder for future
-      set_jenkinslib: true                      # placeholder for future
-      jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"  # url for ACE Jenkins library
-      keptn_lib_url: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"     # url for Jenkins Keptn library
-    microk8s:
-      domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
-      addons: "dns storage registry ingress "   # microk8s addons to enable, WARNING may break ace-box functionality
-    git:
-      version: "1.11.6"         # version of gitea to install, defaults to 1.11.6
-      user: "dynatrace"         # user that will be created to log in to gitea, defaults to "dynatrace"
-      password: "dynatrace"     # password for the user that will be automatically created, defaults to "dynatrace"
-      email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
-      org: "ace"                # org that will be created on gitea, defaults to "ace"
-      repo: "ace"               # repo that will be created on gitea, defaults to "hot-repo"
-    activegate:
-      download_location: "/vagrant/ansible/Dynatrace-ActiveGate-Linux-x86-latest.sh" # overwrite where the oneagent will be downloaded, storing it inside /vagrant/* will speed up subsequent destroy and up commands as the AG does not have to be re-downloaded
-```
-
-Behavior can be verified in [initial.yml](microk8s/ansible/initial.yml)
 
 #### Training mode
 
 Training mode can be used to have more control over the features and configuration of the ace-box. 
-
-```
-dynatrace:
-  tenant:     ''    # https://abc12345.live.dynatrace.com OR https://[managed-domain]/e/[environmentguid]
-  apitoken:   ''    # full scope
-  paastoken:  ''
-acebox:
-  specs:
-    cpu: 2                      # number of cpu vcores
-    mem: 8192                   # memory assignment in MB
-    priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
-    disk: "50GB"
-  features:
-    oneagent: true              # install Dynatrace OneAgent, defaults to true
-    activegate:  true            # install Dynatrace ActiveGate for Private Synthetic, defaults to false
-    jenkins: true               # install Jenkins, defaults to true
-    gitea: true                 # install gitea local github (broken ATM), defaults to false
-    dashboard: true             # install ACE dashboard, defaults to false
-    mode: "training"                # select mode for ace-box. choose between "training" (default) and "demo"
-    keptn: true                 # install keptn, defaults to false
-    gitlab: false
-    activegatekube:  false
-  config:
-    keptn:
-      version: "0.6.2"
-      dynatrace_service_version: "0.7.1"
-      dynatrace_sli_service_version: "0.4.2"
-    jenkins:
-      helm_chart_version: "1.27.0"
-      version: "lts"
-      set_creds: true
-      set_jenkinslib: true
-      jenkins_lib_url: "https://github.com/dynatrace-ace/ace-jenkins-extensions.git"
-      keptn_lib_url: "https://github.com/keptn-sandbox/keptn-jenkins-library.git"
-    microk8s:
-      domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
-      addons: "dns storage registry ingress "
-    git:
-      version: "1.11.6"         # version of gitea to install, defaults to 1.11.6
-      user: "dynatrace"         # user that will be created to log in to gitea, password is the same, defaults to "dynatrace"
-      password: "dynatrace"     # password for the user that will be automatically created, defaults to "dynatrace"
-      email: "ace@ace.ace"      # email assigned to user, for account creation purposes, defaults to "ace@ace.ace"
-      org: "ace"                # org that will be created on gitea, defaults to "ace"
-      repo: "ace"          # repo that will be created on gitea, defaults to "hot-repo"
-    activegate:
-      download_location: "/vagrant/ansible/Dynatrace-ActiveGate-Linux-x86-latest.sh" # overwrite where the oneagent will be downloaded, subsequent vagrant up can be sped up that way
-```
 
 ### Step 4 - Provision
 Run the following commands to bring up the virtual machine
