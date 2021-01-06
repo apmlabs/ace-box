@@ -54,7 +54,7 @@
   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
 
 - name: "Gitea - Add files to {{ git_repo }}"
-  shell: "cp -R /vagrant/repos/hot-repo/* /home/vagrant/{{ git_repo }}"
+  shell: "cp -r /vagrant/repos/hot-repo/. /home/vagrant/{{ git_repo }}"
 
 - name: "Gitea - Git add/commit for {{ git_repo }}"
   shell: "cd /home/vagrant/{{ git_repo }} && git add . && git commit -m \"Initial commit, enjoy\""
