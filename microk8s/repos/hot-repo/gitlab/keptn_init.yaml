@@ -3,8 +3,8 @@ keptn_init:
   image: registry.gitlab.com/checkelmann/cicd-tools:latest
   script: |
     # Log into keptn    
-    KEPTN_DOMAIN=$(kubectl get cm keptn-domain -n keptn -ojsonpath={.data.app_domain})
-    KEPTN_ENDPOINT=https://api.keptn.${KEPTN_DOMAIN}
+    KEPTN_DOMAIN=keptn.192.168.50.10.nip.io
+    KEPTN_ENDPOINT=http://${KEPTN_DOMAIN}/api
     KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 -d)
 
     echo $KEPTN_API_TOKEN
@@ -35,9 +35,11 @@ keptn_init:
     }"
 
     # echo -e "Upload SLO"
-    slob64=$(base64 ./keptn/slo.yaml | tr -d \\n)
+    slob64=$(base64 ./keptn/slo.yml | tr -d \\n)
 
-    curl -k --location --request POST "$KEPTN_ENDPOINT/v1/project/$KEPTN_PROJECT/stage/$KEPTN_STAGE/service/$KEPTN_SERVICE/resource" \
+    KEPTN_RESOURCE_URL="$KEPTN_ENDPOINT/configuration-service/v1/project/$KEPTN_PROJECT/stage/$KEPTN_STAGE/service/$KEPTN_SERVICE/resource"
+
+    curl -k --location --request POST "$KEPTN_RESOURCE_URL" \
     --header "x-token: $KEPTN_API_TOKEN" \
     --header 'Content-Type: application/json' \
     --data-raw "{
@@ -50,9 +52,9 @@ keptn_init:
     }"
 
     # echo -e "Upload SLI"
-    slib64=$(base64 ./keptn/sli.yaml | tr -d \\n)
+    slib64=$(base64 ./keptn/sli.yml | tr -d \\n)
 
-    curl -k --location --request POST "$KEPTN_ENDPOINT/v1/project/$KEPTN_PROJECT/stage/$KEPTN_STAGE/service/$KEPTN_SERVICE/resource" \
+    curl -k --location --request POST "$KEPTN_RESOURCE_URL" \
     --header "x-token: $KEPTN_API_TOKEN" \
     --header 'Content-Type: application/json' \
     --data-raw "{
@@ -67,7 +69,7 @@ keptn_init:
     # echo -e "Upload DT Config"
     conf64=$(base64 ./keptn/dynatrace.conf.yaml | tr -d \\n)
 
-    curl -k --location --request POST "$KEPTN_ENDPOINT/v1/project/$KEPTN_PROJECT/stage/$KEPTN_STAGE/service/$KEPTN_SERVICE/resource" \
+    curl -k --location --request POST "$KEPTN_RESOURCE_URL" \
     --header "x-token: $KEPTN_API_TOKEN" \
     --header 'Content-Type: application/json' \
     --data-raw "{

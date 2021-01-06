@@ -28,7 +28,7 @@ global:
         autoPause: true
   
     ## doc/installation/deployment.md#deploy-the-community-edition
-    edition: ee
+    edition: ce
   
     ## doc/charts/globals.md#gitlab-version
     # gitlabVersion: master
@@ -42,7 +42,7 @@ global:
     hosts:
       domain: "DOMAIN_PLACEHOLDER"
       https: false
-      #externalIP:
+      externalIP: 192.168.50.10
       #ssh: ~
       #gitlab: {}
       #minio: {}
@@ -379,7 +379,7 @@ global:
     ## Rails generic setting, applicable to all Rails-based containers
     rails:
       bootsnap: # Enable / disable Shopify/Bootsnap cache
-        enabled: true
+        enabled: false
   
     ## doc/charts/globals.md#configure-registry-settings
     registry:
@@ -511,22 +511,26 @@ global:
 runners:
   privileged: true
 prometheus:
-    install: false
+  install: false
 nginx-ingress:
-    enabled: false
+  enabled: false
 certmanager: 
-    install: false
+  install: false
+
 gitlab:
   webservice:
-    replicaCount: 1
+    minReplicas: 1
+    maxReplicas: 1
+  sidekiq:
+    minReplicas: 1
+    maxReplicas: 1
   gitlab-shell:
-    replicaCount: 1
+    minReplicas: 1
+    maxReplicas: 1
 registry:
   hpa:
     minReplicas: 1
-    maxReplicas: 2
-    cpu:
-      targetAverageUtilization: 75
+    maxReplicas: 1
 gitlab-runner:
   runners:
     image: ubuntu:18.04

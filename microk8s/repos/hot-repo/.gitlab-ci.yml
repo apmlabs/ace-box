@@ -25,7 +25,7 @@ deployment:
   stage: deploy # must match the stage name declared above
   script:
     # create/update the kubernetes resources
-    - kubectl apply -f manifest.yml
+    - kubectl apply -f gitlab/manifest.yml
     # Restart the deployment so as to pull the latest version of the container image
     - kubectl -n simplenode-gitlab rollout restart deployment/simplenodeservice
   environment:
@@ -35,6 +35,8 @@ generate-load:
   stage: test   
   environment:
     name: test
+  variables: 
+    ENDPOINT: simplenode.simplenode-gitlab.192.168.50.10.nip.io
 
 keptn_evaluation:
   stage: eval

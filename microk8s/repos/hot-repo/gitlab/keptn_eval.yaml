@@ -2,13 +2,14 @@ keptn_evaluation:
   stage: verify
   image: registry.gitlab.com/checkelmann/cicd-tools:latest
   script: |
-    KEPTN_DOMAIN=$(kubectl get cm keptn-domain -n keptn -ojsonpath={.data.app_domain})
-    KEPTN_ENDPOINT=https://api.keptn.${KEPTN_DOMAIN}
+    KEPTN_DOMAIN=keptn.192.168.50.10.nip.io
+    KEPTN_ENDPOINT=http://${KEPTN_DOMAIN}/api
     KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 -d)
-    KEPTN_BRIDGE=https://bridge.keptn.${KEPTN_DOMAIN}
+    KEPTN_BRIDGE=http://${KEPTN_DOMAIN}/bridge
 
     echo $KEPTN_API_TOKEN
     echo $KEPTN_ENDPOINT
+    echo $KEPTN_BRIDGE
 
     #cat ${CI_ENVIRONMENT_NAME}_teststart.txt
     #cat ${CI_ENVIRONMENT_NAME}_testend.txt
