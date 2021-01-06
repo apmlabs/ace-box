@@ -1,0 +1,25 @@
+- set_fact:
+    dynatrace_tenant_nohttps: "{{ dynatrace_tenant_url | regex_replace('https://', '') }}"
+
+- set_fact:
+    tenant_login: "{{ dynatrace_tenant_nohttps | regex_search(qry) }}"
+  vars:
+    qry: '([^.]+)'
+
+- debug: var=tenant_login
+
+- name: Dynatrace Activegate Kubernetes - Set placeholders
+  shell: >
+    sed 
+    -e "s|REGISTRY_PLACEHOLDER|{{ dynatrace_tenant_nohttps }}|"  
+    /vagrant/k8s/dtactivegate_kubernetes.yml > /vagrant/k8s/dtactivegate_kubernetes_gen.yml
+
+# - name: Dynatrace Activegate Kubernetes - Login to tenant
+#   become_user: vagrant
+#   shell: "docker login -u {{ tenant_login }} -p {{ dynatrace_paas_token }} {{ dynatrace_tenant_url }}"
+
+- name: "Dynatrace Activegate Kubernetes - Create secret"
+  shell: "/snap/bin/microk8s.kubectl -n dynatrace create secret docker-registry dt-environment-registry --docker-server={{ dynatrace_tenant_nohttps }} --docker-username={{ tenant_login }} --docker-password={{ dynatrace_paas_token }}"
+
+- name: "Dynatrace Activegate Kubernetes - Deploy"
+  shell: "/snap/bin/microk8s.kubectl apply -f /vagrant/k8s/dtactivegate_kubernetes_gen.yml"
