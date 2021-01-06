@@ -7,6 +7,7 @@
     -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
+    -e "s|GITLAB_ROOT_PASSWORD_PLACEHOLDER|{{ gitlab_root_password | default('N/A') }}|g" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"
