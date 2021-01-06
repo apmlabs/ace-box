@@ -45,9 +45,6 @@ To run the ace-box, the following is required:
 - virtualbox installed (6.1.x tested)
 - vagrant installed (2.2.7 tested)
 - Dynatrace tenant (prod or sprint, dev not recommended)
-- github account
-  - a designated organization that you will use to fork a repository. The organization name will have to be added to the configuration file lateron 
-  - a personal access token. Check [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) for more info
 - Hyper-V disabled on Windows machines, check [Troubleshooting](#troubleshooting) for more information
 
 ## Spinning up the ace-box
