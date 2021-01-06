@@ -4,6 +4,7 @@ The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can us
 
 Vagrant is used for spinning up the VM, Ansible is used for setting up the various components.
 - [Welcome to the ACE-BOX](#welcome-to-the-ace-box)
+  - [Release notes](#release-notes)
   - [Components](#components)
   - [Prerequisites](#prerequisites)
   - [Spinning up the ace-box](#spinning-up-the-ace-box)
@@ -21,6 +22,9 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
   - [Behind the scenes](#behind-the-scenes)
   - [Triggering a pipeline run](#triggering-a-pipeline-run)
 
+
+## Release notes
+Please check [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 ## Components
 ACE-BOX comes with the following components
