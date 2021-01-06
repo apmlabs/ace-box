@@ -1,0 +1,7 @@
+config: 
+    - acebox: "kubernetes.json"
+  
+acebox:
+    - name: "ACE-BOX"
+    - endpointUrl: "https://192.168.50.10:16443"
+    - authToken: "{{ .Env.KUBE_BEARER_TOKEN }}"
