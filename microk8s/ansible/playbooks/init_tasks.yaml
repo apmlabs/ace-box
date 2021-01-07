@@ -6,11 +6,12 @@
     vars:
       packages:
       - snapd
-      - cloud-utils
+      # - cloud-utils # not needed?
       - parted
       - docker.io
       - ansible
       - python-jmespath
+      - ntp
 
   - name: Disable swap and resize disk
     become: true
