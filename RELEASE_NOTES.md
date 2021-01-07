@@ -15,3 +15,5 @@ A new feature is the ability to deploy an ActiveGate using a container image and
 By default, simplenodeservice, deployed using jenkins or gitlab, requested a fair bit of resources from kubernetes. This has now been drastically reduced to ensure that no pods end up in a Pending state
 #### Update monaco to OSS
 All references to "mac" have been removed and ace-box is now using the official OSS version of Monaco
+#### Added ntp package
+To fix a time drift issue due to either the host being hibernated and sometimes due to high VM CPU usage, ntp package was installed
