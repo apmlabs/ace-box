@@ -12,6 +12,7 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
     - [Step 2 - change directory to microk8s](#step-2---change-directory-to-microk8s)
     - [Step 3 - create a config file](#step-3---create-a-config-file)
       - [config.yml settings](#configyml-settings)
+      - [Resource Requirements](#resource-requirements)
       - [Demo mode](#demo-mode)
       - [Training mode](#training-mode)
     - [Step 4 - Provision](#step-4---provision)
@@ -106,6 +107,18 @@ acebox.config.git.email | email address assigned to gitea user for account creat
 acebox.config.git.org | organization name created on gitea during install | no | ace 
 acebox.config.git.repo | repository name created on gitea during install | no | ace 
 acebox.config.activegate.download_location | overwrite where the oneagent will be downloaded, storing it inside /vagrant/* will speed up subsequent destroy and up commands as the AG does not have to be re-downloaded | no | not set
+
+#### Resource Requirements
+Each feature requires a certain amount of resources - on top of the base microk8s requirements.
+The resource requirements below are measured using Dynatrace's Kubernetes monitoring
+Feature  | Kubernetes Resource Usage | 
+-------- | ------- |
+GitLab | 11 mCores, 2GB RAM
+Jenkins | 1mCore, 1GB RAM
+Gitea | 2 mCores, 250MB RAM
+
+
+
 
 #### Demo mode
 
