@@ -27,7 +27,7 @@ deployment:
     # create/update the kubernetes resources
     - kubectl apply -f gitlab/manifest.yml
     # Restart the deployment so as to pull the latest version of the container image
-    - kubectl -n simplenode-gitlab rollout restart deployment/simplenodeservice
+    - kubectl -n simplenode-gitlab-staging rollout restart deployment/simplenodeservice
   environment:
     name: test
 

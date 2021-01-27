@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: simplenode-gitlab
+  name: simplenode-gitlab-staging
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -10,7 +10,7 @@ metadata:
   name: simplenodeservice
   labels:
     app: simplenodeservice
-  namespace: simplenode-gitlab
+  namespace: simplenode-gitlab-staging
 spec:
   replicas: 1
   selector:
@@ -26,7 +26,7 @@ spec:
       - name: simplenodeservice
         image: grabnerandi/simplenodeservice:1.0.0
         env:
-        - name: DT_TAGS
+        - name: DT_CUSTOM_PROP
           value: "keptn_project=simplenode-gitlab keptn_service=simplenodeservice keptn_stage=staging"
         resources:
           limits:
@@ -83,10 +83,10 @@ metadata:
   labels:
     app: simplenodeservice
   name: simplenodeservice
-  namespace: simplenode-gitlab
+  namespace: simplenode-gitlab-staging
 spec:
   rules:
-  - host: simplenode.simplenode-gitlab.192.168.50.10.nip.io
+  - host: simplenode.simplenode-gitlab-staging.192.168.50.10.nip.io
     http:
       paths:
       - backend:
