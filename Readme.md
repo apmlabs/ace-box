@@ -2,8 +2,11 @@
 
 The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can use as a portable sandbox, demo and testing environment. The key is that it is spun up on demand on your local workstation, without the need of an expensive cloud provider. 
 
+## Check out [Troubleshooting](#troubleshooting) before reaching out!
+
 Vagrant is used for spinning up the VM, Ansible is used for setting up the various components.
 - [Welcome to the ACE-BOX](#welcome-to-the-ace-box)
+  - [Check out Troubleshooting before reaching out!](#check-out-troubleshooting-before-reaching-out)
   - [Release notes](#release-notes)
   - [Components](#components)
   - [Prerequisites](#prerequisites)
@@ -172,8 +175,8 @@ Training mode can be used to have more control over the features and configurati
 
 ### Step 4 - Provision
 Run the following commands to bring up the virtual machine
-```
-$ vagrant up
+```shell
+vagrant up
 ```
 
 Check [Behind the scenes](#behind-the-scenes) for more detail about what happens now
@@ -185,13 +188,18 @@ Check [Behind the scenes](#behind-the-scenes) for more detail about what happens
 **Note:** Windows users will be asked to confirm security notifications a couple of times during the provisioning process, so keep an eye out for them.
 
 ### Troubleshooting
-1. During testing it was found that when spinning up the VM while being connected to the corporate VPN it would sometimes have connectivity issues. It is best to disconnect from the VPN while provisioning. This will also drastically speed up the provision process
+1. During testing it was found that when spinning up the VM while being connected to the corporate VPN it would sometimes have connectivity issues. It is best to disconnect from the VPN while provisioning. This will also drastically speed up the provision process. VPN issues manifests themselves mainly in Jenkins being empty (no pipelines or plugins installed) after provisioning. If you have this, turn off VPN and re-provision.
 2. Some users had issues with (old) customer vpn software that was installed - not even connected -  causing issues with the virtual network adaptors. If you are having issues provisioning the VM, uninstall them when possible
 3. If you are using a Windows workstation, ensure that Hyper-V native virtualization has been disabled as it clashes with virtualbox. Hyper-V support is on the roadmap. Check this [doc](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v) on how to disable Hyper-V
 4. If at any given time the provisioning fails, it is best to execute a `vagrant destroy` followed by a `vagrant up`
 5. During testing there were some cases where Jenkins plugins refused to install while provisioning which renders the installation useless for the other usecases. In that case, it is best to execute a `vagrant destroy` followed by a `vagrant up`
 6. On Windows machines the following error might occur `Stderr: VBoxManage.exe: error: Failed to open/create the internal network 'HostInterfaceNetworking-VirtualBox Host-Only Ethernet Adapter #2' (VERR_INTNET_FLT_IF_NOT_FOUND)`. It was found that disabling and enabling the network adaptor solved the issue
 7. On Windows machines it might be that a `vagrant ssh` `gives vagrant@127.0.0.1: Permission denied (publickey,gssapi-keyex,gssapi-with-mic)` or similar. A common cause is that a privatekey file has too many people with access. This was seen when the repo was cloned in a subfolder of the C drive on Dynatrace laptops. It is suggested to use a subfolder of your home directory.
+8. Your DNS settings might hinder the provisioning of the ace-box as the name does not resolve. It mainly manifests itself when it is waiting for gitea to be up. If you get a message like the below, you are most likely affected. The best way to go around it, is by changing the DNS settings on your network adaptor and point to for example the google DNS servers (8.8.8.8 and 8.8.4.4). A quick google search should tell you how to do that for your particular OS.
+    ```
+    FAILED - RETRYING: Gitea - Wait for API to be up (1 retries left).
+    fatal: [ace-box]: FAILED! => {"attempts": 60, "changed": false, "content": "", "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>", "redirected": false, "status": -1, "url": "http://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=1c8d4fcef25b3ae2a15d17d29be64c2c7aa22501"}
+    ```
 
 ## Accessing ace-box dashboard
 At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.
