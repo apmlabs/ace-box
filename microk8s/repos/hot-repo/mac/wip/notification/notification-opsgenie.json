@@ -1,8 +1,0 @@
-{
-    "type": "OPS_GENIE",
-    "name": "{{ .name }}",
-    "alertingProfile": "{{ .alertingProfile }}",
-    "active": true,
-    "domain": "api.opsgenie.com",
-    "message": "{{ .message }}"
-}

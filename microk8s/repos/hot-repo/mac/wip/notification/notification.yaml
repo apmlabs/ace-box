@@ -1,7 +1,0 @@
-config:
-    - emergencies-devops: "notification-opsgenie.json"
-  
-  emergencies-devops:
-    - name: "Cl:Emergencies > DevOps"
-    - alertingProfile: "ace/alerting-profile/emergencies-devops.id"
-    - message: "{ProblemID} {ProblemTitle}"
