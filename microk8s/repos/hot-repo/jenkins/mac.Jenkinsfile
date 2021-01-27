@@ -1,4 +1,4 @@
-ENVS_FILE = "mac/tenants.yaml"
+ENVS_FILE = "mac/environments.yaml"
 
 pipeline {
     agent {
@@ -19,6 +19,7 @@ pipeline {
                 container('ace') {
                     script {
 				        sh "monaco -v -e=$ENVS_FILE -p=infrastructure mac/projects"
+                        sh "sleep 60"
                     }
                 }
 			}
