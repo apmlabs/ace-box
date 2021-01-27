@@ -19,3 +19,9 @@ microk8s/ansible/kubeconfig
 
 Dynatrace-ActiveGate-Linux-x86-latest.sh
 self-monitoring-*
+
+#share folder between VM and host
+microk8s/share
+
+#any .log folder
+*/.log/
