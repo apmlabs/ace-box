@@ -76,8 +76,8 @@
     -e "s|GIT_DOMAIN_PLACEHOLDER|{{ gitea_domain }}|" 
     -e "s|ACE_LIB_PLACEHOLDER|{{ jenkins_ace_lib_url }}|" 
     -e "s|KEPTN_LIB_PLACEHOLDER|{{ jenkins_keptn_lib_url }}|"
-    -e "s|SYNTH_NODE_ID_PLACEHOLDER|{{ dt_node_id }}|"  
-    -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER|{{ kube_bearer_token }}|"  
+    -e "s|SYNTH_NODE_ID_PLACEHOLDER|{{ dt_node_id | default('') }}|"  
+    -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER|{{ kube_bearer_token | default('')}}|"  
     /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: acebox_mode == 'demo'
 
