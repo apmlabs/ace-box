@@ -76,3 +76,18 @@
 
 - name: "Gitea - Git push for docs"
   shell: "cd /home/vagrant/docs && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 
+
+- name: "Gitea - Create repo monaco"
+  shell: "curl -k -d '{\"name\":\"monaco\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
+
+- name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco"
+  shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco" 
+
+- name: "Gitea - Add files to monaco"
+  shell: "cp -R /vagrant/repos/monaco/* /home/vagrant/monaco"
+
+- name: "Gitea - Git add/commit for monaco"
+  shell: "cd /home/vagrant/monaco && git add . && git commit -m \"Initial commit, enjoy\""
+
+- name: "Gitea - Git push for monaco"
+  shell: "cd /home/vagrant/monaco && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco" 
