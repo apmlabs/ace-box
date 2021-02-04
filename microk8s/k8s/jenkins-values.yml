@@ -59,23 +59,25 @@ master:
       proxyCompatability: true
   installPlugins:
     - command-launcher:1.5
-    - kubernetes:1.28.5
+    - kubernetes:1.28.7
     - kubernetes-credentials-provider:0.15
     - workflow-job:2.40
     - workflow-aggregator:2.6
     - credentials-binding:1.24
     - git:4.5.2
-    - google-oauth-plugin:1.0.2
+    - google-oauth-plugin:1.0.3
     - google-source-plugin:0.4
     - performance:3.18
-    - github-branch-source:2.9.3
+    - github-branch-source:2.9.4
     - job-dsl:1.77
     - pipeline-build-step:2.13
-    - docker-plugin:1.2.1
-    - blueocean:1.24.3
-    - configuration-as-code:1.46
+    - docker-plugin:1.2.2
+    - blueocean:1.24.4
+    - configuration-as-code:1.47
     - http_request:1.8.27
     - pipeline-utility-steps:2.6.1
+    - ansible:1.1
+    - gitea:1.2.1
   JCasC:
     enabled: true
     defaultConfig: false
@@ -375,6 +377,23 @@ master:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
                     mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"
+              - containers:
+                - alwaysPullImage: false
+                  args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceace/monaco-runner:release-v1.2.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "monaco"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "monaco-runner"
+                name: "monaco-runner"
                 yamlMergeStrategy: "override"
               - containers:
                 - args: "cat"
