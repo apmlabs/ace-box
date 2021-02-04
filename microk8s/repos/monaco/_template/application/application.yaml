@@ -1,0 +1,5 @@
+config:
+    - app: "application.json"
+  
+app:
+    - name: "APPLICATION_NAME_PLACEHOLDER"
