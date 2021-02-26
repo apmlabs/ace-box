@@ -534,7 +534,9 @@ master:
                       - "gitBranchDiscovery"
         jobs:
           - script: >
-              pipelineJob('1. Build') {
+              folder('ace-demo')
+          - script: >
+              pipelineJob('ace-demo/1. Build') {
                 parameters {
                   choiceParam('BUILD', ['1','2','3','4'], 'Select the build you want to deploy (affects application behavior, github.com/grabnerandi/simplenodeservice for more details)')
                 }
@@ -554,7 +556,7 @@ master:
                 }
               }
           - script: >
-              pipelineJob('2. Deploy') {
+              pipelineJob('ace-demo/2. Deploy') {
                 parameters {
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
                   stringParam('TAG_STAGING', '', 'The image of the service to deploy.')
@@ -576,7 +578,7 @@ master:
                 }
               }
           - script: >
-              pipelineJob('3. Test') {
+              pipelineJob('ace-demo/3. Test') {
                 parameters {
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
                 }
@@ -596,7 +598,7 @@ master:
                 }
               }
           - script: >
-              pipelineJob('4. Deploy production') {
+              pipelineJob('ace-demo/4. Deploy production') {
                 parameters {
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
                   stringParam('TAG_STAGING', '', 'The image of the service to deploy.')
@@ -618,7 +620,7 @@ master:
                 }
               }
           - script: >
-              pipelineJob('Monitoring as Code') {
+              pipelineJob('ace-demo/Monitoring as Code') {
                 definition {
                   cpsScm {
                     scriptPath('jenkins/mac.Jenkinsfile')
@@ -635,7 +637,9 @@ master:
                 }
               }
           - script: >
-              pipelineJob('Monaco - Application Onboarding') {
+              folder('monaco-gitops-demo')
+          - script: >
+              pipelineJob('monaco-gitops-demo/Monaco - Application Onboarding') {
                 parameters {
                   stringParam('MON_PROJECT_NAME', '', 'The name of the Monaco project to onboard.')
                   stringParam('MON_APP_NAME', 'simplenodeservice', 'The name of the application to onboard.')

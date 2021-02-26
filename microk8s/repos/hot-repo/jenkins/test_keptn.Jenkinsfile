@@ -94,7 +94,7 @@ pipeline {
                 }
             }
             steps {
-                build job: "4. Deploy production",
+                build job: "ace-demo/4. Deploy production",
                     wait: false,
                     parameters: [
                         string(name: 'APP_NAME', value: "${env.APP_NAME}")
