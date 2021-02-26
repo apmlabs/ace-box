@@ -3,11 +3,24 @@ pipeline {
 		label 'kubectl'
 	}
   stages {
-    stage('Set up Kubernetes') {
+    stage('Create namespaces') {
       steps {
         container('kubectl') {
           sh "kubectl apply -f env/namespaces.yaml"
+        }
+      }
+    }
+    stage('Create pvc') {
+      steps {
+        container('kubectl') {
           sh "kubectl apply -f env/maven-pvc.yaml"
+        }
+      }
+    }
+    stage('Deploy carts-db') {
+      steps {
+        container('kubectl') {
+          sh "kubectl apply -f manifest/carts-db.yml"
         }
       }
     }

@@ -1,4 +1,4 @@
-@Library('dynatrace@v1.0') _
+@Library('ace@v1.0') _
 
 def tagMatchRules = [
   [
@@ -163,7 +163,7 @@ pipeline {
         }
       }
       steps {
-        build job: "k8s-deploy-staging",
+        build job: "quality-gates-hot/k8s-deploy-staging",
           parameters: [
             string(name: 'APP_NAME', value: "${env.APP_NAME}"),
             string(name: 'TAG_STAGING', value: "${env.TAG_STAGING}"),
