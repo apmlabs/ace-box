@@ -382,7 +382,7 @@ master:
                 - alwaysPullImage: false
                   args: "cat"
                   command: "/bin/sh -c"
-                  image: "dynatraceace/monaco-runner:release-v1.2.0"
+                  image: "dynatraceace/monaco-runner:release-v1.4.0"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
