@@ -20,3 +20,12 @@
 - name: "Dynatrace Operator 2 - Install"
   shell:
     cmd: sh /home/vagrant/install.sh --api-url "{{ dynatrace['tenant'] }}/api" --api-token "{{ dynatrace['apitoken'] }}" --paas-token "{{ dynatrace['paastoken'] }}" --enable-app-log-access --skip-ssl-verification --enable-k8s-monitoring 
+
+- name: "Dynatrace Operator 3 - Get bearer token " 
+  shell: "/snap/bin/microk8s.kubectl get secret $(kubectl get sa dynatrace-kubernetes-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.token}' -n dynatrace | base64 --decode"
+  register: token_raw
+
+- set_fact:
+    kube_bearer_token: "{{  token_raw.stdout }}"
+
+- debug: var=kube_bearer_token
