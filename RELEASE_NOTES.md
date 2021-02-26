@@ -1,6 +1,6 @@
 # ACE-BOX Release notes
 
-## v1.5 - February 2021
+## v1.6 - February 2021
 ### New features
 #### Move to Dynatrace Operator
 The OneAgent Operator was replaced with the Dynatrace Operator that will also install kubernetes monitoring on microk8s.
