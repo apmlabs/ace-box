@@ -1,9 +1,12 @@
 ---
-- hosts: all
+- hosts: localhost,ace-box
   become: true
   vars_files:
-  - ../config.yml
-  vars:
+    - ../config.yml
+  vars:     
+    non_root_user:                    "{{ non_root_user | default('vagrant')}}"
+    public_ip:                        "{{ public_ip }}"
+    acebox_provisioner:               "{{ acebox_provisioner | default('vagrant')}}"
     acebox_mode:                      "{{ acebox['features']['mode'] | default('training') }}"
     feature_activegate:               "{{ acebox['features']['activegate'] | default(false) }}"
     feature_oneagent:                 "{{ acebox['features']['oneagent'] | default(true) }}"
@@ -28,15 +31,34 @@
     keptn_jmeter_ext_service_version:     "{{ acebox['config']['keptn']['dynatrace_jmeter_ext_service_version'] | default('0.2.0')}}"
     microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns storage registry ingress ') }}"
     microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('nip.io') }}"
-    ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
-    git_user:                   "{{ acebox['config']['git']['user'] | default('dynatrace') }}"
-    git_password:               "{{ acebox['config']['git']['password'] | default('dynatrace') }}"
-    git_email:                  "{{ acebox['config']['git']['email'] | default('ace@ace.ace') }}"
-    git_org:                    "{{ acebox['config']['git']['org'] | default('ace') }}"
-    git_repo:                   "{{ acebox['config']['git']['repo'] | default('ace') }}"
-    gitea_version:               "{{ acebox['config']['git']['version'] | default('1.11.6') }}"
+    #ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
+    # git_user:                   "{{ acebox['config']['git']['user'] | default('dynatrace') }}"
+    # git_password:               "{{ acebox['config']['git']['password'] | default('dynatrace') }}"
+    # git_email:                  "{{ acebox['config']['git']['email'] | default('ace@ace.ace') }}"
+    # git_org:                    "{{ acebox['config']['git']['org'] | default('ace') }}"
+    # git_repo:                   "{{ acebox['config']['git']['repo'] | default('ace') }}"
+    git_user:                   "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).user | default('dynatrace') }}"
+    git_password:               "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).password | default('dynatrace') }}"
+    git_email:                  "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).email | default('ace@ace.ace') }}"
+    git_org:                    "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).org | default('ace') }}"
+    git_repo:                   "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).repo | default('ace') }}"
+    #gitea_version:               "{{ acebox.config.git.version | default('1.11.6') }}"
+    gitea_version:               "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).version |default('1.13.2') }}"
+    #gitea_version:               "{{ acebox|json_query('config.git.version') | default('1.11.6') }}"
     activegate_download_location: "{{ acebox['config']['activegate']['download_location'] | default('/tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh') }}"
   tasks:
+  - name: Set Ingress Domain - Vagrant
+    set_fact:
+      ingress_domain: "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
+    when: acebox_provisioner == "vagrant"
+
+  - name: Set Ingress Domain - Terraform
+    set_fact:
+      ingress_domain: "{{ public_ip }}.{{ microk8s_domain_ext }}"
+    when: acebox_provisioner == "terraform"
+
+  - debug: var=ingress_domain
+
   - name: Init install tasks
     include_tasks: playbooks/init_tasks.yaml
 
@@ -47,10 +69,6 @@
     include_tasks: playbooks/dtactivegate_tasks.yaml
     when: feature_activegate or acebox_mode == "demo"
   
-  # - name: Configure Dynatrace tenant
-  #   include_tasks: playbooks/dynatrace_config_tasks.yaml
-  #   when: acebox_mode == "demo"
-
   - name: Install and configure helm
     include_tasks: playbooks/helm.yaml
   
@@ -58,13 +76,9 @@
     include_tasks: playbooks/dtoneagent_tasks.yaml
     when: feature_oneagent or acebox_mode == "demo"
 
-  #- name: Install and configure Dynatrace ActiveGate on Kubernetes
-  #  include_tasks: playbooks/dtactivegate_kubernetes_tasks.yaml
-  #  when: feature_activegatekube
-  
   - name: Install and configure cert-manager
     include_tasks: playbooks/cert_manager_tasks.yaml
-    when: feature_cert_manager
+    when: feature_cert_manager or acebox_provisioner == "terraform"
   
   - name: Install and configure Gitlab
     include_tasks: playbooks/gitlab_tasks.yaml

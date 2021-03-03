@@ -13,13 +13,13 @@
 - name: "Dynatrace Operator 1 - Download"
   get_url:
     url: "https://github.com/dynatrace/dynatrace-operator/releases/latest/download/install.sh"
-    dest: "/home/vagrant/install.sh"
+    dest: "/home/{{ non_root_user }}/install.sh"
     mode: +x
     timeout: 300
 
 - name: "Dynatrace Operator 2 - Install"
   shell:
-    cmd: sh /home/vagrant/install.sh --api-url "{{ dynatrace['tenant'] }}/api" --api-token "{{ dynatrace['apitoken'] }}" --paas-token "{{ dynatrace['paastoken'] }}" --enable-app-log-access --skip-ssl-verification --enable-k8s-monitoring 
+    cmd: "sh /home/{{ non_root_user }}/install.sh --api-url {{ dynatrace['tenant'] }}/api --api-token {{ dynatrace['apitoken'] }} --paas-token {{ dynatrace['paastoken'] }} --enable-app-log-access --skip-ssl-verification --enable-k8s-monitoring" 
 
 - name: "Dynatrace Operator 3 - Get bearer token " 
   shell: "/snap/bin/microk8s.kubectl get secret $(kubectl get sa dynatrace-kubernetes-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.token}' -n dynatrace | base64 --decode"

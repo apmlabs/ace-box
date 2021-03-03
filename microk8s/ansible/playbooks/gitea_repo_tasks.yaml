@@ -10,21 +10,21 @@
   when: org_result.status != 200
 
 - name: "Gitea - Create repo {{ gitea_org }}/{{ gitea_repo }}"
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: "curl -k -d '{\"name\":\"{{ gitea_repo }}\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ gitea_org }}/repos?access_token={{ gitea_access_token }}\""
 
 - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}"
-  become_user: vagrant
-  shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}" 
+  become_user: "{{ non_root_user }}"
+  shell: "cd /home/{{ non_root_user }} && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}" 
 
 - name: "Gitea - Add files to {{ gitea_org }}/{{ gitea_repo }}"
-  become_user: vagrant
-  shell: "cp -R /vagrant/repos/{{ gitea_source_folder }}/* /home/vagrant/{{ gitea_repo }}"
+  become_user: "{{ non_root_user }}"
+  shell: "cp -R /vagrant/repos/{{ gitea_source_folder }}/* /home/{{ non_root_user }}/{{ gitea_repo }}"
 
 - name: "Gitea - Git add/commit for {{ gitea_org }}/{{ gitea_repo }}"
-  become_user: vagrant
-  shell: "cd /home/vagrant/{{ gitea_repo }} && git add . && git commit -m \"Initial commit, enjoy\""
+  become_user: "{{ non_root_user }}"
+  shell: "cd /home/{{ non_root_user }}/{{ gitea_repo }} && git add . && git commit -m \"Initial commit, enjoy\""
 
 - name: "Gitea - Git push for {{ gitea_org }}/{{ gitea_repo }}"
-  become_user: vagrant
-  shell: "cd /home/vagrant/{{ gitea_repo }} && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}" 
+  become_user: "{{ non_root_user }}"
+  shell: "cd /home/{{ non_root_user }}/{{ gitea_repo }} && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}" 

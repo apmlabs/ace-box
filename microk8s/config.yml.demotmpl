@@ -4,12 +4,16 @@ dynatrace:
   paastoken:  ''
 acebox:
   specs:
-    cpu: 3                      # number of cpu vcores
-    mem: 8196                   # memory assignment in MB
-    priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
-    disk: "50GB"
+    cpu: 5                      # number of cpu vcores - only for local (vagrant) deployments
+    mem: 12288                  # memory assignment in MB - only for local (vagrant) deployments
+    priv_ip: "192.168.50.10"    # private IP - only for local (vagrant) deployments
+    disk: "50GB"                # disk size - only for local (vagrant) deployments
   features:
     mode: "demo"                # select mode for ace-box. choose between "training" (default) and "demo"
   config:
+    git:
+    keptn:
+    jenkins:
+    activegate:
     microk8s:
-      domain_ext: "nip.io"      
+      domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues

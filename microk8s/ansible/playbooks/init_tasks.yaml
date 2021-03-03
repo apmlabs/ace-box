@@ -23,9 +23,9 @@
     become: true
     command: snap install core
 
-  - name: Add vagrant to docker group
+  - name: "Add {{ non_root_user }} to docker group"
     become: true
-    command: usermod -a -G docker vagrant
+    command: "usermod -a -G docker {{ non_root_user }}"
   
   - name: Chmod 777 to docker socker
     become: true

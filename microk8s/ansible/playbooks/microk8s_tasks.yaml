@@ -4,9 +4,9 @@
   args:
     creates: /snap/bin/microk8s.kubectl
   
-- name: Microk8s - Add vagrant to microk8s group
+- name: "Microk8s - Add {{ non_root_user }} to microk8s group"
   become: true
-  command: usermod -a -G microk8s vagrant
+  command: "usermod -a -G microk8s {{ non_root_user }}"
 
 - name: Microk8s - Allow Priviledged
   become: true

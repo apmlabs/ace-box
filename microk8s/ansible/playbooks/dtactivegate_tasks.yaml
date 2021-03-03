@@ -5,12 +5,11 @@
 
 - name: ActiveGate - Download ActiveGate installer
   get_url:
-    url: "{{ dynatrace['tenant'] }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default"
+    url: "{{ dynatrace_tenant_url }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default"
     dest: "{{ activegate_download_location }}"
     mode: +x
     timeout: 300
-    headers:
-      Authorization: "Api-token {{ dynatrace['paastoken'] }}"
+    headers: "Authorization: Api-token {{ dynatrace_paas_token }}"
   when: not ag_available.stat.exists
 
 - name: ActiveGate - Install synthetic-enabled ActiveGate

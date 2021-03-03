@@ -1,10 +1,13 @@
 
 - name: Gitea - Add helm repo
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm repo add k8s-land https://charts.k8s.land
 
 - set_fact:
     gitea_domain: "gitea.{{ ingress_domain }}"
+
+- debug: var=gitea_domain
+- debug: var=gitea_version
 
 - name: Gitea - Set placeholders
   shell: >
@@ -14,7 +17,7 @@
     /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
 
 - name: Gitea - Install gitea using helm
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm install gitea k8s-land/gitea -f /vagrant/k8s/gitea-values-gen.yml --namespace ace
   ignore_errors: yes
 
@@ -38,7 +41,7 @@
     validate_certs: no
   register: result
   until: result.status == 200
-  retries: 60
+  retries: 120
   delay: 1
 
 #- name: "Gitea - Create org {{ git_org }}"
@@ -51,7 +54,7 @@
   shell: "git config --global user.email \"{{ git_email }}\" && git config --global user.name \"{{ git_user }}\" && git config --global http.sslverify false"
 
 - name: "Gitea - Git config"
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: "git config --global user.email \"{{ git_email }}\" && git config --global user.name \"{{ git_user }}\" && git config --global http.sslverify false"
 
 - name: Gitea - Configure repo

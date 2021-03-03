@@ -18,10 +18,10 @@
   shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/helm-charts/dashboard/values.yaml > /vagrant/helm-charts/dashboard/values-gen.yaml
 
 - name: Build ace dashboard
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: docker build -t localhost:32000/dashboard /vagrant/docker/dashboard && docker push localhost:32000/dashboard
 
 - name: Run ace dashboard
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm upgrade -i ace-dashboard /vagrant/helm-charts/dashboard -f /vagrant/helm-charts/dashboard/values-gen.yaml --namespace ace
   ignore_errors: yes    

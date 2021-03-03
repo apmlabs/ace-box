@@ -10,6 +10,7 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
   - [Release notes](#release-notes)
   - [Components](#components)
   - [Prerequisites](#prerequisites)
+  - [Cloud Version](#cloud-version)
   - [Spinning up the ace-box](#spinning-up-the-ace-box)
     - [Step 1 - Clone the ace-box repository](#step-1---clone-the-ace-box-repository)
     - [Step 2 - change directory to microk8s](#step-2---change-directory-to-microk8s)
@@ -45,11 +46,14 @@ ACE-BOX comes with the following components
 
 ## Prerequisites
 To run the ace-box, the following is required:
-- a workstation with at least **16GB of RAM** and **2 CPU cores (non-virtualized)**
+- a workstation with at least **16GB of RAM** and **4 CPU cores (non-virtualized)**
 - virtualbox installed (6.1.x tested)
 - vagrant installed (2.2.7 tested)
 - Dynatrace tenant (prod or sprint, dev not recommended)
 - Hyper-V disabled on Windows machines, check [Troubleshooting](#troubleshooting) for more information
+
+## Cloud Version
+In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](micork8s/../microk8s/terraform/Readme.md) for more details. Currently GCP is supported.
 
 ## Spinning up the ace-box
 

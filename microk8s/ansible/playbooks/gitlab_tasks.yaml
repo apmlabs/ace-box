@@ -1,5 +1,5 @@
 - name: Gitlab - Add helm repo
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm repo add gitlab https://charts.gitlab.io/ && helm repo update
 
 - set_fact:
@@ -12,7 +12,7 @@
     /vagrant/k8s/gitlab-values.yml > /vagrant/k8s/gitlab-values-gen.yml
 
 - name: Gitlab - Install using helm
-  become_user: vagrant
+  become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm install gitlab gitlab/gitlab -f /vagrant/k8s/gitlab-values-gen.yml --create-namespace --namespace gitlab
   ignore_errors: yes
 
