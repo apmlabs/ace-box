@@ -22,7 +22,7 @@ spec:
         - name: JAVA_OPTS
           value: -Xms128m -Xmx512m -XX:PermSize=128m -XX:MaxPermSize=128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
         - name: DT_CUSTOM_PROP
-          value: "app=carts"
+          value: "app=carts url=carts.staging.INGRESS_DOMAIN_PLACEHOLDER"
         resources:
           limits:
             cpu: 500m
@@ -80,7 +80,7 @@ metadata:
   namespace: staging
 spec:
   rules:
-  - host: carts.staging.192.168.50.10.nip.io
+  - host: carts.staging.INGRESS_DOMAIN_PLACEHOLDER
     http:
       paths:
       - backend:

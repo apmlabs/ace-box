@@ -12,57 +12,6 @@ def tagMatchRules = [
   ]
 ]
 
-def mzContitions = [
-    [
-        key: [ attribute: 'SERVICE_TAGS' ],
-        comparisonInfo: [ type: 'TAG', operator: 'EQUALS',
-            value: [ context: 'CONTEXTLESS', key: 'project', value: 'simpleproject' ],
-            negate: false
-        ]
-    ],
-    [
-        key: [ attribute: 'PROCESS_GROUP_PREDEFINED_METADATA', dynamicKey: 'KUBERNETES_NAMESPACE', type: 'PROCESS_PREDEFINED_METADATA_KEY' ],
-        comparisonInfo: [ type: 'STRING', operator: 'EQUALS', value: 'staging', negate: false, caseSensitive: false ]
-    ]
-]
-
-def dashboardTileRules = [
-    [
-        name : 'Service health', tileType : 'SERVICES', configured : true, filterConfig: null, chartVisible: true,
-        bounds : [ top: 38, left : 0, width: 304, height: 304 ],
-        tileFilter : [ timeframe : null, managementZone : null ]
-            
-    ],
-    [
-        name : 'Custom chart', tileType : 'CUSTOM_CHARTING', configured : true, chartVisible: true,
-        bounds : [ top: 38, left : 342, width: 494, height: 304 ],
-        tileFilter : [ timeframe : null, managementZone : null ],
-        filterConfig : [ type : 'MIXED', customName: 'Response time', defaultName: 'Custom chart', 
-            chartConfig : [
-                legendShown : true, type : 'TIMESERIES', resultMetadata : [:],
-                series : [
-                    [ metric: 'builtin:service.response.time', aggregation: 'AVG', percentile: null, type : 'BAR', entityType : 'SERVICE', dimensions : [], sortAscending : false, sortColumn : true, aggregationRate : 'TOTAL' ]
-                ],
-            ],
-        filtersPerEntityType: [:]
-        ]
-    ],
-    [
-        name : 'Custom chart', tileType : 'CUSTOM_CHARTING', configured : true, chartVisible: true,
-        bounds : [ top: 38, left : 874, width: 494, height: 304 ],
-        tileFilter : [ timeframe : null, managementZone : null ],
-        filterConfig : [ type : 'MIXED', customName: 'Failure rate (any  errors)', defaultName: 'Custom chart', 
-            chartConfig : [
-                legendShown : true, type : 'TIMESERIES', resultMetadata : [:],
-                series : [
-                    [ metric: 'builtin:service.errors.total.rate', aggregation: 'AVG', percentile: null, type : 'BAR', entityType : 'SERVICE', dimensions : [], sortAscending : false, sortColumn : true, aggregationRate : 'TOTAL' ]
-                ],
-            ],
-        filtersPerEntityType: [:]
-        ]
-    ]
-]
-
 pipeline {
     parameters {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
@@ -98,6 +47,7 @@ pipeline {
             steps {
                 checkout scm
                 container('kubectl') {
+                    sh "sed -i 's|INGRESS_DOMAIN_PLACEHOLDER|simplenode.staging.${env.INGRESS_DOMAIN}|g' manifests/staging/${env.APP_NAME}.yml"
                     sh "kubectl -n staging apply -f manifests/staging/${env.APP_NAME}.yml"
                 }
             }
@@ -118,72 +68,6 @@ pipeline {
                 }
             }
         }
-        /*stage('DT create synthetic monitor') {
-            steps {
-                container("kubectl") {
-                    script {
-                        // Get IP of service
-                        env.SERVICE_IP = sh(script: 'kubectl get Ingress simplenodeservice -n staging -o jsonpath=\'{.spec.rules[0].host}\'', , returnStdout: true).trim()
-                    }
-                }
-                container("curl") {
-                    script {
-                        def status = dt_createUpdateSyntheticTest (
-                            testName : "simpleproject.staging.${env.APP_NAME}",
-                            url : "http://${SERVICE_IP}/api/invoke?url=https://www.dynatrace.com",
-                            method : "GET",
-                            location : "${env.DT_SYNTHETIC_LOCATION}"
-                        )
-                    }
-                }
-            }
-        }
-        stage('DT create application detection rule') {
-            steps {
-                container("curl") {
-                    script {
-                        def status = dt_createUpdateAppDetectionRule (
-                            dtAppName : "simpleproject.staging.${env.APP_NAME}",
-                            pattern : "http://${SERVICE_IP}",
-                            applicationMatchType: "CONTAINS",
-                            applicationMatchTarget: "URL"
-                        )
-                    }
-                }
-            }
-        }
-		stage('DT create management zone') {
-          steps {
-            container("curl") {
-              script {
-                def (int status, String dt_mngtZoneId) = dt_createUpdateManagementZone (
-                    managementZoneName : 'SimpleProject Staging',
-                    ruleType : 'SERVICE',
-                    managementZoneConditions : mzContitions,
-                )
-                DT_MGMTZONEID = dt_mngtZoneId
-              }
-            }
-          }
-        }
-		stage('DT create dashboard') {
-          steps {
-            container("curl") {
-              script {
-                def status = dt_createUpdateDashboard (
-                  dashboardName : 'simpleproject-staging',
-                  dashboardManagementZoneName : 'SimpleProject Staging',
-                  dashboardManagementZoneId : "${DT_MGMTZONEID}",
-                  dashboardShared : true,
-                  dashboardLinkShared : true,
-                  dashboardPublished : true,
-                  dashboardTimeframe : '-30m',
-                  dtDashboardTiles : dashboardTileRules
-                )
-              }
-            }
-         }
-       }*/
         stage('Run tests') {
             steps {
                 build job: "ace-demo/3. Test",
@@ -205,6 +89,7 @@ def generateDynamicMetaData(){
     returnValue += "keptn_project=simplenodeproject "
     returnValue += "keptn_service=${env.APP_NAME} "
     returnValue += "keptn_stage=staging "
+    returnValue += "url=simplenode.staging.${env.INGRESS_DOMAIN}"
     return returnValue;
 }
 

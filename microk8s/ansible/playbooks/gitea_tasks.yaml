@@ -13,7 +13,7 @@
   shell: >
     sed 
     -e "s|GITEA_INGRESS_PLACEHOLDER|{{ gitea_domain }}|"  
-    -e "s|GITEA_VERSION_PLACEHOLDER|{{ gitea_version }}|"  
+    -e "s|GITEA_VERSION_PLACEHOLDER|{{ gitea_version }}|g"  
     /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
 
 - name: Gitea - Install gitea using helm

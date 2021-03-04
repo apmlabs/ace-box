@@ -49,7 +49,7 @@ pipeline {
                             title: "Jmeter Start",
                             customProperties : [
                                 [key: 'VU Count', value: "1"],
-                                [key: 'Loop Count', value: "10"]
+                                [key: 'Loop Count', value: "100"]
                             ]
                         )
                     }
@@ -95,7 +95,7 @@ pipeline {
                             title: "Jmeter Stop",
                             customProperties : [
                                 [key: 'VU Count', value: "1"],
-                                [key: 'Loop Count', value: "10"]
+                                [key: 'Loop Count', value: "100"]
                             ]
                         )
                     }

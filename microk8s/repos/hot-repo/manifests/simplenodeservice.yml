@@ -73,3 +73,20 @@ spec:
   selector:
     app: simplenodeservice
   type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: simplenodeservice
+  name: simplenodeservice
+spec:
+  rules:
+  - host: INGRESS_DOMAIN_PLACEHOLDER
+    http:
+      paths:
+      - backend:
+          serviceName: simplenodeservice
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific

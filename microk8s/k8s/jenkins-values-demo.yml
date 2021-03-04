@@ -57,8 +57,8 @@ master:
       value: "SYNTH_NODE_ID_PLACEHOLDER"
     - name: KUBE_BEARER_TOKEN
       value: KUBE_BEARER_TOKEN_PLACEHOLDER
-    - name: INRESS_DOMAIN
-      value: INRESS_DOMAIN_PLACEHOLDER
+    - name: INGRESS_DOMAIN
+      value: INGRESS_DOMAIN_PLACEHOLDER
   csrf:
     defaultCrumbIssuer:
       enabled: false

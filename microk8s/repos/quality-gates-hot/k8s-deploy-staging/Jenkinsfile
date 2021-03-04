@@ -64,6 +64,7 @@ pipeline {
       steps {
         checkout scm
         container('kubectl') {
+          sh "sed -i 's|INGRESS_DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|g' ${env.APP_NAME}.yml" 
           sh "kubectl -n staging apply -f ${env.APP_NAME}.yml"
         }
       }

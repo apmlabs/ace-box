@@ -65,8 +65,8 @@ pipeline {
       }
       steps {
         container('kubectl') {
-          sh "sed -i 's#image: .*#image: ${env.TAG_DEV}#' manifest/carts.yml"
-          sh "kubectl -n dev apply -f manifest/carts.yml"
+          sh "sed -e 's#image: .*#image: ${env.TAG_DEV}#' -e 's|INGRESS_DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|g' manifest/carts.yml > manifest/carts_gen.yml" 
+          sh "kubectl -n dev apply -f manifest/carts_gen.yml"
         }
       }
     }

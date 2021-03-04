@@ -6,12 +6,12 @@ config:
 app-detect-app-one:
   - name: "/perform/application/app-app-one.name"
   - applicationId: "/perform/application/app-app-one.id"
-  - pattern: "http://simplenode.staging.192.168.50.10.nip.io"
+  - pattern: "http://simplenode.staging.{{ .Env.INGRESS_DOMAIN }}"
 
 app-detect-app-two:
   - name: "/perform/application/app-app-two.name"
   - applicationId: "/perform/application/app-app-two.id"
-  - pattern: "http://simplenode.production.192.168.50.10.nip.io"
+  - pattern: "http://simplenode.production.{{ .Env.INGRESS_DOMAIN }}"
 
   
 # Below examples to apply certain configuration on a tenant basis
