@@ -29,4 +29,4 @@ sudo mkdir /vagrant
 sudo cp -R ~/microk8s/* /vagrant
 
 echo "INIT - Run Ansible Playbook"
-ansible-playbook -vv /vagrant/ansible/initial.yml --extra-vars "public_ip=$1 acebox_provisioner=terraform non_root_user=$2"
+ansible-playbook /vagrant/ansible/initial.yml --extra-vars "public_ip=$1 acebox_provisioner=terraform non_root_user=$2"
