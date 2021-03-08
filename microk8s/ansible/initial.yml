@@ -25,6 +25,8 @@
     jenkins_version:                  "{{ acebox['config']['jenkins']['version'] | default('lts') }}"
     jenkins_ace_lib_url:              "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/dynatrace-ace/dynatrace-jenkins-library.git') }}"
     jenkins_keptn_lib_url:            "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/keptn-sandbox/keptn-jenkins-library.git') }}"
+    jenkins_user:                     "admin" #not used for configuring jenkins
+    jenkins_password:                 "dynatrace" #not used for configuring jenkins
     keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.7.3')}}"
     keptn_dynatrace_service_version:      "{{ acebox['config']['keptn']['dynatrace_service_version'] | default('0.10.3')}}"
     keptn_dynatrace_sli_service_version:  "{{ acebox['config']['keptn']['dynatrace_sli_service_version'] | default('0.7.3')}}"
@@ -46,6 +48,7 @@
     gitea_version:               "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).version |default('1.13.2') }}"
     #gitea_version:               "{{ acebox|json_query('config.git.version') | default('1.11.6') }}"
     activegate_download_location: "{{ acebox['config']['activegate']['download_location'] | default('/tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh') }}"
+    monaco_download_version: "v1.5.0"
   tasks:
   - name: Set Ingress Domain - Vagrant
     set_fact:
@@ -99,6 +102,10 @@
   - name: Create ACE Dashboard
     include_tasks: playbooks/dashboard_tasks.yaml
     when: feature_dashboard or acebox_mode == "demo"
+  
+  - name: Set up Monaco
+    include_tasks: playbooks/monaco_tasks.yaml
+    when: acebox_mode == "demo"
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml
