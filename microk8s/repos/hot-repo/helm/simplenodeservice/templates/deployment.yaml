@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    meta.helm.sh/release-name: "{{ .Chart.Name }}"
+    app.kubernetes.io/version: "{{ .Values.version }}"
+  labels:
+    app: "{{ .Chart.Name }}"
+    app.kubernetes.io/managed-by: "Helm"
+    chart: "{{ .Chart.Name }}"
+    heritage: "Helm"
+    release: "{{ .Chart.Name }}"
+    version: "{{ .Values.version }}"
+  name: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        version: v{{ .Values.version }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.image }}
+        env:
+        - name: DT_TAGS
+          value: {{ .Values.dt_tags }}
+        - name: DT_CUSTOM_PROP
+          value: {{ .Values.dt_custom_prop }}
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 15
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        beta.kubernetes.io/os: linux

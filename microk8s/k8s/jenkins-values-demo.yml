@@ -235,6 +235,18 @@ master:
                   name: "curl"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/helm:3.5.2"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "helm"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
                 idleMinutes: 10
                 idleMinutesStr: "10"
                 label: "maven"
@@ -394,7 +406,7 @@ master:
                 - alwaysPullImage: false
                   args: "cat"
                   command: "/bin/sh -c"
-                  image: "dynatraceace/monaco-runner:release-v1.4.0"
+                  image: "dynatraceace/monaco-runner:release-v1.5.0"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -481,6 +493,18 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
+                  image: "alpine/helm:3.5.2"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "helm"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
                   image: "dynatraceacm/apline-curl"
                   livenessProbe:
                     failureThreshold: 0
@@ -496,6 +520,22 @@ master:
                 nodeUsageMode: NORMAL
                 slaveConnectTimeout: 300
                 slaveConnectTimeoutStr: "300"
+                yamlMergeStrategy: "override"
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/helm:3.5.2"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "helm"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                label: "helm"
+                name: "helm"
                 yamlMergeStrategy: "override"
         credentials:
           system:
