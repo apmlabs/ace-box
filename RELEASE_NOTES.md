@@ -1,5 +1,28 @@
 # ACE-BOX Release notes
 
+## v1.7-beta - March 8 2021
+### New features
+#### ACE-BOX Cloud Edition
+There is now the possibility to deploy the ACE-BOX on cloud providers using Terraform. For this first release GCP only is supported using Terraform.
+A generic installation script is there to support any virtual machine with a public IP address and ports 80/443 exposed.
+Check out the **microk8s/terraform** folder for more info.
+
+#### Monaco installed on ACE-BOX
+Additionally to being available on the Jenkins pipelines, monaco is now also available as the same-named command.
+It is also used to deploy an ACE dashboard on Dynatrace instance.
+
+#### ACE Dashboard on Dynatrace
+As an alternative to the ACE-Dashboard that is deployed on Kubernetes, there is now also a Dynatrace dashboard containing all the links.
+
+#### Helm chart to deploy SimpleNode Staging in ace pipeline
+In the staging environment, a helm chart was introduced to deploy the simplenodeservice as opposed to traditional yaml file deployment. This will also facilitate the release inventory functionality in Dynatrace.
+
+### Fixes
+#### Keptn
+Update `dynatrace-service` and `dynatrace-sli-service` to the latest version
+Increased helm timeout for installation
+
+
 ## v1.6 - February 2021
 ### New features
 #### Move to Dynatrace Operator
