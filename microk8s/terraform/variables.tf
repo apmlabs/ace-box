@@ -17,7 +17,7 @@ variable "name_prefix" {
 
 variable "acebox_size" {
   description = "Size (machine type) of the ace-box instance"
-  default     = "n1-standard-8"
+  default     = "n2-standard-8"
 }
 
 variable "acebox_user" {
