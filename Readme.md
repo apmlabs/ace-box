@@ -53,7 +53,7 @@ To run the ace-box, the following is required:
 - Hyper-V disabled on Windows machines, check [Troubleshooting](#troubleshooting) for more information
 
 ## Cloud Version
-In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](micork8s/../microk8s/terraform/Readme.md) for more details. Currently GCP is supported.
+In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](terraform/Readme.md) for more details. Currently GCP is supported.
 
 ## Spinning up the ace-box
 

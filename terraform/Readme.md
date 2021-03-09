@@ -62,7 +62,7 @@ BYO Ubuntu Virtual Machine has not been tested, but should be possible.
 Ensure the repo contents are available on the virtual machine and that **ansible** has been installed.
 
 ### Requirements
-1. A virtual machine (Ubuntu 18.04 LTS minimal tested)
+1. An Ubuntu 18.04 virtual machine (Ubuntu 18.04 LTS "minimal" tested)
 2. A public IP address
 3. Ports 80 and 443 exposed
 4. Ansible installed (e.g. using `sudo apt-get install ansible -y`)

@@ -1,4 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+# This script will be triggered by Terraform as part of the provisioning process.
+# It can also be triggered manually on a VM.
+
 set -euo pipefail
 if [ -z "$1" ]
 then

@@ -68,14 +68,19 @@ resource "google_compute_instance" "acebox" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/../../microk8s"
+    source      = "${path.module}/../microk8s"
     destination = "~/"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../install.sh"
+    destination = "~/install.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-        "chmod +x /home/${var.acebox_user}/microk8s/terraform/install.sh",
-        "/home/${var.acebox_user}/microk8s/terraform/install.sh ${self.network_interface.0.access_config.0.nat_ip} ${var.acebox_user}"
+        "chmod +x /home/${var.acebox_user}/install.sh",
+        "/home/${var.acebox_user}/install.sh ${self.network_interface.0.access_config.0.nat_ip} ${var.acebox_user}"
       ]
   }
 }
