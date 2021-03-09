@@ -80,6 +80,7 @@ resource "google_compute_instance" "acebox" {
   provisioner "remote-exec" {
     inline = [
         "chmod +x /home/${var.acebox_user}/install.sh",
+        "sed -i $'s/\r$//' /home/${var.acebox_user}/install.sh",
         "/home/${var.acebox_user}/install.sh ${self.network_interface.0.access_config.0.nat_ip} ${var.acebox_user}"
       ]
   }

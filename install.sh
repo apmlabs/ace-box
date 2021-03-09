@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script will be triggered by Terraform as part of the provisioning process.
 # It can also be triggered manually on a VM.
@@ -33,4 +33,4 @@ sudo mkdir /vagrant
 sudo cp -R ~/microk8s/* /vagrant
 
 echo "INIT - Run Ansible Playbook"
-ansible-playbook /vagrant/ansible/initial.yml --extra-vars "public_ip=$1 acebox_provisioner=terraform non_root_user=$2"
+ansible-playbook -vv /vagrant/ansible/initial.yml --extra-vars "public_ip=$1 acebox_provisioner=terraform non_root_user=$2"
