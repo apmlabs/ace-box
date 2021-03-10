@@ -10,7 +10,7 @@ resource "google_compute_firewall" "acebox-https" {
 
   allow {
     protocol = "tcp"
-    ports    = ["443"]
+    ports    = ["443", "16443"]
   }
 
   target_tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
