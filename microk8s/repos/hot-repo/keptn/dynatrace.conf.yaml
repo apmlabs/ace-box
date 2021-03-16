@@ -4,14 +4,17 @@ dtCreds: dynatrace
 attachRules:
   tagRule:
   - meTypes:
-    - SERVICE
+    - PROCESS_GROUP_INSTANCE
     tags:
-    - context: CONTEXTLESS
-      key: keptn_service
+    - context: KUBERNETES
+      key: app.kubernetes.io/version
+      value: $LABEL.art_version
+    - context: KUBERNETES
+      key: app.kubernetes.io/name
       value: $SERVICE
-    - context: CONTEXTLESS
-      key: keptn_stage
-      value: $STAGE
-    - context: CONTEXTLESS
-      key: keptn_project
-      value: $PROJECT
+    - context: KUBERNETES
+      key: app.kubernetes.io/part-of
+      value: $LABEL.part_of
+    - context: KUBERNETES
+      key: app.kubernetes.io/component
+      value: $LABEL.component
