@@ -166,13 +166,13 @@ master:
                   resourceRequestCpu: "512m"
                   resourceRequestMemory: "512Mi"
                   workingDir: "/home/jenkins"
-                hostNetwork: false
-                label: "jenkins-slave "
+                id: "99124a5d-8561-4dd2-a48c-72bc4e6515d9"
+                label: "jenkins-slave"
                 name: "jenkins-slave"
                 nodeUsageMode: NORMAL
+                serviceAccount: "default"
                 slaveConnectTimeout: 300
                 slaveConnectTimeoutStr: "300"
-                serviceAccount: "default"
                 yamlMergeStrategy: "override"
               - containers:
                 - args: "cat"
@@ -213,7 +213,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "quay.io/dtacmworkshop/jmeter"
+                  image: "dynatraceace/jmeter-runner:release-v5.4.1"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -247,6 +247,7 @@ master:
                   name: "helm"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "84ff7d6d-d00f-4819-b2e8-ef2f7a79105a"
                 idleMinutes: 10
                 idleMinutesStr: "10"
                 label: "maven"
@@ -278,7 +279,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "quay.io/dtacmworkshop/jmeter"
+                  image: "dynatraceace/jmeter-runner:release-v5.4.1"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -288,6 +289,7 @@ master:
                   name: "jmeter"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "dbffc10e-ee05-4d04-b88b-0d4eeffa0397"
                 label: "git"
                 name: "Git"
                 nodeUsageMode: NORMAL
@@ -319,6 +321,7 @@ master:
                   name: "docker"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "a4f51512-c02c-4e63-99b7-2e2a27ddb5b2"
                 idleMinutes: 10
                 idleMinutesStr: "10"
                 label: "nodejs"
@@ -370,7 +373,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "quay.io/dtacmworkshop/jmeter"
+                  image: "dynatraceace/jmeter-runner:release-v5.4.1"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -392,6 +395,7 @@ master:
                   name: "curl"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "dc22e422-5dd6-4e22-8ae2-8c429ece5f0e"
                 label: "golang2"
                 name: "golang2"
                 nodeUsageMode: NORMAL
@@ -403,8 +407,7 @@ master:
                     mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
               - containers:
-                - alwaysPullImage: false
-                  args: "cat"
+                - args: "cat"
                   command: "/bin/sh -c"
                   image: "dynatraceace/monaco-runner:release-v1.5.0"
                   livenessProbe:
@@ -416,6 +419,7 @@ master:
                   name: "monaco"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "c532d3f2-9c84-4074-9cf6-70dcb4fb28bf"
                 label: "monaco-runner"
                 name: "monaco-runner"
                 yamlMergeStrategy: "override"
@@ -432,6 +436,7 @@ master:
                   name: "kubectl"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "b37f18fd-eb24-4bbf-9298-f85a7a8c6998"
                 label: "kubectl"
                 name: "kubectl"
                 yamlMergeStrategy: "override"
@@ -448,7 +453,7 @@ master:
                   name: "ace"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
-                hostNetwork: false
+                id: "576eed6b-a0bb-463e-b08f-fcbc676cb004"
                 label: "ace"
                 name: "ace-cicd-tools"
                 slaveConnectTimeout: 300
@@ -481,7 +486,7 @@ master:
                   workingDir: "/home/jenkins/agent"
                 - args: "cat"
                   command: "/bin/sh -c"
-                  image: "quay.io/dtacmworkshop/jmeter"
+                  image: "dynatraceace/jmeter-runner:release-v5.4.1"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -515,6 +520,7 @@ master:
                   name: "curl"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "9fe3bc5f-5537-4d6b-8652-4960ea920539"
                 label: "kubegit"
                 name: "kubegit"
                 nodeUsageMode: NORMAL
@@ -534,6 +540,7 @@ master:
                   name: "helm"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                id: "884387ac-af70-4a41-9526-a77f017326de"
                 label: "helm"
                 name: "helm"
                 yamlMergeStrategy: "override"
@@ -574,6 +581,14 @@ master:
                   scm:
                     git:
                       remote: "${ACE_LIB}"
+                      traits:
+                      - "gitBranchDiscovery"
+            - name: "jenkinstest"
+              retriever:
+                modernSCM:
+                  scm:
+                    git:
+                      remote: "https://github.com/dynatrace-ace/jenkins-test-library"
                       traits:
                       - "gitBranchDiscovery"
         jobs:
