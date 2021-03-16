@@ -1,6 +1,6 @@
 # ACE-BOX Release notes
 
-## v1.7-beta - March 8 2021
+## v1.7 - March 16 2021
 ### New features
 #### ACE-BOX Cloud Edition
 There is now the possibility to deploy the ACE-BOX on cloud providers using Terraform. For this first release GCP only is supported using Terraform.
@@ -16,6 +16,12 @@ As an alternative to the ACE-Dashboard that is deployed on Kubernetes, there is 
 
 #### Helm chart to deploy SimpleNode Staging in ace pipeline
 In the staging environment, a helm chart was introduced to deploy the simplenodeservice as opposed to traditional yaml file deployment. This will also facilitate the release inventory functionality in Dynatrace.
+
+#### Support for release inventory
+In preparation for the release of the new Release Inventory feature, the right kubernetes labels have been set to support version, component and application detection. The events have also been updated to show up on this screen.
+
+#### New jmeter-runner template
+Jenkins now uses a new ACE developed jmeter-runner pod template to fix known security issues. 
 
 ### Fixes
 #### Keptn
