@@ -3,7 +3,7 @@ config:
     - app-simplenode-prod: "application.json"
   
 app-simplenode-staging:
-    - name: "simplenode.staging"
+    - name: "app.simplenodeservice.staging"
 
 app-simplenode-prod:
-    - name: "simplenode.production"
+    - name: "app.simplenodeservice.production"

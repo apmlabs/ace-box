@@ -4,9 +4,9 @@ config:
 
 management-zone-staging:
     - environment: "staging"
-    - name: "mac-mz-staging"
+    - name: "monaco-mz-staging"
 
 management-zone-prod:
     - environment: "production"
-    - name: "mac-mz-production"
+    - name: "monaco-mz-production"
 

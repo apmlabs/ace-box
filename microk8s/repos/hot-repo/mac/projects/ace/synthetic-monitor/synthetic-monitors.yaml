@@ -3,8 +3,8 @@ config:
     - health-prod: "health-check-monitor.json"
   
 health-staging:
-    - name: "mac.simplenode.staging"
-    - url: "http://simplenode.staging.{{ .Env.INGRESS_DOMAIN }}/api/invoke?url=https://www.dynatrace.com"
+    - name: "webcheck.simplenode.staging"
+    - url: "http://simplenodeservice.staging.{{ .Env.INGRESS_DOMAIN }}/api/invoke?url=https://www.dynatrace.com"
     - description: "Health Check for simplenode in staging"
     - location: "/infrastructure/synthetic-location/acebox.id"
     - managementZoneId: "/ace/management-zone/management-zone-staging.id"
@@ -13,8 +13,8 @@ health-staging:
     - enabled: "true"
 
 health-prod:
-    - name: "mac.simplenode.production"
-    - url: "http://simplenode.production.{{ .Env.INGRESS_DOMAIN }}/api/invoke?url=https://www.dynatrace.com"
+    - name: "webcheck.simplenode.production"
+    - url: "http://simplenodeservice.production.{{ .Env.INGRESS_DOMAIN }}/api/invoke?url=https://www.dynatrace.com"
     - description: "Health Check for simplenode in production"
     - location: "/infrastructure/synthetic-location/acebox.id"
     - managementZoneId: "/ace/management-zone/management-zone-prod.id"
