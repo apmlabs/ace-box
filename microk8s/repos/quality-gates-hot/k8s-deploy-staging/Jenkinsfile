@@ -1,10 +1,13 @@
 @Library('ace@v1.0')
+@Library('jenkinstest@v1.2.1') jenkinstest
 //  Link to keptn QG evaluation
 /*
 @Library('keptn-library@3.3')
 import sh.keptn.Keptn
 def keptn = new sh.keptn.Keptn()
 */
+
+def jmeter = new com.dynatrace.ace.Jmeter()
 
 def tagMatchRules = [
   [
@@ -59,7 +62,6 @@ pipeline {
         }
       }
     } // end stage
-
     stage('Deploy to staging namespace') {
       steps {
         checkout scm
@@ -69,9 +71,7 @@ pipeline {
         }
       }
     } // end stage
-
 // Link to dynatrace events
-
     stage('DT Deploy Event') {
       steps {
         container("curl") {
@@ -88,7 +88,6 @@ pipeline {
         }
       }
     } // end stage
-
 
 // Link to keptn QG evaluation
 /*
@@ -121,7 +120,7 @@ pipeline {
         echo "Running one iteration with one VU to warm up service"  
         container('jmeter') {
           script {
-            def status = executeJMeter ( 
+            def status = jmeter.executeJmeterTest ( 
               scriptName: "jmeter/${env.APP_NAME}_perfcheck.jmx",
               resultsDir: "PerfCheck_Warmup_${env.APP_NAME}_${env.VERSION}_${BUILD_NUMBER}",
               serverUrl: "${env.APP_NAME}.${env.KEPTN_STAGE}",  
@@ -141,7 +140,6 @@ pipeline {
         }
       }
     } // end stage
-
     stage('Run check in staging') {
       steps {
         script {
@@ -149,7 +147,7 @@ pipeline {
         }
         container('jmeter') {
           script {
-            def status = executeJMeter ( 
+            def status = jmeter.executeJmeterTest ( 
               scriptName: "jmeter/${env.APP_NAME}_perfcheck.jmx",
               resultsDir: "PerfCheck_${env.APP_NAME}_${env.VERSION}_${BUILD_NUMBER}",
               serverUrl: "${env.APP_NAME}.${env.KEPTN_STAGE}", 
@@ -173,7 +171,6 @@ pipeline {
         }
       }
     } // end stage
-
     stage('Pipeline Quality Gate') {
       steps {
         script {
