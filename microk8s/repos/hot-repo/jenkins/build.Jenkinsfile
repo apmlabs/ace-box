@@ -5,7 +5,7 @@ pipeline {
     environment {
         APP_NAME = "simplenodeservice"
         ARTEFACT_ID = "ace/" + "${env.APP_NAME}"
-        TAG = "${env.DOCKER_REGISTRY_URL}/${env.ARTEFACT_ID}:${env.BUILD}.0.0-${env.BUILD_NUMBER}"
+        TAG = "${env.DOCKER_REGISTRY_URL}/${env.ARTEFACT_ID}:${env.BUILD}.0.0-${env.GIT_COMMIT}"
     }
     agent {
         label 'nodejs'
@@ -27,7 +27,7 @@ pipeline {
                 }
             }
         }
-        stage('Docker push to registry') {
+        stage('Docker push') {
             steps {
                 container('docker') {
                     sh "docker push ${env.TAG}"
@@ -39,12 +39,14 @@ pipeline {
             parallel {
                 stage('ace-demo/Deploy to staging'){
                     steps {
+                        script { env.V_TAG = sh(returnStdout: true, script: "echo ${env.GIT_COMMIT} | cut -c1-6 | tr -d '\n'") }
                         build job: "2. Deploy",
                         wait: false,
                         parameters: [
                             string(name: 'APP_NAME', value: "${env.APP_NAME}"),
                             string(name: 'TAG_STAGING', value: "${env.TAG}"),
-                            string(name: 'BUILD', value: "${env.BUILD}")
+                            string(name: 'BUILD', value: "${env.BUILD}"),
+                            string(name: 'ART_VERSION', value: "${env.BUILD}.0.0-${env.V_TAG}")
                         ]
                     }
                 }

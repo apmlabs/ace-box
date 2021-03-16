@@ -1,22 +1,24 @@
-@Library('ace@master') _ 
+@Library('ace@v1.1') ace 
+def event = new com.dynatrace.ace.Event()
 
 def tagMatchRules = [
-  [
-    "meTypes": [
-      ["meType": "SERVICE"]
-    ],
-    tags : [
-      ["context": "CONTEXTLESS", "key": "app", "value": "simplenodeservice"],
-      ["context": "CONTEXTLESS", "key": "environment", "value": "staging"]
+    [
+        "meTypes": [ "PROCESS_GROUP_INSTANCE"],
+        tags: [
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/version", "value": "${env.ART_VERSION}"],
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "${env.APP_NAME}"],
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/part-of", "value": "simplenode-app"],
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/component", "value": "api"],
+            ["context": "CONTEXTLESS", "key": "environment", "value": "staging"]
+        ]
     ]
-  ]
 ]
-
 pipeline {
     parameters {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
         string(name: 'TAG_STAGING', defaultValue: '', description: 'The image of the service to deploy.', trim: true)
         string(name: 'BUILD', defaultValue: '', description: 'The version of the service to deploy.', trim: true)
+        string(name: 'ART_VERSION', defaultValue: '', description: 'The Artefact Version', trim: true)
     }
     agent {
         label 'kubegit'
@@ -43,43 +45,49 @@ pipeline {
                 }
             }
         }     
-        stage('Deploy to staging') {
+        stage('Deploy via Helm') {
             steps {
                 checkout scm
                 container('helm') {
-                    sh "sed -e \"s|DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|\" -e \"s|IMAGE_PLACEHOLDER|${env.TAG_STAGING}|\" -e \"s|VERSION_PLACEHOLDER|${env.BUILD}.0.0|\" -e \"s|DT_TAGS_PLACEHOLDER|${env.DT_TAGS}|\" -e \"s|DT_CUSTOM_PROP_PLACEHOLDER|${env.DT_CUSTOM_PROP}|\" helm/simplenodeservice/values.yaml > helm/simplenodeservice/values-gen.yaml"
+                    sh "sed -e \"s|DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|\" -e \"s|ENVIRONMENT_PLACEHOLDER|staging|\" -e \"s|IMAGE_PLACEHOLDER|${env.TAG_STAGING}|\" -e \"s|VERSION_PLACEHOLDER|${env.ART_VERSION}|\" -e \"s|DT_TAGS_PLACEHOLDER|${env.DT_TAGS}|\" -e \"s|DT_CUSTOM_PROP_PLACEHOLDER|${env.DT_CUSTOM_PROP}|\" helm/simplenodeservice/values.yaml > helm/simplenodeservice/values-gen.yaml"
                      //sh "sed -i 's|INGRESS_DOMAIN_PLACEHOLDER|simplenode.staging.${env.INGRESS_DOMAIN}|g' manifests/staging/${env.APP_NAME}.yml"
                      //sh "kubectl -n staging apply -f manifests/staging/${env.APP_NAME}.yml"
                      //sh "cat helm/simplenodeservice/values-gen.yaml"
-                     sh "helm upgrade -i simplenodeservice-staging helm/simplenodeservice -f helm/simplenodeservice/values-gen.yaml --namespace staging"
+                     sh "helm upgrade -i simplenodeservice-staging helm/simplenodeservice -f helm/simplenodeservice/values-gen.yaml --namespace staging --wait"
                 }
             }
         }
-        stage('DT send deploy event') {
+            
+        stage('Dynatrace deployment event') {
             steps {
-                container("curl") {
-                    script {
-                        def status = pushDynatraceDeploymentEvent (
-                            tagRule : tagMatchRules,
-                            deploymentVersion: "${env.BUILD}",
-                            customProperties : [
-                                [key: 'Jenkins Build Number', value: "${env.BUILD_ID}"],
-                                [key: 'Git commit', value: "${env.GIT_COMMIT}"]
-                            ]
-                        )
-                    }
+                script {
+                    sleep(time:120,unit:"SECONDS")
+                    
+                    def status = event.pushDynatraceDeploymentEvent (
+                        tagRule: tagMatchRules,
+                        deploymentName: "simplenodeservice ${env.ART_VERSION} deployed",
+                        deploymentVersion: "${env.ART_VERSION}",
+                        deploymentProject: "simplenode-app",
+                        customProperties : [
+                            "Jenkins Build Number": "${env.BUILD_ID}",
+                            "Approved by":"ACE"
+                        ]
+                    )
                 }
             }
         }
-        stage('Run tests') {
+
+        stage('Launch tests') {
             steps {
                 build job: "ace-demo/3. Test",
                 wait: false,
                 parameters: [
-                    string(name: 'APP_NAME', value: "${env.APP_NAME}")
+                    string(name: 'APP_NAME', value: "${env.APP_NAME}"),
+                    string(name: 'BUILD', value: "${env.BUILD}"),
+                    string(name: 'ART_VERSION', value: "${env.ART_VERSION}")
                 ]
             }
-        }  
+        }         
     }
 }
 

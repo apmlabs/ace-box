@@ -1,28 +1,39 @@
-@Library('ace@master') ace
+@Library('ace@v1.1') ace
+@Library('jenkinstest@v1.2.1') jenkinstest
 @Library('keptn-library@3.4') keptnlib
 import sh.keptn.Keptn
-def keptn = new sh.keptn.Keptn()
 
+def keptn = new sh.keptn.Keptn()
+def event = new com.dynatrace.ace.Event()
+def jmeter = new com.dynatrace.ace.Jmeter()
+ 
 def tagMatchRules = [
-  [
-    "meTypes": [
-      ["meType": "SERVICE"]
-    ],
-    tags : [
-      ["context": "CONTEXTLESS", "key": "app", "value": "simplenodeservice"],
-      ["context": "CONTEXTLESS", "key": "environment", "value": "staging"]
-    ]
-  ]
-]
+     [
+         "meTypes": [ "PROCESS_GROUP_INSTANCE"],
+         tags: [
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/version", "value": "${env.ART_VERSION}"],
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "${env.APP_NAME}"],
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/part-of", "value": "simplenode-app"],
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/component", "value": "api"],
+             ["context": "CONTEXTLESS", "key": "environment", "value": "staging"]
+         ]
+     ]
+ ]
 
 pipeline {
     parameters {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
+        string(name: 'BUILD', defaultValue: '', description: 'The build version to deploy.', trim: true)
+        string(name: 'ART_VERSION', defaultValue: '', description: 'Artefact version that is being deployed.', trim: true)
     }
     environment {
         ENVIRONMENT = 'staging'
         PROJECT = 'simplenodeproject'
         MONITORING = 'dynatrace'
+        VU = 1
+        LOOPCOUNT = 100
+        COMPONENT = 'api'
+        PARTOF = 'simplenode-app'
     }
     agent {
         label 'kubegit'
@@ -40,20 +51,19 @@ pipeline {
         }
         stage('DT Test Start') {
             steps {
-                container("curl") {
                     script {
-                        def status = pushDynatraceInfoEvent (
-                            tagRule : tagMatchRules,
-                            source: "Jmeter",
-                            description: "Performance test started for ${env.APP_NAME}",
-                            title: "Jmeter Start",
+                        def status = event.pushDynatraceInfoEvent (
+                            tagRule: tagMatchRules,
+                            title: "Jmeter Start ${env.APP_NAME} ${env.ART_VERSION}",
+                            description: "Performance test started for ${env.APP_NAME} ${env.ART_VERSION}",
+                            source : "jmeter",
                             customProperties : [
-                                [key: 'VU Count', value: "1"],
-                                [key: 'Loop Count', value: "100"]
+                                "Jenkins Build Number": env.BUILD_ID,
+                                "Virtual Users" : env.VU,
+                                "Loop Count" : env.LOOPCOUNT
                             ]
                         )
                     }
-                }
             }
         }
         stage('Run performance test') {
@@ -64,49 +74,53 @@ pipeline {
                 checkout scm
                 container('jmeter') {
                     script {
-                    def status = executeJMeter ( 
-                        scriptName: "jmeter/simplenodeservice_load.jmx",
-                        resultsDir: "perfCheck_${env.APP_NAME}_staging_${BUILD_NUMBER}",
-                        serverUrl: "simplenodeservice.staging", 
-                        serverPort: 80,
-                        checkPath: '/health',
-                        vuCount: 1,
-                        loopCount: 100,
-                        LTN: "perfCheck_${env.APP_NAME}_${BUILD_NUMBER}",
-                        funcValidation: false,
-                        avgRtValidation: 4000
-                    )
-                    if (status != 0) {
-                        currentBuild.result = 'FAILED'
-                        error "Performance test in staging failed."
-                    }
+                        def status = jmeter.executeJmeterTest ( 
+                            scriptName: "jmeter/simplenodeservice_load.jmx",
+                            resultsDir: "perfCheck_${env.APP_NAME}_staging_${BUILD_NUMBER}",
+                            serverUrl: "simplenodeservice.staging", 
+                            serverPort: 80,
+                            checkPath: '/health',
+                            vuCount: env.VU.toInteger(),
+                            loopCount: env.LOOPCOUNT.toInteger(),
+                            LTN: "perfCheck_${env.APP_NAME}_${BUILD_NUMBER}",
+                            funcValidation: false,
+                            avgRtValidation: 4000
+                        )
+                        if (status != 0) {
+                            currentBuild.result = 'FAILED'
+                            error "Performance test in staging failed."
+                        }
                     }
                 }
             }
         }
         stage('DT Test Stop') {
             steps {
-                container("curl") {
                     script {
-                        def status = pushDynatraceInfoEvent (
-                            tagRule : tagMatchRules,
-                            source: "Jmeter",
-                            description: "Performance test stopped for ${env.APP_NAME}",
-                            title: "Jmeter Stop",
-                            customProperties : [
-                                [key: 'VU Count', value: "1"],
-                                [key: 'Loop Count', value: "100"]
-                            ]
-                        )
+                        def status = event.pushDynatraceInfoEvent (
+                             tagRule: tagMatchRules,
+                             title: "Jmeter Stop ${env.APP_NAME} ${env.ART_VERSION}",
+                             description: "Performance test stopped for ${env.APP_NAME} ${env.ART_VERSION}",
+                             source : "jmeter",
+                             customProperties : [
+                                 "Jenkins Build Number": env.BUILD_ID,
+                                 "Virtual Users" : env.VU,
+                                 "Loop Count" : env.LOOPCOUNT
+                             ]
+                         )
                     }
-                }
             }
         }
 
         stage('Keptn Evaluation') {
             steps {
                 script {
-                    def keptnContext = keptn.sendStartEvaluationEvent starttime:"", endtime:"" 
+                    def labels=[:]
+                    labels.put("art_version", "${env.ART_VERSION}")
+                    labels.put("component", "${env.COMPONENT}")
+                    labels.put("part_of", "${env.PARTOF}")
+                    
+                    def keptnContext = keptn.sendStartEvaluationEvent starttime:"", endtime:"", labels:labels
                     echo keptnContext
                     result = keptn.waitForEvaluationDoneEvent setBuildResult:true, waitTime:3
 
@@ -143,6 +157,15 @@ pipeline {
                             break;
                         case "FAILURE":
                             env.DPROD = false;
+                            def status = event.pushDynatraceErrorEvent (
+                                tagRule: tagMatchRules,
+                                title: "Quality Gate failed for ${env.APP_NAME} ${env.ART_VERSION}",
+                                description: "Quality Gate evaluation failed for ${env.APP_NAME} ${env.ART_VERSION}",
+                                source : "jenkins",
+                                customProperties : [
+                                    "Jenkins Build Number": env.BUILD_ID
+                                ]
+                            )
                             break;
                     }
                 }
@@ -161,7 +184,9 @@ pipeline {
                 build job: "ace-demo/4. Deploy production",
                     wait: false,
                     parameters: [
-                        string(name: 'APP_NAME', value: "${env.APP_NAME}")
+                        string(name: 'APP_NAME', value: "${env.APP_NAME}"),
+                        string(name: 'BUILD', value: "${env.BUILD}"),
+                        string(name: 'ART_VERSION', value: "${env.ART_VERSION}")
                     ]
             }
         }  

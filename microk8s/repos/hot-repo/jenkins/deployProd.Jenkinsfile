@@ -1,55 +1,67 @@
-@Library('ace@master') _ 
+@Library('ace@v1.1') _ 
 
-def tagMatchRules = [
-  [
-    "meTypes": [
-      ["meType": "SERVICE"]
-    ],
-    tags : [
-      ["context": "CONTEXTLESS", "key": "app", "value": "simplenodeservice"],
-      ["context": "CONTEXTLESS", "key": "environment", "value": "production"]
-    ]
-  ]
-]
+def event = new com.dynatrace.ace.Event()
+ 
+ def tagMatchRules = [
+     [
+         "meTypes": [ "PROCESS_GROUP_INSTANCE"],
+         tags: [
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/version", "value": "${env.ART_VERSION}"],
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "${env.APP_NAME}"],
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/part-of", "value": "simplenode-app"],
+             ["context": "KUBERNETES", "key": "app.kubernetes.io/component", "value": "api"],
+             ["context": "CONTEXTLESS", "key": "environment", "value": "production"]
+         ]
+     ]
+ ]
 
 pipeline {
     parameters {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
+        string(name: 'BUILD', defaultValue: '', description: 'The build of the service to deploy.', trim: true)
+        string(name: 'ART_VERSION', defaultValue: '', description: 'The artefact version to be deployed.', trim: true)
     }
     agent {
         label 'kubegit'
     }
     stages {
-        stage('Update production version') {
+        stage('Update production artefact') {
             steps {
                 script {
                     env.DT_CUSTOM_PROP = readMetaData() + " " + generateDynamicMetaData()
                     env.DT_TAGS = readTags()
                 }
                 container('kubectl') {
-                    sh "sed 's#value: \"DT_CUSTOM_PROP_PLACEHOLDER\".*#value: \"${env.DT_CUSTOM_PROP}\"#' manifests/${env.APP_NAME}.yml > manifests/production/${env.APP_NAME}.yml"
-                    sh "sed -i 's#value: \"DT_TAGS_PLACEHOLDER\".*#value: \"${env.DT_TAGS}\"#' manifests/production/${env.APP_NAME}.yml"
-                    sh "sed -i 's#value: \"NAMESPACE_PLACEHOLDER\".*#value: \"production\"#' manifests/production/${env.APP_NAME}.yml"
-                    sh "sed -i \"s#image: .*#image: `kubectl -n staging get deployment -o jsonpath='{.items[*].spec.template.spec.containers[0].image}' --field-selector=metadata.name=${env.APP_NAME}`#\" manifests/production/${env.APP_NAME}.yml"
-                    sh "sed -i 's|INGRESS_DOMAIN_PLACEHOLDER|simplenode.production.${env.INGRESS_DOMAIN}|g' manifests/production/${env.APP_NAME}.yml"
-                    sh "cat manifests/production/${env.APP_NAME}.yml"
-                    sh "kubectl -n production apply -f manifests/production/${env.APP_NAME}.yml"
+                    //sh "sed 's#value: \"DT_CUSTOM_PROP_PLACEHOLDER\".*#value: \"${env.DT_CUSTOM_PROP}\"#' manifests/${env.APP_NAME}.yml > manifests/production/${env.APP_NAME}.yml"
+                    //sh "sed -i 's#value: \"DT_TAGS_PLACEHOLDER\".*#value: \"${env.DT_TAGS}\"#' manifests/production/${env.APP_NAME}.yml"
+                    //sh "sed -i 's#value: \"NAMESPACE_PLACEHOLDER\".*#value: \"production\"#' manifests/production/${env.APP_NAME}.yml"
+                    //sh "sed -i \"s#image: .*#image: `kubectl -n staging get deployment -o jsonpath='{.items[*].spec.template.spec.containers[0].image}' --field-selector=metadata.name=${env.APP_NAME}`#\" manifests/production/${env.APP_NAME}.yml"
+                    //sh "sed -i 's|INGRESS_DOMAIN_PLACEHOLDER|simplenode.production.${env.INGRESS_DOMAIN}|g' manifests/production/${env.APP_NAME}.yml"
+                    //sh "cat manifests/production/${env.APP_NAME}.yml"
+                    //sh "export IMAGE_TAG=$(kubectl -n staging get deployment simplenodeservice -o jsonpath='{.items[*].spec.template.spec.containers[0].image})"
+                    sh "sed -e \"s|DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|\" -e \"s|CONTAINER_IMAGE_PLACEHOLDER|${env.CONTAINER_IMAGE}|\" -e \"s|ENVIRONMENT_PLACEHOLDER|production|\" -e \"s|IMAGE_PLACEHOLDER|`kubectl -n staging get deployment -o jsonpath='{.items[*].spec.template.spec.containers[0].image}' --field-selector=metadata.name=${env.APP_NAME}`|\" -e \"s|VERSION_PLACEHOLDER|${env.ART_VERSION}|\" -e \"s|DT_TAGS_PLACEHOLDER|${env.DT_TAGS}|\" -e \"s|DT_CUSTOM_PROP_PLACEHOLDER|${env.DT_CUSTOM_PROP}|\" helm/simplenodeservice/values.yaml > helm/simplenodeservice/values-gen.yaml"
+                    
+                    //sh "kubectl -n production apply -f manifests/production/${env.APP_NAME}.yml"
+                }
+                container('helm') {
+                    sh "cat helm/simplenodeservice/values-gen.yaml"
+                    sh "helm upgrade -i simplenodeservice-production helm/simplenodeservice -f helm/simplenodeservice/values-gen.yaml --namespace production --wait"
                 }
             }
         }
         stage('DT send deploy event') {
             steps {
-                container("curl") {
-                    script {
-                        def status = pushDynatraceDeploymentEvent (
-                            tagRule : tagMatchRules,
-                            deploymentVersion: "${env.BUILD}",
-                            customProperties : [
-                                [key: 'Jenkins Build Number', value: "${env.BUILD_ID}"],
-                                [key: 'Git commit', value: "${env.GIT_COMMIT}"]
-                            ]
-                        )
-                    }
+                script {
+                    sh "sleep 120"
+                    def status = event.pushDynatraceDeploymentEvent (
+                        tagRule: tagMatchRules,
+                        deploymentName: "simplenodeservice ${env.ART_VERSION} deployed",
+                        deploymentVersion: "${env.ART_VERSION}",
+                        deploymentProject: "simplenode-app",
+                        customProperties : [
+                            "Jenkins Build Number": env.BUILD_ID
+                        ]
+                    )
                 }
             }
         }
