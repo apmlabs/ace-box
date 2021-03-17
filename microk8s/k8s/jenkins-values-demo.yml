@@ -620,6 +620,7 @@ master:
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
                   stringParam('TAG_STAGING', '', 'The image of the service to deploy.')
                   stringParam('BUILD', '', 'The version of the service to deploy.')
+                  stringParam('ART_VERSION', '', 'The artefact version and hash to deploy.')
                 }
                 definition {
                   cpsScm {
@@ -640,6 +641,8 @@ master:
               pipelineJob('ace-demo/3. Test') {
                 parameters {
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
+                  stringParam('BUILD', '', 'The version of the service to deploy.')
+                  stringParam('ART_VERSION', '', 'The artefact version and hash to deploy.')
                 }
                 definition {
                   cpsScm {
@@ -662,6 +665,7 @@ master:
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
                   stringParam('TAG_STAGING', '', 'The image of the service to deploy.')
                   stringParam('BUILD', '', 'The version of the service to deploy.')
+                  stringParam('ART_VERSION', '', 'The artefact version and hash to deploy.')
                 }
                 definition {
                   cpsScm {
