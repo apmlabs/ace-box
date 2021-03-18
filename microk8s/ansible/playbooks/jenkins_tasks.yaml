@@ -89,5 +89,5 @@
 
 - name: Jenkins - Install jenkins
   become_user: "{{ non_root_user }}"
-  shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values-gen.yml --version {{ jenkins_helm_chart_version }} --namespace ace jenkins stable/jenkins
+  shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values-gen.yml --version {{ jenkins_helm_chart_version }} --namespace ace jenkins stable/jenkins --wait --timeout 600s
   ignore_errors: yes
