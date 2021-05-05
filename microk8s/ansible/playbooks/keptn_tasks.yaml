@@ -7,13 +7,14 @@
 
 - name: Keptn - Download Keptn CLI
   unarchive:
-    src: "https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/{{ keptn_version }}_keptn-linux.tar"
-    dest: /usr/local/bin/
+    src: "https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/keptn-{{ keptn_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin
     remote_src: yes
     mode: +x
 
-#- name: Keptn Install metallb
-#  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml"
+- name: Keptn - Rename CLI
+  become: true
+  shell: "cp /usr/local/bin/keptn-{{ keptn_version }}-linux-amd64 /usr/local/bin/keptn"
 
 - name: Keptn - Install Keptn Quality Gates using helm
   become_user: "{{ non_root_user }}"

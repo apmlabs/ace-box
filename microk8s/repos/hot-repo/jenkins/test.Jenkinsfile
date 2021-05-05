@@ -1,6 +1,6 @@
 @Library('ace@v1.1') ace
 @Library('jenkinstest@v1.2.1') jenkinstest
-@Library('keptn-library@3.4') keptnlib
+@Library('keptn-library@4.0') keptnlib
 import sh.keptn.Keptn
 
 def keptn = new sh.keptn.Keptn()

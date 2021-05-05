@@ -95,10 +95,9 @@ acebox.features.gitea | Install Gitea local git server | no | false
 acebox.features.dashboard | Install ACE dashboard | no | false
 acebox.features.keptn | Install Keptn Quality Gates | no | false
 acebox.features.gitlab | Install Gitlab | no | false
-acebox.config.keptn.version | Keptn version to install | no | 0.7.2
-acebox.config.keptn.dynatrace_service_version | Keptn Dynatrace Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.10.0
-acebox.config.keptn.dynatrace_sli_service_version | Keptn Dynatrace SLI Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.7.0
-acebox.config.keptn.keptn_jmeter_ext_service_version | Keptn Jmeter Extended Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.2.0
+acebox.config.keptn.version | Keptn version to install | no | 0.8.0
+acebox.config.keptn.dynatrace_service_version | Keptn Dynatrace Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.11.0
+acebox.config.keptn.dynatrace_sli_service_version | Keptn Dynatrace SLI Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.8.0
 acebox.config.keptn.jenkins.helm_chart_version | Version of the Jenkins helm chart to use (is not equal to Jenkins version) | no | 1.27.0
 acebox.config.keptn.version | Version of Jenkins to deploy | no | lts
 acebox.config.keptn.set_creds | placeholder for future | no | n/a

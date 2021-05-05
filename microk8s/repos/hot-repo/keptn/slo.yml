@@ -8,6 +8,7 @@ comparison:
 filter:
 objectives:
   - sli: "response_time_p95"
+    displayName: "Response Time 95th Percentile"
     key_sli: false
     pass:             # pass if (relative change <= 10% AND absolute value is < 600ms)
       - criteria:
@@ -18,6 +19,7 @@ objectives:
           - "<=1000"
     weight: 1
   - sli: "rt_invokeapi" # looking at a particular transaction
+    displayName: "Response Time of InvokeAPI Method"
     weight: 2           # business critical transaction
     pass:
       - criteria:
@@ -28,6 +30,7 @@ objectives:
           - "<=+20%"
           - "<=1000000"
   - sli: "error_rate"
+    displayName: "Error Rate"
     pass:
       - criteria:
           - "<=+5%"
@@ -36,7 +39,9 @@ objectives:
       - criteria:
           - "<5"
   - sli: "pg_heap_suspension"
+    displayName: "Process Heap Suspension"
   - sli: "pg_cpu_usage"
+    displayName: "Process CPU Usage"
 total_score:
   pass: "90%"
   warning: "75%"
