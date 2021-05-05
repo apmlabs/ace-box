@@ -25,6 +25,7 @@
     -e "s|KEPTN_LIB_PLACEHOLDER||" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER||" 
     -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" 
+    -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|"
     -e "s|SYNTH_NODE_ID_PLACEHOLDER||" 
     -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER||"  
     -e "s|INGRESS_DOMAIN_PLACEHOLDER|{{ ingress_domain }}|"
@@ -35,6 +36,7 @@
   shell: >
     sed 
     -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|"
+    -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|"
     -e "s|GITHUB_USER_EMAIL_PLACEHOLDER||" 
     -e "s|GITHUB_USER_NAME_PLACEHOLDER||" 
     -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER||" 
@@ -73,6 +75,7 @@
     -e "s|KEPTN_ENDPOINT_PLACEHOLDER|http://keptn.{{ ingress_domain }}/api|" 
     -e "s|KEPTN_BRIDGE_PLACEHOLDER|http://keptn.{{ ingress_domain }}/bridge|" 
     -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" 
+    -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|" 
     -e "s|GIT_REPO_PLACEHOLDER|{{ git_repo }}|" 
     -e "s|GIT_DOMAIN_PLACEHOLDER|{{ gitea_domain }}|" 
     -e "s|ACE_LIB_PLACEHOLDER|{{ jenkins_ace_lib_url }}|" 
@@ -89,5 +92,5 @@
 
 - name: Jenkins - Install jenkins
   become_user: "{{ non_root_user }}"
-  shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values-gen.yml --version {{ jenkins_helm_chart_version }} --namespace ace jenkins stable/jenkins
+  shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values-gen.yml --wait --timeout 10m0s --version {{ jenkins_helm_chart_version }} --namespace ace jenkins stable/jenkins
   ignore_errors: yes
