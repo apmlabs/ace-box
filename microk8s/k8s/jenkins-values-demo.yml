@@ -2,7 +2,7 @@ master:
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-master"
   image: "jenkins/jenkins"
-  tag: "2.277.1-lts"
+  tag: "JENKINS_VERSION_PLACEHOLDER"
   adminPassword: "dynatrace"
   #serviceType: "NodePort"
   #nodePort: 31000
