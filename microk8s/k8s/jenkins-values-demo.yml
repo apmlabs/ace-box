@@ -59,6 +59,8 @@ master:
       value: KUBE_BEARER_TOKEN_PLACEHOLDER
     - name: INGRESS_DOMAIN
       value: INGRESS_DOMAIN_PLACEHOLDER
+    - name: JAVA_OPTS
+      value: -Djenkins.install.runSetupWizard=false
   csrf:
     defaultCrumbIssuer:
       enabled: false
