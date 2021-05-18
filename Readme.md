@@ -203,6 +203,7 @@ Check [Behind the scenes](#behind-the-scenes) for more detail about what happens
     FAILED - RETRYING: Gitea - Wait for API to be up (1 retries left).
     fatal: [ace-box]: FAILED! => {"attempts": 60, "changed": false, "content": "", "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>", "redirected": false, "status": -1, "url": "http://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=1c8d4fcef25b3ae2a15d17d29be64c2c7aa22501"}
     ```
+9. Dynatrace Operator installation fails with "Error: Cluster already exists: ...": If you ever had a cluster created before please remove it from https://<dynatrace tenant>/#settings/kubernetesmonitoring;gf=all
 
 ## Accessing ace-box dashboard
 At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.
