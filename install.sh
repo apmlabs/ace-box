@@ -26,7 +26,7 @@ sudo apt-get update -y
 sudo apt-get upgrade -y
 
 echo "INIT - Installing packages and dependencies..."
-sudo apt-get install ansible -y
+sudo apt-get install vim ansible -y
 ansible --version
 echo "INIT - Setting up structure..."
 sudo mkdir /vagrant
