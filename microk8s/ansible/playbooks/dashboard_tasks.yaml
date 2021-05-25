@@ -14,8 +14,20 @@
     -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
     /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
 
-- name: Dashboard - Set domain for helm chart
-  shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/helm-charts/dashboard/values.yaml > /vagrant/helm-charts/dashboard/values-gen.yaml
+- name: Encrpyt http basic auth password
+  set_fact:
+    password_encrypted: "{{ dashboard_password | password_hash('md5') }}"
+
+- name: Encode http basic auth credentials
+  set_fact:
+    authb64encoded: "{{ [dashboard_user, password_encrypted] | join(':') | b64encode }}"
+
+- name: Dashboard - Build helm chart
+  shell: >
+    sed
+    -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g"
+    -e "s|AUTH_PLACEHOLDER|{{ authb64encoded }}|g"
+    /vagrant/helm-charts/dashboard/values.yaml > /vagrant/helm-charts/dashboard/values-gen.yaml
 
 - name: Build ace dashboard
   become_user: "{{ non_root_user }}"

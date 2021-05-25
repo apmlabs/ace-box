@@ -42,3 +42,6 @@ acebox:
       repo: "ace"          # repo that will be created on gitea, defaults to "hot-repo"
     activegate:
       download_location: "/vagrant/ansible/Dynatrace-ActiveGate-Linux-x86-latest.sh" # overwrite where the oneagent will be downloaded, subsequent vagrant up can be sped up that way
+    dashboard:
+      user: "dynatrace"
+      password: "dynatrace"

@@ -113,6 +113,11 @@ acebox.config.git.email | email address assigned to gitea user for account creat
 acebox.config.git.org | organization name created on gitea during install | no | ace 
 acebox.config.git.repo | repository name created on gitea during install | no | ace 
 acebox.config.activegate.download_location | overwrite where the oneagent will be downloaded, storing it inside /vagrant/* will speed up subsequent destroy and up commands as the AG does not have to be re-downloaded | no | not set
+acebox.config.dashboard.user | Dashboard login username | no | dynatrace
+acebox.config.dashboard.password | Dashboard login password | no | dynatrace
+
+
+
 
 #### Resource Requirements
 Each feature requires a certain amount of resources - on top of the base microk8s requirements.
