@@ -59,6 +59,8 @@ master:
       value: KUBE_BEARER_TOKEN_PLACEHOLDER
     - name: INGRESS_DOMAIN
       value: INGRESS_DOMAIN_PLACEHOLDER
+    - name: JAVA_OPTS
+      value: -Djenkins.install.runSetupWizard=false
   csrf:
     defaultCrumbIssuer:
       enabled: false
@@ -79,7 +81,7 @@ master:
     - pipeline-build-step:2.13
     - docker-plugin:1.2.2
     - blueocean:1.24.4
-    - configuration-as-code:1.47
+    - configuration-as-code:1.50
     - http_request:1.8.27
     - pipeline-utility-steps:2.6.1
     - ansible:1.1

@@ -113,6 +113,11 @@ acebox.config.git.email | email address assigned to gitea user for account creat
 acebox.config.git.org | organization name created on gitea during install | no | ace 
 acebox.config.git.repo | repository name created on gitea during install | no | ace 
 acebox.config.activegate.download_location | overwrite where the oneagent will be downloaded, storing it inside /vagrant/* will speed up subsequent destroy and up commands as the AG does not have to be re-downloaded | no | not set
+acebox.config.dashboard.user | Dashboard login username | no | dynatrace
+acebox.config.dashboard.password | Dashboard login password | no | dynatrace
+
+
+
 
 #### Resource Requirements
 Each feature requires a certain amount of resources - on top of the base microk8s requirements.
@@ -203,6 +208,7 @@ Check [Behind the scenes](#behind-the-scenes) for more detail about what happens
     FAILED - RETRYING: Gitea - Wait for API to be up (1 retries left).
     fatal: [ace-box]: FAILED! => {"attempts": 60, "changed": false, "content": "", "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>", "redirected": false, "status": -1, "url": "http://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=1c8d4fcef25b3ae2a15d17d29be64c2c7aa22501"}
     ```
+9. Dynatrace Operator installation fails with "Error: Cluster already exists: ...": If you ever had a cluster created before please remove it from https://<dynatrace tenant>/#settings/kubernetesmonitoring;gf=all
 
 ## Accessing ace-box dashboard
 At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.

@@ -1,3 +1,4 @@
 #nodeport: 30001
 replicasnum: 1
 domain: DOMAIN_PLACEHOLDER
+authb64encoded: AUTH_PLACEHOLDER
