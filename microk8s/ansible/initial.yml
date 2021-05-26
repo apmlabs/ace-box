@@ -22,7 +22,7 @@
     dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
     jenkins_setcreds:                 "{{ acebox['config']['jenkins']['setcreds'] | default(true) }}"
     jenkins_helm_chart_version:       "{{ acebox['config']['jenkins']['helm_chart_version'] | default('1.27.0') }}"
-    jenkins_version:                  "{{ acebox['config']['jenkins']['version'] | default('lts') }}"
+    jenkins_version:                  "{{ acebox['config']['jenkins']['version'] | default('2.277.4-lts') }}"
     jenkins_ace_lib_url:              "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/dynatrace-ace/dynatrace-jenkins-library.git') }}"
     jenkins_keptn_lib_url:            "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/keptn-sandbox/keptn-jenkins-library.git') }}"
     jenkins_user:                     "admin" #not used for configuring jenkins
