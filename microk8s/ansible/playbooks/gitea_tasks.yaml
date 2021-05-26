@@ -43,13 +43,7 @@
   until: result.status == 200
   retries: 120
   delay: 1
-
-#- name: "Gitea - Create org {{ git_org }}"
-#  shell: "curl -k -d '{\"full_name\":\"{{ git_org }}\", \"visibility\":\"public\", \"username\":\"{{ git_org }}\"}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/orgs?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - Create repo {{ git_repo }}"
-#   shell: "curl -k -d '{\"name\":\"{{ git_repo }}\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
+  
 - name: "Gitea - Git config"
   shell: "git config --global user.email \"{{ git_email }}\" && git config --global user.name \"{{ git_user }}\" && git config --global http.sslverify false"
 
@@ -64,57 +58,12 @@
     gitea_repo: "{{ git_repo }}"
     gitea_source_folder: "hot-repo"
 
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}"
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
-
-# - name: "Gitea - Add files to {{ git_repo }}"
-#   shell: "cp -r /vagrant/repos/hot-repo/. /home/vagrant/{{ git_repo }}"
-
-# - name: "Gitea - Git add/commit for {{ git_repo }}"
-#   shell: "cd /home/vagrant/{{ git_repo }} && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for {{ git_repo }}"
-#   shell: "cd /home/vagrant/{{ git_repo }} && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
-
-# - name: "Gitea - Create repo docs"
-#   shell: "curl -k -d '{\"name\":\"docs\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs"
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 
-
-# - name: "Gitea - Add files to docs"
-#   shell: "cp -R /vagrant/repos/docs/* /home/vagrant/docs"
-
-# - name: "Gitea - Git add/commit for docs"
-#   shell: "cd /home/vagrant/docs && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for docs"
-#   shell: "cd /home/vagrant/docs && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 
-
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
   vars:
     gitea_org: "ace"
     gitea_repo: "docs"
     gitea_source_folder: "docs"
-
-# Create repo for Monaco
-
-# - name: "Gitea - Create repo monaco"
-#   shell: "curl -k -d '{\"name\":\"monaco\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco"
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco" 
-
-# - name: "Gitea - Add files to monaco"
-#   shell: "cp -R /vagrant/repos/monaco/* /home/vagrant/monaco"
-
-# - name: "Gitea - Git add/commit for monaco"
-#   shell: "cd /home/vagrant/monaco && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for monaco"
-#   shell: "cd /home/vagrant/monaco && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco" 
-
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -157,24 +106,3 @@
     gitea_org: "quality-gates-hot"
     gitea_repo: "lab-guides"
     gitea_source_folder: "quality-gates-hot/lab-guides"
-
-# Create repo for monaco-hot
-# - name: "Gitea - Create repo monaco-hot"
-#   become_user: vagrant
-#   shell: "curl -k -d '{\"name\":\"monaco-hot\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco-hot"
-#   become_user: vagrant
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco-hot" 
-
-# - name: "Gitea - Add files to monaco-hot"
-#   become_user: vagrant
-#   shell: "cp -R /vagrant/repos/monaco-hot/* /home/vagrant/monaco-hot"
-
-# - name: "Gitea - Git add/commit for monaco-hot"
-#   become_user: vagrant
-#   shell: "cd /home/vagrant/monaco-hot && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for monaco-hot"
-#   become_user: vagrant
-#   shell: "cd /home/vagrant/monaco-hot && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco-hot" 
