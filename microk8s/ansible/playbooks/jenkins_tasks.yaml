@@ -1,16 +1,63 @@
-- name: Jenkins - Create persistent volume for jenkins
-  shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/jenkins-pvc.yml
-  ignore_errors: yes
+- name: Jenkins - Retrieve Gitea access token
+  shell: /snap/bin/microk8s.kubectl -n ace get secret gitea -o jsonpath='{.data.access_token}' | base64 -d
+  register: gitea_access_token_raw
+  tags:
+    - jenkins
 
-- name: Jenkins - Get registry nodeport
+- set_fact:
+    gitea_access_token: "{{ gitea_access_token_raw.stdout }}"
+  tags:
+    - jenkins
+
+- name: Jenkins - Retrieve Gitea domain
+  shell: /snap/bin/microk8s.kubectl -n ace get secret gitea -o jsonpath='{.data.gitea_domain}' | base64 -d
+  register: gitea_domain_raw
+  tags:
+    - jenkins
+
+- set_fact:
+    gitea_domain: "{{ gitea_domain_raw.stdout }}"
+  tags:
+    - jenkins
+
+- name: Jenkins - Retrieve Dynatrace Operator bearer token
+  shell: "/snap/bin/microk8s.kubectl get secret $(kubectl get sa dynatrace-kubernetes-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.token}' -n dynatrace | base64 --decode"
+  register: kube_bearer_token_raw
+  tags:
+    - jenkins
+
+- set_fact:
+    kube_bearer_token: "{{  kube_bearer_token_raw.stdout }}"
+  tags:
+    - jenkins
+
+- name: Jenkins - Retrieve Keptn API token
+  shell: /snap/bin/microk8s.kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode
+  register: keptn_api_token_raw
+  tags:
+    - jenkins
+
+- set_fact:
+    keptn_api_token: "{{ keptn_api_token_raw.stdout }}"
+  tags:
+    - jenkins
+
+- name: Jenkins - Retrieve registry nodeport
   shell: /snap/bin/microk8s.kubectl get svc registry -n container-registry -o jsonpath='{.spec.ports[0].nodePort}'
-  register: registry_port
+  register: registry_port_raw
+  tags:
+    - jenkins
+
+- set_fact:
+    registry_port: "{{ registry_port_raw.stdout }}"
+  tags:
+    - jenkins
 
 - name: Jenkins - Set environment variables TRAINING MODE
   shell: >
     sed 
     -e "s|GITHUB_USER_EMAIL_PLACEHOLDER||" 
-    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" 
+    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|" 
     -e "s|GITHUB_USER_NAME_PLACEHOLDER||" 
     -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER||" 
     -e "s|GITHUB_ORGANIZATION_PLACEHOLDER||" 
@@ -31,11 +78,13 @@
     -e "s|INGRESS_DOMAIN_PLACEHOLDER|{{ ingress_domain }}|"
     /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: jenkins_setcreds == true and acebox_mode == 'training'
+  tags:
+    - jenkins
 
 - name: Jenkins - Empty environment variables
   shell: >
     sed 
-    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|"
+    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|"
     -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|"
     -e "s|GITHUB_USER_EMAIL_PLACEHOLDER||" 
     -e "s|GITHUB_USER_NAME_PLACEHOLDER||" 
@@ -53,18 +102,22 @@
     -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER||"  
     /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: jenkins_setcreds != true and acebox_mode == 'training'
+  tags:
+    - jenkins
 
 #- name: Jenkins - Set environment variables DEMO MODE
-#  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER|https://api.keptn.{{ ingress_domain }}|" -e "s|KEPTN_BRIDGE_PLACEHOLDER|https://bridge.keptn.{{ ingress_domain }}|" -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
+#  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER|https://api.keptn.{{ ingress_domain }}|" -e "s|KEPTN_BRIDGE_PLACEHOLDER|https://bridge.keptn.{{ ingress_domain }}|" -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
 #  when: acebox_mode == 'demo'
 
 - debug: var=gitea_access_token
+  tags:
+    - jenkins
 
 - name: Jenkins - Set environment variables DEMO MODE
   shell: >
     sed 
     -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git_email }}|" 
-    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port.stdout }}|" 
+    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|" 
     -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git_user }}|" 
     -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ gitea_access_token }}|" 
     -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git_org }}|" 
@@ -85,15 +138,21 @@
     -e "s|INGRESS_DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" 
     /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
   when: acebox_mode == 'demo'
+  tags:
+    - jenkins
 
 - name: Jenkins - Allow jenkins to admin k8s
   shell: /snap/bin/microk8s.kubectl create clusterrolebinding jenkins --clusterrole cluster-admin --serviceaccount=jenkins:ace
   ignore_errors: yes
+  tags:
+    - jenkins
 
 - name: Jenkins - Install jenkins
   become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values-gen.yml --version {{ jenkins_helm_chart_version }} --namespace ace jenkins jenkins/jenkins --wait --timeout 600s
   ignore_errors: yes
+  tags:
+    - jenkins
 
 - name: Jenkins - Uninstall jenkins
   become_user: "{{ non_root_user }}"
