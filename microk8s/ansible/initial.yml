@@ -27,7 +27,8 @@
     jenkins_keptn_lib_url:            "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/keptn-sandbox/keptn-jenkins-library.git') }}"
     jenkins_user:                     "admin" #not used for configuring jenkins
     jenkins_password:                 "dynatrace" #not used for configuring jenkins
-    keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.8.2')}}"
+    # keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.8.2')}}"
+    keptn_version:                        "{{ acebox['config']['keptn']['version'] | default('0.8.3')}}"
     keptn_dynatrace_service_version:      "{{ acebox['config']['keptn']['dynatrace_service_version'] | default('0.13.1')}}"
     keptn_dynatrace_sli_service_version:  "{{ acebox['config']['keptn']['dynatrace_sli_service_version'] | default('0.10.2')}}"
     keptn_jmeter_ext_service_version:     "{{ acebox['config']['keptn']['dynatrace_jmeter_ext_service_version'] | default('0.2.0')}}"
@@ -130,22 +131,16 @@
   - name: Install and configure Gitlab
     include_tasks: playbooks/gitlab_tasks.yaml
     when: feature_gitlab
-    args:
-      apply:
-        tags:
-          - git
     tags:
       - git
+      - git_uninstall
 
   - name: Install and configure Gitea
     include_tasks: playbooks/gitea_tasks.yaml
     when: feature_gitea or acebox_mode == "demo"
-    args:
-      apply:
-        tags:
-          - git
     tags:
       - git
+      - git_uninstall
 
   - name: Install and configure Keptn
     include_tasks: playbooks/keptn_tasks.yaml
@@ -160,12 +155,9 @@
   - name: Install and configure jenkins
     include_tasks: playbooks/jenkins_tasks.yaml
     when: feature_jenkins or acebox_mode == "demo"
-    args:
-      apply:
-        tags:
-          - jenkins
     tags:
       - jenkins
+      - jenkins_uninstall
 
   - name: Create ACE Dashboard
     include_tasks: playbooks/dashboard_tasks.yaml
