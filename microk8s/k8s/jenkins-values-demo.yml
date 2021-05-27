@@ -1,25 +1,10 @@
-master:
-  # Used for label app.kubernetes.io/component
-  componentName: "jenkins-master"
-  image: "jenkins/jenkins"
+controller:
   tag: "JENKINS_VERSION_PLACEHOLDER"
   adminPassword: "dynatrace"
-  #serviceType: "NodePort"
-  #nodePort: 31000
-  serviceType: ClusterIP
+  numExecutors: 2
   ingress:
     enabled: true
     hostName: JENKINS_INGRESS_PLACEHOLDER
-    #certManager: true
-    # annotations:
-    #   kubernetes.io/ingress.class: "nginx"    
-    #   cert-manager.io/issuer: "letsencrypt-staging"
-    #   ingress.kubernetes.io/secure-backends: true
-    #   kubernetes.io/tls-acme: true
-    # tls:    
-    # - hosts:    
-    #   - JENKINS_INGRESS_PLACEHOLDER
-    #   secretName: jenkins.local-tls 
   containerEnv:
     - name: GITHUB_USER_EMAIL
       value: GITHUB_USER_EMAIL_PLACEHOLDER
@@ -59,48 +44,38 @@ master:
       value: KUBE_BEARER_TOKEN_PLACEHOLDER
     - name: INGRESS_DOMAIN
       value: INGRESS_DOMAIN_PLACEHOLDER
-    - name: JAVA_OPTS
-      value: -Djenkins.install.runSetupWizard=false
-  csrf:
-    defaultCrumbIssuer:
-      enabled: false
-      proxyCompatability: true
   installPlugins:
-    - command-launcher:1.5
-    - kubernetes:1.29.2
-    - kubernetes-credentials-provider:0.16
+    - command-launcher:1.6
+    - kubernetes:1.29.6
+    - kubernetes-credentials-provider:0.18-1
     - workflow-job:2.40
     - workflow-aggregator:2.6
     - credentials-binding:1.24
-    - git:4.6.0
-    - google-oauth-plugin:1.0.4
+    - git:4.7.1
+    - google-oauth-plugin:1.0.5
     - google-source-plugin:0.4
     - performance:3.19
-    - github-branch-source:2.10.2
+    - github-branch-source:2.10.4
     - job-dsl:1.77
     - pipeline-build-step:2.13
     - docker-plugin:1.2.2
-    - blueocean:1.24.4
-    - configuration-as-code:1.50
-    - http_request:1.8.27
-    - pipeline-utility-steps:2.6.1
+    - blueocean:1.24.7
+    - configuration-as-code:1.51
+    - http_request:1.9.0
+    - pipeline-utility-steps:2.7.1
     - ansible:1.1
     - gitea:1.2.1
+  installLatestPlugins: true
   JCasC:
     enabled: true
-    defaultConfig: false
+    defaultConfig: true
     configScripts:
       jenkins-settings: |
         jenkins:
           agentProtocols:
           - "JNLP4-connect"
           - "Ping"
-          authorizationStrategy:
-            loggedInUsersCanDoAnything:
-              allowAnonymousRead: false
           systemMessage: Welcome to the ACE BOX CI\CD server.  This Jenkins is configured and managed 'as code'.
-          disableRememberMe: false
-          numExecutors: 2
           globalNodeProperties:
           - envVars:
               env:
@@ -881,7 +856,3 @@ master:
                     }
                   }
                 }
-
-persistence:
-  enabled: true
-  existingClaim: "jenkins-pvc"
