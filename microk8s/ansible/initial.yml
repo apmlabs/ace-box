@@ -131,9 +131,12 @@
   - name: Install and configure Gitlab
     include_tasks: playbooks/gitlab_tasks.yaml
     when: feature_gitlab
+    args:
+      apply:
+        tags:
+          - git
     tags:
       - git
-      - git_uninstall
 
   - name: Install and configure Gitea
     include_tasks: playbooks/gitea_tasks.yaml
