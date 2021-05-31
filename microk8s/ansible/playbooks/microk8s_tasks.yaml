@@ -1,6 +1,6 @@
 - name: Microk8s - Install microk8s
   become: true
-  command: snap install microk8s --classic --channel=1.18/stable 
+  command: snap install microk8s --classic --channel=1.21/stable 
   args:
     creates: /snap/bin/microk8s.kubectl
   

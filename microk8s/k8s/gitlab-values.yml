@@ -54,7 +54,8 @@ global:
     ingress:
       class: "nginx"
       configureCertmanager: false
-      annotations: {}
+      annotations:
+        kubernetes.io/ingress.class: public
       enabled: true
       tls:
         enabled: false
