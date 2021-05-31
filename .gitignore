@@ -23,8 +23,9 @@ self-monitoring-*
 #share folder between VM and host
 microk8s/share
 
-#any .log folder
+#any .log file and folder
 */.log/
+*.log
 
 **key*
 
@@ -40,3 +41,4 @@ override.tf.json
 *_override.tf.json
 *tfplan*
 *.terraform.lock.hcl
+

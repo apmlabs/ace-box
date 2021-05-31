@@ -1,11 +1,13 @@
 ## acebox requires public IP address
 resource "google_compute_address" "acebox" {
   name = "${var.name_prefix}-ipv4-addr-${random_id.uuid.hex}"
+  count = var.gcloud_count
 }
 
 ## Allow access to acebox via HTTPS
 resource "google_compute_firewall" "acebox-https" {
   name    = "${var.name_prefix}-allow-https-${random_id.uuid.hex}"
+  count = var.gcloud_count
   network = "default"
 
   allow {
@@ -19,6 +21,7 @@ resource "google_compute_firewall" "acebox-https" {
 ## Allow access to acebox via HTTPS
 resource "google_compute_firewall" "acebox-http" {
   name    = "${var.name_prefix}-allow-http-${random_id.uuid.hex}"
+  count = var.gcloud_count
   network = "default"
 
   allow {
@@ -32,6 +35,7 @@ resource "google_compute_firewall" "acebox-http" {
 ## Create acebox host
 resource "google_compute_instance" "acebox" {
   name         = "${var.name_prefix}-${random_id.uuid.hex}"
+  count = var.gcloud_count
   machine_type = var.acebox_size
   zone         = var.gcloud_zone
 
@@ -46,7 +50,7 @@ resource "google_compute_instance" "acebox" {
     network = "default"
 
     access_config {
-      nat_ip = google_compute_address.acebox.address
+      nat_ip = google_compute_address.acebox[count.index].address
     }
   }
 
@@ -84,4 +88,12 @@ resource "google_compute_instance" "acebox" {
         "/home/${var.acebox_user}/install_fixed.sh ${self.network_interface.0.access_config.0.nat_ip} ${var.acebox_user}"
       ]
   }
+}
+
+
+output "acebox_gcloud" {
+  #value = "connect using ssh -i [location of key file] ${var.acebox_user}@${google_compute_instance.acebox[0].network_interface[0].access_config[0].nat_ip}"
+  value = toset([
+    for ace in google_compute_instance.acebox : ace.network_interface[0].access_config[0].nat_ip
+  ])
 }

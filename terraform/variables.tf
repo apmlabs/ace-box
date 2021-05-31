@@ -37,3 +37,23 @@ variable "ssh_keys" {
     public  = "./key.pub"
   }
 }
+
+variable "gcloud_count" {
+  description = "Set 1 to provision in GCP"
+  default = 0
+}
+
+variable "azure_count" {
+  description = "Set 1 to provision in Azure"
+  default = 0
+}
+
+variable "azure_location" {
+  description = "Azure Locationwhere resources will be created"
+  default = "westeurope"
+}
+
+variable "azure_instance_size" {
+  description = "Azure VM Instance type"
+  default = "Standard_A4m_v2"
+}
