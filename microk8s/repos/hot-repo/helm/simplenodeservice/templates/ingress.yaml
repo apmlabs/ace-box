@@ -4,6 +4,7 @@ kind: Ingress
 metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Chart.Name }}
+    kubernetes.io/ingress.class: "public"
   labels:
     app: {{ .Chart.Name }}
     app.kubernetes.io/managed-by: Helm
