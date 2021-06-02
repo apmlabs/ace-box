@@ -1,23 +1,6 @@
-variable "gcloud_project" {
-  description = "Google Cloud Project where resources will be created"
-}
-
-variable "gcloud_zone" {
-  description = "Google Cloud Zone where resources will be created"
-}
-
-variable "gcloud_cred_file" {
-  description = "Path to GCloud credential file"
-}
-
 variable "name_prefix" {
   description = "Prefix to distinguish the instance"
   default = "ace-box-cloud"
-}
-
-variable "acebox_size" {
-  description = "Size (machine type) of the ace-box instance"
-  default     = "n2-standard-8"
 }
 
 variable "acebox_user" {
@@ -25,9 +8,14 @@ variable "acebox_user" {
   default     = "ace"
 }
 
-variable "acebox_os" {
+variable "acebox_os_azure" {
   description = "Ubuntu version to use"
-  default     = "ubuntu-minimal-1804-lts"
+  default = {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
 }
 
 variable "ssh_keys" {
@@ -36,16 +24,6 @@ variable "ssh_keys" {
     private = "./key"
     public  = "./key.pub"
   }
-}
-
-variable "gcloud_count" {
-  description = "Set 1 to provision in GCP"
-  default = 0
-}
-
-variable "azure_count" {
-  description = "Set 1 to provision in Azure"
-  default = 0
 }
 
 variable "azure_location" {

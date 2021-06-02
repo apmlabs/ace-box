@@ -1,6 +1,5 @@
 resource "azurerm_resource_group" "rg" {
   name = "${var.name_prefix}-rg-${random_id.uuid.hex}"
-  count = var.azure_count
   location = var.azure_location
   tags = {
     environment = "acebox"
@@ -9,10 +8,9 @@ resource "azurerm_resource_group" "rg" {
 
 resource "azurerm_virtual_network" "vnet" {
   name = "acebox-vnet"
-  count = var.azure_count
   address_space = ["10.0.0.0/16"]
   location = var.azure_location
-  resource_group_name = azurerm_resource_group.rg[0].name
+  resource_group_name = azurerm_resource_group.rg.name
   tags = {
     environment = "acebox"
   }
@@ -20,18 +18,16 @@ resource "azurerm_virtual_network" "vnet" {
 
 resource "azurerm_subnet" "ace-box_subnet" {
   name = "acebox_subnet"
-  count = var.azure_count
-  resource_group_name =  azurerm_resource_group.rg[0].name
-  virtual_network_name = azurerm_virtual_network.vnet[0].name
-  address_prefix = "10.0.1.0/24"
+  resource_group_name =  azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes = ["10.0.1.0/24"]
 }
 
 resource "azurerm_public_ip" "acebox_publicip" {
   name = "acebox_publicip"
-  count = var.azure_count
   location = var.azure_location
-  resource_group_name = azurerm_resource_group.rg[0].name
-  allocation_method = "Dynamic"
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method = "Static"
   sku = "Basic"
   tags = {
     environment = "acebox"
@@ -41,14 +37,13 @@ resource "azurerm_public_ip" "acebox_publicip" {
 resource "azurerm_network_interface" "acebox-nic" {
   name = "acebox-nic"
   location = var.azure_location
-  resource_group_name = azurerm_resource_group.rg[0].name
-  count = var.azure_count
+  resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
     name = "ipconfig1"
-    subnet_id = azurerm_subnet.ace-box_subnet[0].id
+    subnet_id = azurerm_subnet.ace-box_subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id = azurerm_public_ip.acebox_publicip[0].id
+    public_ip_address_id = azurerm_public_ip.acebox_publicip.id
   }
   tags = {
     environment = "acebox"
@@ -56,15 +51,14 @@ resource "azurerm_network_interface" "acebox-nic" {
 }
 
 resource "azurerm_network_interface_security_group_association" "acebox-nic-nsg" {
-    network_interface_id      = azurerm_network_interface.acebox-nic[0].id
-    network_security_group_id = azurerm_network_security_group.acebox_nsg[0].id
+    network_interface_id      = azurerm_network_interface.acebox-nic.id
+    network_security_group_id = azurerm_network_security_group.acebox_nsg.id
 }
 
 resource "azurerm_network_security_group" "acebox_nsg" {
     name                = "acebox-nsg"
     location            = var.azure_location
-    resource_group_name = azurerm_resource_group.rg[0].name
-    count = var.azure_count
+    resource_group_name = azurerm_resource_group.rg.name
 
     security_rule {
         name                       = "SSH"
@@ -105,53 +99,13 @@ resource "azurerm_network_security_group" "acebox_nsg" {
     }
 }
 
-# resource "azurerm_firewall" "acebox-azure_firewall" {
-#   count = var.azure_count
-#   depends_on=[azurerm_public_ip.acebox_publicip[0]]
-#   name = "ace-box_firewall"
-#   resource_group_name = azurerm_resource_group.rg[0].name
-#   location = var.azure_location
-#   ip_configuration {
-#     name = "acebox-${var.azure_location}-${random_id.uuid.hex}-azure-firewall-config"
-#     subnet_id = azurerm_subnet.ace-box_subnet[0].id
-#     public_ip_address_id = azurerm_public_ip.acebox_publicip[0].id
-#   }
- 
-#   tags = {
-#     environment = "acebox"
-#   }
-# }
-
-# resource "azurerm_firewall_network_rule_collection" "acebox-fw-web" {
-#   name = "acebox-azure-firewall-web-traffc"
-#   azure_firewall_name = azurerm_firewall.acebox-azure_firewall[0].name
-#   resource_group_name = azurerm_resource_group.rg[0].name
-#   priority = 101
-#   action = "Allow"
-#   rule {
-#     name = "HTTP"
-#     source_addresses = ["*"]
-#     destination_ports = ["80"]
-#     destination_addresses = ["*"]
-#     protocols = ["TCP"]  
-#   }
-#   rule {
-#     name = "HTTPS"
-#     source_addresses = ["*"]
-#     destination_ports = ["443"]
-#     destination_addresses = ["*"]
-#     protocols = ["TCP"]
-#   }
-# }
-
 resource "azurerm_linux_virtual_machine" "acebox" {
   name                  = "ace-box"  
   location              = var.azure_location
-  resource_group_name   = azurerm_resource_group.rg[0].name
-  network_interface_ids = [azurerm_network_interface.acebox-nic[0].id]
+  resource_group_name   = azurerm_resource_group.rg.name
+  network_interface_ids = [azurerm_network_interface.acebox-nic.id]
   size                  = var.azure_instance_size
   admin_username        = var.acebox_user
-  count = var.azure_count
 
   admin_ssh_key {
       username = var.acebox_user
@@ -159,10 +113,10 @@ resource "azurerm_linux_virtual_machine" "acebox" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
+    publisher = var.acebox_os_azure.publisher
+    offer     = var.acebox_os_azure.offer
+    sku       = var.acebox_os_azure.sku
+    version   = var.acebox_os_azure.version
   }
 
   os_disk {
@@ -187,12 +141,12 @@ resource "azurerm_linux_virtual_machine" "acebox" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/../microk8s"
+    source      = "${path.module}/../../microk8s"
     destination = "~/"
   }
 
   provisioner "file" {
-    source      = "${path.module}/../install.sh"
+    source      = "${path.module}/../../install.sh"
     destination = "~/install.sh"
   }
 
@@ -205,7 +159,3 @@ resource "azurerm_linux_virtual_machine" "acebox" {
   }
 }
 
-output "acebox_azure" {
-  #value = "connect using ssh -i [location of key file] ${var.acebox_user}@${google_compute_instance.acebox[0].network_interface[0].access_config[0].nat_ip}"
-  value = "${azurerm_public_ip.acebox_publicip.*}"
-}
