@@ -9,7 +9,8 @@
     dest: "{{ activegate_download_location }}"
     mode: +x
     timeout: 300
-    headers: "Authorization: Api-token {{ dynatrace_paas_token }}"
+    headers:
+      Authorization: "Api-token {{ dynatrace_paas_token }}"
   when: not ag_available.stat.exists
 
 - name: ActiveGate - Install synthetic-enabled ActiveGate

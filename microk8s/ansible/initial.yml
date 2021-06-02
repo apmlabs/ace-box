@@ -21,8 +21,8 @@
     dynatrace_paas_token:             "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
     jenkins_setcreds:                 "{{ acebox['config']['jenkins']['setcreds'] | default(true) }}"
-    jenkins_helm_chart_version:       "{{ acebox['config']['jenkins']['helm_chart_version'] | default('1.27.0') }}"
-    jenkins_version:                  "{{ acebox['config']['jenkins']['version'] | default('lts') }}"
+    jenkins_helm_chart_version:       "{{ acebox['config']['jenkins']['helm_chart_version'] | default('3.3.18') }}"
+    jenkins_version:                  "{{ acebox['config']['jenkins']['version'] | default('2.277.4') }}"
     jenkins_ace_lib_url:              "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/dynatrace-ace/dynatrace-jenkins-library.git') }}"
     jenkins_keptn_lib_url:            "{{ acebox['config']['jenkins']['ace_lib_url'] | default('https://github.com/keptn-sandbox/keptn-jenkins-library.git') }}"
     jenkins_user:                     "admin" #not used for configuring jenkins
@@ -56,58 +56,138 @@
     set_fact:
       ingress_domain: "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
     when: acebox_provisioner == "vagrant"
+    tags:
+      - always
 
   - name: Set Ingress Domain - Terraform
     set_fact:
       ingress_domain: "{{ public_ip }}.{{ microk8s_domain_ext }}"
     when: acebox_provisioner == "terraform"
+    tags:
+      - always
 
   - debug: var=ingress_domain
+    tags:
+      - always
 
   - name: Init install tasks
     include_tasks: playbooks/init_tasks.yaml
+    args:
+      apply:
+        tags:
+          - init
+    tags:
+      - init
 
   - name: Install and configure microk8s
     include_tasks: playbooks/microk8s_tasks.yaml
+    args:
+      apply:
+        tags:
+          - k8s
+    tags:
+      - k8s
   
   - name: Install and configure Dynatrace ActiveGate
     include_tasks: playbooks/dtactivegate_tasks.yaml
     when: feature_activegate or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - dt_core
+    tags:
+      - dt_core
   
   - name: Install and configure helm
     include_tasks: playbooks/helm.yaml
+    args:
+      apply:
+        tags:
+          - k8s
+    tags:
+      - k8s
   
   - name: Install and configure Dynatrace OneAgent
     include_tasks: playbooks/dtoneagent_tasks.yaml
     when: feature_oneagent or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - dt_core
+    tags:
+      - dt_core
 
   - name: Install and configure cert-manager
     include_tasks: playbooks/cert_manager_tasks.yaml
     when: feature_cert_manager or acebox_provisioner == "terraform"
+    args:
+      apply:
+        tags:
+          - k8s
+    tags:
+      - k8s
   
   - name: Install and configure Gitlab
     include_tasks: playbooks/gitlab_tasks.yaml
     when: feature_gitlab
+    args:
+      apply:
+        tags:
+          - git
+    tags:
+      - git
 
   - name: Install and configure Gitea
     include_tasks: playbooks/gitea_tasks.yaml
     when: feature_gitea or acebox_mode == "demo"
+    tags:
+      - git
+      - git_uninstall
 
   - name: Install and configure Keptn
     include_tasks: playbooks/keptn_tasks.yaml
     when: feature_keptn or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - keptn
+    tags:
+      - keptn
 
   - name: Install and configure jenkins
     include_tasks: playbooks/jenkins_tasks.yaml
     when: feature_jenkins or acebox_mode == "demo"
+    tags:
+      - jenkins
+      - jenkins_uninstall
 
   - name: Create ACE Dashboard
     include_tasks: playbooks/dashboard_tasks.yaml
     when: feature_dashboard or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - dashboard
+    tags:
+      - dashboard
   
   - name: Set up Monaco
     include_tasks: playbooks/monaco_tasks.yaml
     when: acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - monaco
+    tags:
+      - monaco
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml
+    args:
+      apply:
+        tags:
+          - init
+          - post_install
+    tags:
+      - init
+      - post_install
