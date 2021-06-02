@@ -12,7 +12,7 @@ master:
     hostName: JENKINS_INGRESS_PLACEHOLDER
     #certManager: true
     annotations:
-      kubernetes.io/ingress.class: "public"    
+      kubernetes.io/ingress.class: "nginx"    
     #   cert-manager.io/issuer: "letsencrypt-staging"
     #   ingress.kubernetes.io/secure-backends: true
     #   kubernetes.io/tls-acme: true

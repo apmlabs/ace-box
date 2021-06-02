@@ -45,7 +45,7 @@ ingress:
   ## If certManager is set to true, annotation kubernetes.io/tls-acme: "true" will automatically be set
   annotations:
     #cert-manager.io/issuer: letsencrypt-staging
-    kubernetes.io/ingress.class: public
+    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-body-size: 100m
 
   ## The list of additional hostnames to be covered with this ingress record.
