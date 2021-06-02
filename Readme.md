@@ -1,6 +1,6 @@
 # Welcome to the ACE-BOX
 
-The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can use as a portable sandbox, demo and testing environment. The key is that it is spun up on demand on your local workstation, without the need of an expensive cloud provider. 
+The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can use as a portable sandbox, demo and testing environment. 
 
 ## Check out [Troubleshooting](#troubleshooting) before reaching out!
 
@@ -8,9 +8,10 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
 - [Welcome to the ACE-BOX](#welcome-to-the-ace-box)
   - [Check out Troubleshooting before reaching out!](#check-out-troubleshooting-before-reaching-out)
   - [Release notes](#release-notes)
+  - [Deployment Modes](#deployment-modes)
   - [Components](#components)
-  - [Prerequisites](#prerequisites)
-  - [Cloud Version](#cloud-version)
+  - [Local version using vagrant](#local-version-using-vagrant)
+  - [Cloud Version using terraform](#cloud-version-using-terraform)
   - [Spinning up the ace-box](#spinning-up-the-ace-box)
     - [Step 1 - Clone the ace-box repository](#step-1---clone-the-ace-box-repository)
     - [Step 2 - change directory to microk8s](#step-2---change-directory-to-microk8s)
@@ -31,6 +32,12 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
 ## Release notes
 Please check [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
+## Deployment Modes
+The ACE-BOX comes in two deployment modes based on your requirement:
+
+  1. Local installation (on your workstation) using vagrant
+  2. Cloud installation using terraform
+
 ## Components
 ACE-BOX comes with the following components
 
@@ -44,16 +51,16 @@ ACE-BOX comes with the following components
 | ace dashboard | built on the spot |
 | gitea local git server | 1.11.6 |
 
-## Prerequisites
-To run the ace-box, the following is required:
+## Local version using vagrant
+To run the ace-box locally, the following is required:
 - a workstation with at least **16GB of RAM** and **4 CPU cores (non-virtualized)**
 - virtualbox installed (6.1.x tested)
 - vagrant installed (2.2.7 tested)
 - Dynatrace tenant (prod or sprint, dev not recommended)
 - Hyper-V disabled on Windows machines, check [Troubleshooting](#troubleshooting) for more information
 
-## Cloud Version
-In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](terraform/Readme.md) for more details. Currently GCP is supported.
+## Cloud Version using terraform
+In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](terraform/Readme.md) for more details. Currently GCP and azure are supported.
 
 ## Spinning up the ace-box
 
