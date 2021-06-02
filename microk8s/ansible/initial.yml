@@ -87,6 +87,26 @@
           - k8s
     tags:
       - k8s
+
+  - name: Set up Monaco
+    include_tasks: playbooks/monaco_tasks.yaml
+    when: acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - monaco
+    tags:
+      - monaco
+  
+  - name: Clean Up Dynatrace
+    include_tasks: playbooks/monaco_cleanup_tasks.yaml
+    when: acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - monaco
+    tags:
+      - monaco
   
   - name: Install and configure Dynatrace ActiveGate
     include_tasks: playbooks/dtactivegate_tasks.yaml
@@ -171,8 +191,8 @@
     tags:
       - dashboard
   
-  - name: Set up Monaco
-    include_tasks: playbooks/monaco_tasks.yaml
+  - name: Configure Dynatrace
+    include_tasks: playbooks/monaco_config_tasks.yaml
     when: acebox_mode == "demo"
     args:
       apply:

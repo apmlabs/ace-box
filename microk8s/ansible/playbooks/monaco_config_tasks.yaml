@@ -1,0 +1,18 @@
+- name: Monaco - Apply Config
+  shell:
+    cmd: /usr/local/bin/monaco -e=/vagrant/monaco/environments.yaml -p=acebox /vagrant/monaco/projects
+  environment:
+    DT_ENV_URL: "{{ dynatrace['tenant'] }}"
+    DT_API_TOKEN: "{{ dynatrace['apitoken'] }}"
+    INGRESS_DOMAIN: "{{ ingress_domain }}"
+    JENKINS_USER: "{{ jenkins_user }}"
+    JENKINS_PASSWORD: "{{ jenkins_password }}"
+    GITEA_USER: "{{ git_user }}"
+    GITEA_PASSWORD: "{{ git_password }}"
+    GITEA_PAT: "{{ gitea_access_token }}"
+    KEPTN_API_TOKEN: "{{ keptn_api_token }}"
+    KEPTN_BRIDGE_USER: "{{ keptn_bridge_user }}"
+    KEPTN_BRIDGE_PASSWORD: "{{ keptn_bridge_password }}"
+    GITLAB_USER: "{{ gitlab_user | default('Not Installed')}}"
+    GITLAB_PASSWORD: "{{ gitlab_root_password | default('Not Installed') }}"
+    
