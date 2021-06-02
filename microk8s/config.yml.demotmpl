@@ -17,3 +17,4 @@ acebox:
     activegate:
     microk8s:
       domain_ext: "nip.io"      # defaults to xip.io, set to nip.io in case of stability issues
+    dashboard:

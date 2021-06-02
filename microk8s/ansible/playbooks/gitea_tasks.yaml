@@ -2,12 +2,21 @@
 - name: Gitea - Add helm repo
   become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm repo add k8s-land https://charts.k8s.land
+  tags:
+    - git
 
 - set_fact:
     gitea_domain: "gitea.{{ ingress_domain }}"
+  tags:
+    - git
 
 - debug: var=gitea_domain
+  tags:
+    - git
+
 - debug: var=gitea_version
+  tags:
+    - git
 
 - name: Gitea - Set placeholders
   shell: >
@@ -15,23 +24,47 @@
     -e "s|GITEA_INGRESS_PLACEHOLDER|{{ gitea_domain }}|"  
     -e "s|GITEA_VERSION_PLACEHOLDER|{{ gitea_version }}|g"  
     /vagrant/k8s/gitea-values.yml > /vagrant/k8s/gitea-values-gen.yml
+  tags:
+    - git
 
 - name: Gitea - Install gitea using helm
   become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm install gitea k8s-land/gitea -f /vagrant/k8s/gitea-values-gen.yml --namespace ace
   ignore_errors: yes
+  tags:
+    - git
 
 - name: Gitea - Wait for gitea to be ready
   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
+  tags:
+    - git
 
 - name: "Gitea - Create default user {{ git_user }}"
   shell: /snap/bin/microk8s.kubectl exec -t $(kubectl -n ace get po -l app=gitea-gitea -o jsonpath='{.items[0].metadata.name}') -n ace -- bash -c 'su - git -c "/usr/local/bin/gitea --custom-path /data/gitea --config /data/gitea/conf/app.ini  admin create-user --username {{ git_user }} --password {{ git_password }} --email {{ git_email }} --admin --access-token"'
   register: token_raw
+  tags:
+    - git
 
 - set_fact:
     gitea_access_token: "{{  token_raw.stdout | regex_search('Access token was successfully created... (.*)') | regex_replace ('Access token was successfully created... ', '') }}"
+  tags:
+    - git
 
 - debug: var=gitea_access_token
+  tags:
+    - git
+
+- name: Gitea - Create Gitea secret
+  shell: /snap/bin/microk8s.kubectl -n ace create secret generic gitea --from-literal=gitea_domain={{ gitea_domain }} --from-literal=git_user={{ git_user }} --from-literal=access_token={{ gitea_access_token }}
+  tags:
+    - git
+
+- name: Gitea - Delete Gitea secret
+  shell: /snap/bin/microk8s.kubectl -n ace delete secret gitea
+  ignore_errors: yes
+  tags:
+    - never
+    - git_uninstall
 
 # The wait is needed as sometimes the API is not up even though Gitea deployment is ready
 - name: Gitea - Wait for API to be up
@@ -43,19 +76,19 @@
   until: result.status == 200
   retries: 120
   delay: 1
-
-#- name: "Gitea - Create org {{ git_org }}"
-#  shell: "curl -k -d '{\"full_name\":\"{{ git_org }}\", \"visibility\":\"public\", \"username\":\"{{ git_org }}\"}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/orgs?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - Create repo {{ git_repo }}"
-#   shell: "curl -k -d '{\"name\":\"{{ git_repo }}\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
+  tags:
+    - git
+  
 - name: "Gitea - Git config"
   shell: "git config --global user.email \"{{ git_email }}\" && git config --global user.name \"{{ git_user }}\" && git config --global http.sslverify false"
+  tags:
+    - git
 
 - name: "Gitea - Git config"
   become_user: "{{ non_root_user }}"
   shell: "git config --global user.email \"{{ git_email }}\" && git config --global user.name \"{{ git_user }}\" && git config --global http.sslverify false"
+  tags:
+    - git
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -63,33 +96,9 @@
     gitea_org: "ace"
     gitea_repo: "{{ git_repo }}"
     gitea_source_folder: "hot-repo"
-
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}"
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
-
-# - name: "Gitea - Add files to {{ git_repo }}"
-#   shell: "cp -r /vagrant/repos/hot-repo/. /home/vagrant/{{ git_repo }}"
-
-# - name: "Gitea - Git add/commit for {{ git_repo }}"
-#   shell: "cd /home/vagrant/{{ git_repo }} && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for {{ git_repo }}"
-#   shell: "cd /home/vagrant/{{ git_repo }} && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/{{ git_repo }}" 
-
-# - name: "Gitea - Create repo docs"
-#   shell: "curl -k -d '{\"name\":\"docs\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs"
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 
-
-# - name: "Gitea - Add files to docs"
-#   shell: "cp -R /vagrant/repos/docs/* /home/vagrant/docs"
-
-# - name: "Gitea - Git add/commit for docs"
-#   shell: "cd /home/vagrant/docs && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for docs"
-#   shell: "cd /home/vagrant/docs && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/docs" 
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -97,24 +106,9 @@
     gitea_org: "ace"
     gitea_repo: "docs"
     gitea_source_folder: "docs"
-
-# Create repo for Monaco
-
-# - name: "Gitea - Create repo monaco"
-#   shell: "curl -k -d '{\"name\":\"monaco\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
-
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco"
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco" 
-
-# - name: "Gitea - Add files to monaco"
-#   shell: "cp -R /vagrant/repos/monaco/* /home/vagrant/monaco"
-
-# - name: "Gitea - Git add/commit for monaco"
-#   shell: "cd /home/vagrant/monaco && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for monaco"
-#   shell: "cd /home/vagrant/monaco && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco" 
-
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -122,6 +116,9 @@
     gitea_org: "ace"
     gitea_repo: "monaco"
     gitea_source_folder: "monaco"
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -129,6 +126,9 @@
     gitea_org: "monaco-hot"
     gitea_repo: "monaco-hot"
     gitea_source_folder: "monaco-hot"
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -136,6 +136,9 @@
     gitea_org: "quality-gates-hot"
     gitea_repo: "carts"
     gitea_source_folder: "quality-gates-hot/carts"
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -143,6 +146,9 @@
     gitea_org: "quality-gates-hot"
     gitea_repo: "k8s-deploy-staging"
     gitea_source_folder: "quality-gates-hot/k8s-deploy-staging"
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -150,6 +156,9 @@
     gitea_org: "quality-gates-hot"
     gitea_repo: "jenkins-release-branch"
     gitea_source_folder: "quality-gates-hot/jenkins-release-branch"
+  tags:
+    - git
+    - git_uninstall
 
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
@@ -157,24 +166,22 @@
     gitea_org: "quality-gates-hot"
     gitea_repo: "lab-guides"
     gitea_source_folder: "quality-gates-hot/lab-guides"
+  tags:
+    - git
+    - git_uninstall
 
-# Create repo for monaco-hot
-# - name: "Gitea - Create repo monaco-hot"
-#   become_user: vagrant
-#   shell: "curl -k -d '{\"name\":\"monaco-hot\", \"private\":false, \"auto-init\":true}' -H \"Content-Type: application/json\" -X POST \"http://{{ gitea_domain }}/api/v1/org/{{ git_org }}/repos?access_token={{ gitea_access_token }}\""
+- name: Gitea - Uninstall Gitea
+  become_user: "{{ non_root_user }}"
+  shell: /snap/bin/helm uninstall --namespace ace gitea
+  ignore_errors: yes
+  tags:
+    - never
+    - git_uninstall
 
-# - name: "Gitea - clone repo http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco-hot"
-#   become_user: vagrant
-#   shell: "cd /home/vagrant && git clone http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco-hot" 
+- name: Gitea - Uninstall Gitea PVCs
+  shell: /snap/bin/microk8s.kubectl -n ace delete pvc gitea-gitea data-gitea-mariadb-0
+  ignore_errors: yes
+  tags:
+    - never
+    - git_uninstall
 
-# - name: "Gitea - Add files to monaco-hot"
-#   become_user: vagrant
-#   shell: "cp -R /vagrant/repos/monaco-hot/* /home/vagrant/monaco-hot"
-
-# - name: "Gitea - Git add/commit for monaco-hot"
-#   become_user: vagrant
-#   shell: "cd /home/vagrant/monaco-hot && git add . && git commit -m \"Initial commit, enjoy\""
-
-# - name: "Gitea - Git push for monaco-hot"
-#   become_user: vagrant
-#   shell: "cd /home/vagrant/monaco-hot && git push http://{{ git_user}}:{{ gitea_access_token }}@{{ gitea_domain }}/{{ git_org }}/monaco-hot" 

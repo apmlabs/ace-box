@@ -26,8 +26,16 @@ sudo apt-get update -y
 sudo apt-get upgrade -y
 
 echo "INIT - Installing packages and dependencies..."
-sudo apt-get install vim ansible -y
+sudo apt-get install python3.8 python3-pip -y
+
+python3.8 -m pip --version
+python3.8 -m pip install --upgrade pip -q
+
+# Sudo required in order to properly set up symlinks, etc.
+sudo python3.8 -m pip install ansible -q
+
 ansible --version
+
 echo "INIT - Setting up structure..."
 sudo mkdir /vagrant
 sudo cp -R ~/microk8s/* /vagrant
