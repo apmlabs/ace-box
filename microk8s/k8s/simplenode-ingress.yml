@@ -4,6 +4,8 @@ metadata:
   labels:
     app: simplenodeservice
   name: simplenodeservice
+  annotations:
+    kubernetes.io/ingress.class: nginx
   namespace: staging
 spec:
   rules:
@@ -22,6 +24,8 @@ metadata:
   labels:
     app: simplenodeservice
   name: simplenodeservice
+  annotations:
+    kubernetes.io/ingress.class: nginx
   namespace: production
 spec:
   rules:

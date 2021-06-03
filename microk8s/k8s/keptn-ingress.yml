@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: keptn-ingress
   namespace: keptn
+  annotations: 
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
   - host: keptn.INGRESS_PLACEHOLDER

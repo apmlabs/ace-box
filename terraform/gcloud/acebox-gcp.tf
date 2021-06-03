@@ -68,12 +68,12 @@ resource "google_compute_instance" "acebox" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/../microk8s"
+    source      = "${path.module}/../../microk8s"
     destination = "~/"
   }
 
   provisioner "file" {
-    source      = "${path.module}/../install.sh"
+    source      = "${path.module}/../../install.sh"
     destination = "~/install.sh"
   }
 
