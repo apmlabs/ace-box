@@ -224,9 +224,12 @@ At the end of the provisioning, the ACE dashboard can be accessed in the browser
 Inside the `microk8s` folder, execute `vagrant ssh` to gain access to the VM
 
 ## Cleaning up
+
+### Vagrant
+
 Vagrant offers many commands to deal with the VM, check the below:
 
-Command  | Result 
+Command  | Result
 -------- | -------
 `vagrant destroy` | stops and deletes all traces of the vagrant machine |
 `vagrant halt` | stops the vagrant machine - i.e. shutting down your workstation |
@@ -234,6 +237,15 @@ Command  | Result
 `vagrant resume` | resume a suspended vagrant machine |
 `vagrant up` | starts and provisions the vagrant environment |
 `vagrant box update` | update the base box from time to time to ensure it is the latest version. While provisioning a message will be shown that there are updates available |
+
+### Terraform
+
+The terraform destroy command is a convenient way to destroy all remote objects managed by a particular Terraform configuration.
+
+Command  | Result
+-------- | -------
+`terraform destroy` | deletes any resources created by Terraform |
+`terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
 
 ## Behind the scenes
 
