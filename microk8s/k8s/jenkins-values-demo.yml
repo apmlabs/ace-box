@@ -61,7 +61,7 @@ controller:
     - workflow-job:2.41
     - workflow-aggregator:2.6
     - credentials-binding:1.25
-    - git:4.7.1
+    - git:4.7.2
     - google-oauth-plugin:1.0.5
     - google-source-plugin:0.4
     - performance:3.19

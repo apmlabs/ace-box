@@ -54,10 +54,10 @@ controller:
     - command-launcher:1.6
     - kubernetes:1.29.6
     - kubernetes-credentials-provider:0.18-1
-    - workflow-job:2.40
+    - workflow-job:2.41
     - workflow-aggregator:2.6
-    - credentials-binding:1.24
-    - git:4.7.1
+    - credentials-binding:1.25
+    - git:4.7.2
     - google-oauth-plugin:1.0.5
     - google-source-plugin:0.4
     - performance:3.19
@@ -68,7 +68,7 @@ controller:
     - blueocean:1.24.7
     - configuration-as-code:1.51
     - http_request:1.9.0
-    - pipeline-utility-steps:2.7.1
+    - pipeline-utility-steps:2.8.0
     - ansible:1.1
     - gitea:1.2.1
   installLatestPlugins: true
