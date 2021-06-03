@@ -4,8 +4,10 @@ Since the ACE-BOX uses Ansible underneath for configuration management and deplo
 At the moment, GCP and Azure are supported with a ready-made Terraform config.
 
 ## Requirements
-Terraform needs to be locally installed.
-An Azure account is needed.
+
+- Terraform needs to be locally installed.
+- An Azure account is needed.
+- Azure CLI.
 
 ## Instructions for Azure
 
@@ -13,46 +15,59 @@ An Azure account is needed.
 
 1. Sign in to the correct subscription using the az cli
 
-    ``` bash
+    ```bash
     $ az login
     ```
+
     > Note: if you have multiple subscriptions, you will have to set the default one using `az account set --subscription YOURSUBSCRIPTION`
 
-1. Navigate to the `terraform` folder
+1. Navigate to the `terraform` azure folder
 
-    ```
-    $ cd microk8s/terraform
+    ```bash
+    $ cd terraform/azure
     ```
 
-1. Create key pair for ssh authentication
+1. Create a key pair for ssh authentication
 
+    ```bash
+    $ ssh-keygen -b 2048 -t rsa -f key
     ```
-    ssh-keygen -b 2048 -t rsa -f key
-    ```
+
     Enter through the defaults.
 
 1. Initialize terraform
-    ```
+
+    ```bash
     $ terraform init
     ```
 
 1. Create a `terraform.tfvars` file inside the *terraform* folder
    It needs to contain the following as a minimum:
-    
-    ```
+
+    ```hcl
     azure_location          = "" # azure location where you want to provision the resources
+    ```
+
+    - (Optional) You can also use your own key pair by specifying the key path in the `terraform.tfvars` file:
+
+    ```hcl
+    azure_location = "" # azure location where you want to provision the resources
+    ssh_keys = {
+        private = "" # private key path
+        public = "" # public key path
+    }
     ```
 
     Check out `variables.tf` for a complete list of variables
 
-2.  Verify the configuration by running `terraform plan`
-    
-    ```
+1. Verify the configuration and execution plan by running `terraform plan`
+
+    ```bash
     $ terraform plan
     ```
 
-3. Apply the configuration
+1. Apply the configuration
 
-    ```
+    ```bash
     $ terraform apply
     ```
