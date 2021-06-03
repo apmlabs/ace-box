@@ -1,0 +1,3 @@
+delete:
+  - "kubernetes-credentials/127.0.0.1"
+  - "kubernetes-credentials/ACE-BOX"
