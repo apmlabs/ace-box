@@ -9,7 +9,7 @@ health-staging:
     - location: "/infrastructure/synthetic-location/acebox.id"
     - managementZoneId: "/ace/management-zone/management-zone-staging.id"
     - tag: "/ace/auto-tag/tagging-staging.name"
-    - applicationId: "/ace/application/app-simplenode-staging.id"
+    #- applicationId: "/ace/application/app-simplenode-staging.id"
     - enabled: "true"
 
 health-prod:
@@ -19,5 +19,5 @@ health-prod:
     - location: "/infrastructure/synthetic-location/acebox.id"
     - managementZoneId: "/ace/management-zone/management-zone-prod.id"
     - tag: "/ace/auto-tag/tagging-prod.name"
-    - applicationId: "/ace/application/app-simplenode-prod.id"
+    #- applicationId: "/ace/application/app-simplenode-prod.id"
     - enabled: "true"
