@@ -48,16 +48,6 @@ At the moment, GCP and Azure are supported with a ready-made Terraform config.
     azure_location          = "" # azure location where you want to provision the resources
     ```
 
-    - (Optional) You can also use your own key pair by specifying the key path in the `terraform.tfvars` file:
-
-    ```hcl
-    azure_location = "" # azure location where you want to provision the resources
-    ssh_keys = {
-        private = "" # private key path
-        public = "" # public key path
-    }
-    ```
-
     Check out `variables.tf` for a complete list of variables
 
 1. Verify the configuration and execution plan by running `terraform plan`
