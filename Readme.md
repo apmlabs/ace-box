@@ -60,7 +60,7 @@ To run the ace-box locally, the following is required:
 - Hyper-V disabled on Windows machines, check [Troubleshooting](#troubleshooting) for more information
 
 ## Cloud Version using terraform
-In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](terraform/Readme.md) for more details. Currently GCP and azure are supported.
+In case you require the ACE-BOX to run on a cloud provider, check out [Terraform Instructions](terraform/Readme.md) for more details. Currently GCP, AWS and Azure are supported.
 
 ## Spinning up the ace-box
 
