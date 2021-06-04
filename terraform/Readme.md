@@ -5,11 +5,10 @@ At the moment, GCP and Azure are supported with a ready-made Terraform config.
 
 ## Requirements
 Terraform needs to be locally installed.
-A GCP/Azure account is needed.
+A GCP/Azure/AWS account is needed.
 
-## Installing on GCP or Azure
-Check the **azure** and **gcloud** subfolders for cloud-specific instructions.
-
+## Installing on GCP, AWS or Azure
+Check the **azure**, **aws** and **gcloud** subfolders for cloud-specific instructions.
 
 ## Running on a regular (cloud) VM Instance
 BYO Ubuntu Virtual Machine has not been tested, but should be possible.
@@ -27,7 +26,7 @@ Ensure the repo contents are available on the virtual machine and that **ansible
 1. Copy over the entire repository to the virtual machine
 2. Call the script inside the **terraform** folder to install:
 
-    ```
+    ```bash
     $ cd [root of repo]
     $ ./install.sh [VM_PUBLIC_IP] [NON_ROOT_USER]
         VM_PUBLIC_IP: public IP if the VM, used for ingress generation
