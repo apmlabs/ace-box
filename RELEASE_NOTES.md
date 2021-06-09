@@ -1,5 +1,29 @@
 # ACE-BOX Release notes
 
+## v1.8 - June 2021
+
+### New features
+
+#### Azure support for Cloud Edition
+Following on the first release of ACE-BOX CE, support for Azure using terraform has now been added. Check out the **microk8s/terraform** folder for more info. Terraform config has also been restructured.
+
+#### Basic authentication for ACE Dashboard
+Since the dashboard prints user names and tokens for gitea and other services, basic authentication has been added. User name and password are set to `dynatrace` by default but can be changed by setting the `acebox.config.dashboard.user` and `acebox.config.dashboard.password` in `config.yml`.
+
+#### Clean up step for Dynatrace Environment prior to deployment
+An extra step has been added that deletes config from Dynatrace. At the moment the Kubernetes credentials for `127.0.0.1` and `ACE-BOX` are deleted to avoid conflicts with the new Dynatrace Operator and using a Dynatrace environment that was used prior for the ace-box.
+
+#### Introduction of tags 
+
+### Fixes/tech updates
+Updated python to v3 and ansible to latest version. Jenkins and plugins updated. Moved to new official Jenkins helm chart and updated to latest version of the chart as well.
+
+### Simplenodeservice now uses nodejs 14
+To avoid usage of an unsuported/EOL version of nodejs, simplenodeservice has now been updated to nodejs 14
+
+### Keptn 0.8.3
+Update to latest Keptn release
+
 ## v1.7 - March 16 2021
 ### New features
 #### ACE-BOX Cloud Edition
