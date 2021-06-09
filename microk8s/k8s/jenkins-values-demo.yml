@@ -75,7 +75,7 @@ controller:
     - pipeline-utility-steps:2.8.0
     - ansible:1.1
     - gitea:1.2.1
-  installLatestPlugins: true
+  installLatestPlugins: false
   JCasC:
     enabled: true
     defaultConfig: true
