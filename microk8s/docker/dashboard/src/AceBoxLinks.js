@@ -9,7 +9,7 @@ const AceBoxLinkDetails = ({ title, href, credentials }) => {
     <tbody className={`expandable ${isExpanded ? "is-active" : ""}`}>
       <tr>
         <td>{title}</td>
-        <td><a href={href}>{href}</a></td>
+        <td><a href={href} target="_blank" rel="noreferrer">{href}</a></td>
         <td>
           {
             !!credentials &&
