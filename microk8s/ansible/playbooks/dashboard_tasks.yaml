@@ -18,6 +18,8 @@
   shell: > 
     sed 
     -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
+    -e "s|JENKINS_USER_PLACEHOLDER|{{ jenkins_user | default('N/A') }}|g" 
+    -e "s|JENKINS_PASSWORD_PLACEHOLDER|{{ jenkins_password | default('N/A') }}|g" 
     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user | default('N/A') }}|g" 
     -e "s|GITEA_PASSWORD_PLACEHOLDER|{{ git_password | default('N/A') }}|g" 
     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
@@ -26,7 +28,7 @@
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"
-    -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
+    -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
     /vagrant/docker/dashboard/.env-placeholder > /vagrant/docker/dashboard/.env
 
 - name: Encrpyt http basic auth password
