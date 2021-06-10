@@ -6,8 +6,21 @@ const App = () =>
   <div>
     <Nav />
     <main>
-      <AceBoxLinks />
-      <Preview />
+      <div className="layout__container">
+        <div className="island">
+          <AceBoxLinks />
+        </div>
+      </div>
+      <div className="layout__container">
+        <div className="island">
+          <Preview />
+        </div>
+      </div>
+      {/* <div className="layout__container">
+        <div className="island">
+          <HowTo />
+        </div>
+      </div> */}
     </main>
   </div>
 
