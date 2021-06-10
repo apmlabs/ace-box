@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const Nav = () => {
+const Preview = () => {
   const [iframeKey, setIframeKey] = useState(Math.random().toString(36).substring(7))
 
   useEffect(() => {
@@ -28,4 +28,4 @@ const Nav = () => {
   )
 }
 
-export { Nav as default }
+export { Preview as default }
