@@ -9,19 +9,19 @@ const Nav = () =>
           <a className="nav__link" href="index.html">ACE-BOX</a>
         </li> */}
         <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href="http://jenkins.DOMAIN_PLACEHOLDER/">Jenkins</a>
+          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_JENKINS_URL}>Jenkins</a>
         </li>
         <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href="http://gitea.DOMAIN_PLACEHOLDER/">Gitea</a>
+          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_GITEA_URL}>Gitea</a>
         </li>
         <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href="https://bridge.keptn.DOMAIN_PLACEHOLDER/">Keptn Bridge</a>
+          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_KEPTN_BRIDGE_URL}>Keptn Bridge</a>
         </li>
         <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href="https://api.keptn.DOMAIN_PLACEHOLDER/swagger-ui">Keptn API</a>
+          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_KEPTN_API_URL}>Keptn API Docs</a>
         </li>
         <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href="DYNATRACE_TENANT_PLACEHOLDER">Dynatrace Tenant</a>
+          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_DT_TENANT_URL}>Dynatrace Tenant</a>
         </li>
       </ul>
     </nav>
