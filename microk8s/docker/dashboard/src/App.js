@@ -1,6 +1,7 @@
 import Nav from './Nav'
 import Preview from './Preview'
 import AceBoxLinks from './AceBoxLinks'
+import HowTo from './HowTo'
 
 const App = () =>
   <div>
@@ -16,11 +17,11 @@ const App = () =>
           <Preview />
         </div>
       </div>
-      {/* <div className="layout__container">
+      <div className="layout__container">
         <div className="island">
           <HowTo />
         </div>
-      </div> */}
+      </div>
     </main>
   </div>
 
