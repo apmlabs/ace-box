@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import '@dynatrace/groundhog/dist/css/main.css'
+import '@dynatrace/groundhog/dist/js/main.js'
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
