@@ -31,7 +31,7 @@ const AceBoxLinkDetails = ({ title, href, credentials }) => {
 
 const AceBoxLinks = () =>
   <div>
-    <h2>Credentials</h2>
+    <h2>Links</h2>
     <div className="section">
       <table className="table table--expandable">
         <thead>
