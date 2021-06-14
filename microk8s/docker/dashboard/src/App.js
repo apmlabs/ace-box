@@ -1,42 +1,42 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import Nav from './Nav'
 import Preview from './Preview'
 import AceBoxLinks from './AceBoxLinks'
 import HowTo from './HowTo'
 
-const pages = {
-  'HowTo': HowTo,
-  'Deployment Preview': Preview,
-  'Links': AceBoxLinks
+const AppPages = ({ activePageIndex, children }) => {
+  const allChildren = React.Children.toArray(children)
+
+  return (
+    <div className="layout__container">
+      <div className="island">
+        {allChildren[activePageIndex]}
+      </div>
+    </div>
+  )
+
 }
 
 const App = () => {
-  const [activePageKey, setActivePageKey] = useState(Object.keys(pages)[0])
+  const [activePageIndex, setActivePageIndex] = useState(0)
+
+  const navLabels = ['How-To ACE Box', 'Deployment Preview', 'Links']
 
   return (
     <div>
       <Nav
-        pageKeys={Object.keys(pages)}
-        onPageKeySelect={pageKey => setActivePageKey(pageKey)}
+        pageKeys={navLabels}
+        onPageKeySelect={pageKey => setActivePageIndex(navLabels.indexOf(pageKey))}
       />
       <main>
-        <div className="layout__container">
-          <div className="island">
-            {
-              activePageKey === "HowTo" &&
+        <AppPages
+          activePageIndex={activePageIndex}
+        >
                 <HowTo />
-            }
-            {
-              activePageKey === "Deployment Preview" &&
                 <Preview />
-            }
-            {
-              activePageKey === "Links" &&
                 <AceBoxLinks />
-            }
-          </div>
-        </div>
+        </AppPages>
       </main>
     </div>
   )
