@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Nav from './Nav'
 import Preview from './Preview'
 import AceBoxLinks from './AceBoxLinks'
-import HowTo from './HowTo/HowTo'
+import HowTo from './how-to/HowTo'
 
 const AppPages = ({ activePageIndex, children }) => {
   const allChildren = React.Children.toArray(children)

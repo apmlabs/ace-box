@@ -1,6 +1,7 @@
 const StepOne = () =>
   <div>
     <h3>First pipeline run</h3>
+    <p>Iin order to get started, go to Jenkins and log in with username ... and password ...</p>
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro et culpa quaerat inventore pariatur impedit tempora recusandae iste nam ipsam eos explicabo eligendi dolorum saepe doloremque, similique tempore rerum ipsum.</p>
     <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur animi qui saepe incidunt reprehenderit laboriosam dolore sit assumenda illo, nisi velit dolores nobis, beatae similique et officia veritatis eligendi. Rem.</p>
   </div>
