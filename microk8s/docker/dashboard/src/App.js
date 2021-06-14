@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Nav from './Nav'
 import Preview from './Preview'
 import AceBoxLinks from './AceBoxLinks'
-import HowTo from './HowTo'
+import HowTo from './HowTo/HowTo'
 
 const AppPages = ({ activePageIndex, children }) => {
   const allChildren = React.Children.toArray(children)
@@ -33,9 +33,9 @@ const App = () => {
         <AppPages
           activePageIndex={activePageIndex}
         >
-                <HowTo />
-                <Preview />
-                <AceBoxLinks />
+          <HowTo />
+          <Preview />
+          <AceBoxLinks />
         </AppPages>
       </main>
     </div>
