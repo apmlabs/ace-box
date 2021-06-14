@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState } from "react"
+import Cookies from "universal-cookie"
 
-import Preface from './Preface'
-import WrapUp from './WrapUp'
-import StepOne from './StepOne'
+import Preface from "./Preface"
+import WrapUp from "./WrapUp"
+import StepOne from "./StepOne"
 
 const HowToStepper = ({ activeChildIndex, setActiveChildIndex, children }) => {
   const allChildren = React.Children.toArray(children)
@@ -80,14 +81,26 @@ const HowToStepper = ({ activeChildIndex, setActiveChildIndex, children }) => {
 }
 
 const HowTo = () => {
-  const [activeChildIndex, setActiveChildIndex] = useState(0)
+  const cookies = new Cookies()
+  
+  const friendlyActiveStep = cookies.get('how-to-stepper')
+  const initialActiveChildIndex = friendlyActiveStep ? friendlyActiveStep - 1 : 0
+
+  const [activeChildIndex, setActiveChildIndex] = useState(initialActiveChildIndex)
+
+  const setStep = (activeChildIndex) => {
+    const friendlyStep = activeChildIndex + 1
+    cookies.set('how-to-stepper', friendlyStep, { path: '/' })
+
+    setActiveChildIndex(activeChildIndex)
+  }
 
   return (
     <div>
       <h2>How-To</h2>
       <HowToStepper
         activeChildIndex={activeChildIndex}
-        setActiveChildIndex={setActiveChildIndex}
+        setActiveChildIndex={setStep}
       >
         <Preface />
         <StepOne />
