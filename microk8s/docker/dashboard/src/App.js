@@ -1,44 +1,41 @@
-import React, { useState } from 'react'
+import React from "react"
+import { BrowserRouter, Switch, Route } from "react-router-dom"
 
-import Nav from './Nav'
-import Preview from './Preview'
-import AceBoxLinks from './AceBoxLinks'
-import HowTo from './how-to/HowTo'
-
-const AppPages = ({ activePageIndex, children }) => {
-  const allChildren = React.Children.toArray(children)
-
-  return (
-    <div className="layout__container">
-      <div className="island">
-        {allChildren[activePageIndex]}
-      </div>
-    </div>
-  )
-
-}
+import Nav from "./Nav"
+import Preview from "./Preview"
+import AceBoxLinks from "./AceBoxLinks"
+import HowTo from "./how-to/HowTo"
 
 const App = () => {
-  const [activePageIndex, setActivePageIndex] = useState(0)
-
-  const navLabels = ['How-To ACE Box', 'Deployment Preview', 'Links']
+  const navPaths = {
+    "How-To ACE Box": "/",
+    "Deployment Preview": "/preview",
+    "Links": "/links"
+  }
 
   return (
-    <div>
+    <BrowserRouter>
       <Nav
-        pageKeys={navLabels}
-        onPageKeySelect={pageKey => setActivePageIndex(navLabels.indexOf(pageKey))}
+        navPaths={navPaths}
       />
       <main>
-        <AppPages
-          activePageIndex={activePageIndex}
-        >
-          <HowTo />
-          <Preview />
-          <AceBoxLinks />
-        </AppPages>
+        <div className="layout__container">
+          <div className="island">
+            <Switch>
+              <Route path="/preview">
+                <Preview />
+              </Route>
+              <Route path="/links">
+                <AceBoxLinks />
+              </Route>
+              <Route path="/">
+                <HowTo />
+              </Route>
+            </Switch>
+          </div>
+        </div>
       </main>
-    </div>
+    </BrowserRouter>
   )
 }
 

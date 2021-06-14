@@ -1,4 +1,6 @@
-const Nav = ({ pageKeys, onPageKeySelect }) =>
+import { Link } from "react-router-dom"
+
+const Nav = ({ navPaths }) =>
   <div className="nav has-no-secondary">
     <a className="nav__brand" href="/">
       <img className="nav__logo" src="http://assets.dynatrace.com/global/logos/dynatrace-logo.svg" alt="dynatrace logo" />
@@ -6,33 +8,12 @@ const Nav = ({ pageKeys, onPageKeySelect }) =>
     <nav id="nav-bar-example1" className="nav__bar">
       <ul className="nav__list nav__list--primary">
         {
-          pageKeys.map((pageKey, key) =>
+          navPaths && Object.keys(navPaths).map((pageKey, key) =>
             <li key={key} className="nav__item">
-              <a
-                className="nav__link"
-                onClick={() => onPageKeySelect(pageKey)}
-                href="#"
-              >
-                {pageKey}
-              </a>
+              <Link className="nav__link" to={navPaths[pageKey]}>{pageKey}</Link>
             </li>
           )
         }
-        {/* <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_JENKINS_URL}>Jenkins</a>
-        </li> */}
-        {/* <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_GITEA_URL}>Gitea</a>
-        </li>
-        <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_KEPTN_BRIDGE_URL}>Keptn Bridge</a>
-        </li>
-        <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_KEPTN_API_URL}>Keptn API Docs</a>
-        </li>
-        <li className="nav__item">
-          <a className="nav__link" target="_blank" rel="noreferrer" href={process.env.REACT_APP_DT_TENANT_URL}>Dynatrace Tenant</a>
-        </li> */}
       </ul>
     </nav>
   </div>
