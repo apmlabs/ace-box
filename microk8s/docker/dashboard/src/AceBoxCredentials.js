@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import copy from 'clipboard-copy'
+import { useEffect, useState } from "react"
+import copy from "clipboard-copy"
 
 const copyToClipboard = (value, setIsCopied) => {
   copy(value)
@@ -130,24 +130,4 @@ const AceBoxCredential = ({ name, value, type }) => {
   )
 }
 
-const AceBoxCredentials = ({ credentials }) =>
-  <div style={{ display: "grid", gridTemplateColumns: "auto", rowGap: "10px" }}>
-    {
-      !!credentials && credentials.map((credential, key) => {
-        const capitalizedName = credential.name[0].toUpperCase() + credential.name.substring(1)
-        const value = credential.value
-        const type = credential.type
-        
-        return (
-          <AceBoxCredential
-            key={key}
-            name={capitalizedName}
-            value={value}
-            type={type}
-          />
-        )
-      })
-    }
-  </div>
-
-export { AceBoxCredentials as default }
+export { AceBoxCredential, AceBoxCredentialInline }
