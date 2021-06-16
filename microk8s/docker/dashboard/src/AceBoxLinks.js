@@ -1,6 +1,5 @@
-import { useState } from 'react'
-
-import AceBoxCredentials from './AceBoxCredentials'
+import { useState } from "react"
+import { useJenkins, useGitea, useGitlab, useKeptnApi, useKeptnBridge, useDynatrace } from "./libs/credentials"
 
 const AceBoxLinkDetails = ({ title, href, credentials }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -21,7 +20,13 @@ const AceBoxLinkDetails = ({ title, href, credentials }) => {
         {
           isExpanded &&
             <td colSpan="3">
-              <AceBoxCredentials credentials={credentials} />
+              <div style={{ display: "grid", gridTemplateColumns: "auto", rowGap: "10px" }}>
+                {
+                  !!credentials && credentials.map((Credential, key) =>
+                    <Credential key={key} />
+                  )
+                }
+              </div>
             </td>
         }
       </tr>
@@ -29,49 +34,62 @@ const AceBoxLinkDetails = ({ title, href, credentials }) => {
   )
 }
 
-const AceBoxLinks = () =>
-  <div>
-    <h2>Links</h2>
-    <div className="section">
-      <table className="table table--expandable">
-        <thead>
-          <tr>
-            <th></th>
-            <th>URL</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <AceBoxLinkDetails
-          title="Jenkins"
-          href={process.env.REACT_APP_JENKINS_URL}
-          credentials={[{ name: "user", value: process.env.REACT_APP_JENKINS_USER }, { name: "pass", value: process.env.REACT_APP_JENKINS_PASSWORD, type: "password" }]}
-        />
-        <AceBoxLinkDetails
-          title="Gitea"
-          href={process.env.REACT_APP_GITEA_URL}
-          credentials={[{ name: "user", value: process.env.REACT_APP_GITEA_USER }, { name: "pass", value: process.env.REACT_APP_GITEA_PASSWORD, type: "password" }, { name: "token", value: process.env.REACT_APP_GITEA_PAT, type: "password" }]}
-        />
-        <AceBoxLinkDetails
-          title="Gitlab"
-          href={process.env.REACT_APP_GITLAB_URL}
-          credentials={[{ name: "user", value: process.env.REACT_APP_GITLAB_USER }, { name: "pass", value: process.env.REACT_APP_GITLAB_PASSWORD, type: "password" }]}
-        />
-        <AceBoxLinkDetails
-          title="Keptn API"
-          href={process.env.REACT_APP_KEPTN_API_URL}
-          credentials={[{ name: "token", value: process.env.REACT_APP_KEPTN_API_TOKEN, type: "password" }]}
-        />
-        <AceBoxLinkDetails
-          title="Keptn Bridge"
-          href={process.env.REACT_APP_KEPTN_BRIDGE_URL}
-          credentials={[{ name: "user", value: process.env.REACT_APP_KEPTN_BRIDGE_USER }, { name: "pass", value: process.env.REACT_APP_KEPTN_BRIDGE_PASSWORD, type: "password" }]}
-        />
-        <AceBoxLinkDetails
-          title="Dynatrace Tenant"
-          href={process.env.REACT_APP_DT_TENANT_URL}
-        />
-      </table>
+const AceBoxLinks = () => {
+  const { href: jenkinsHref, Username: JenkinsUsername, Password: JenkinsPassword } = useJenkins()
+  const { href: giteaHref, Username: GiteaUsername, Password: GiteaPassword, Token: GiteaToken } = useGitea()
+  const { isEnabled: isGitlabEnabled, href: gitlabHref, Username: GitlabUsername, Password: GitlabPassword } = useGitlab()
+  const { href: keptnApiHref, Token: KeptnApiToken } = useKeptnApi()
+  const { href: keptnBridgeHref, Username: KeptnBridgeUsername, Password: KeptnBridgePassword } = useKeptnBridge()
+  const { href: dynatraceHref } = useDynatrace()
+
+  return (
+    <div>
+      <h2>Links</h2>
+      <div className="section">
+        <table className="table table--expandable">
+          <thead>
+            <tr>
+              <th></th>
+              <th>URL</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <AceBoxLinkDetails
+            title="Jenkins"
+            href={jenkinsHref}
+            credentials={[JenkinsUsername, JenkinsPassword]}
+          />
+          <AceBoxLinkDetails
+            title="Gitea"
+            href={giteaHref}
+            credentials={[GiteaUsername, GiteaPassword, GiteaToken]}
+          />
+          {
+            isGitlabEnabled &&
+              <AceBoxLinkDetails
+                title="Gitlab"
+                href={gitlabHref}
+                credentials={[GitlabUsername, GitlabPassword]}
+              />
+          }
+          <AceBoxLinkDetails
+            title="Keptn API"
+            href={keptnApiHref}
+            credentials={[KeptnApiToken]}
+          />
+          <AceBoxLinkDetails
+            title="Keptn Bridge"
+            href={keptnBridgeHref}
+            credentials={[KeptnBridgeUsername, KeptnBridgePassword]}
+          />
+          <AceBoxLinkDetails
+            title="Dynatrace Tenant"
+            href={dynatraceHref}
+          />
+        </table>
+      </div>
     </div>
-  </div>
+  )
+}
 
 export { AceBoxLinks as default }
