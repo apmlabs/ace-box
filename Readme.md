@@ -25,8 +25,11 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
   - [Accessing ace-box dashboard](#accessing-ace-box-dashboard)
   - [SSH into the box](#ssh-into-the-box)
   - [Cleaning up](#cleaning-up)
+    - [Vagrant](#vagrant)
+    - [Terraform](#terraform)
   - [Behind the scenes](#behind-the-scenes)
   - [Triggering a pipeline run](#triggering-a-pipeline-run)
+  - [ACE Box Dashboard](#ace-box-dashboard)
 
 
 ## Release notes
@@ -270,3 +273,6 @@ When running the `vagrant up` command the following takes place:
 
 ## Triggering a pipeline run
 If you installed the ace-box in `demo` mode, you can navigate to `Jenkins` and trigger the `1. Build` pipeline.
+
+## ACE Box Dashboard
+The ACE Box Dashboard is built in React. In order to run it locally for development purposes a $ npm install and $ npm run start is required in `microk8s/docker/dashboard/`. This however will create artifacts that a) shouldn't be pushed to Git and b) seem to cause issues when provisioning the ACE Box. Therefore, please don't commit the `node_modules` folder and make sure to delete it locally before launching an ACE Box.
