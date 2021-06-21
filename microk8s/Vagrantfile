@@ -28,16 +28,26 @@ Vagrant.configure("2") do |config|
       c.vm.hostname = "ace-box"
       c.vm.network "private_network", ip: vmconfig["acebox"]["specs"]["priv_ip"]
       c.disksize.size = vmconfig["acebox"]["specs"]["disk"]
+
+      config.vm.provision "shell", inline: "sudo apt-get update -y"
+      config.vm.provision "shell", inline: "sudo apt-get upgrade -y"
+      config.vm.provision "shell", inline: "sudo apt-get install python3.8 python3-pip -y"
+      config.vm.provision "shell", inline: "python3.8 -m pip install --upgrade pip -q"
+      config.vm.provision "shell", inline: "python3.8 -m pip install ansible -q"
+      
       c.vm.provision "ansible_local" do |ansible|
+        ansible.install = false
         ansible.become = true
         ansible.playbook = "ansible/initial.yml"
         # ansible.verbose = true # enable to get more logging
+        ansible.compatibility_mode = "2.0"
         ansible.extra_vars = {
           ansible_python_interpreter: "auto",
           acebox_provisioner: "vagrant",
           non_root_user: "vagrant"
         }
       end
+
       c.vm.provider "virtualbox" do |pr|
         pr.memory = vmconfig["acebox"]["specs"]["mem"]
         pr.cpus = vmconfig["acebox"]["specs"]["cpu"]
