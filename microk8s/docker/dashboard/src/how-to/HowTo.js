@@ -70,7 +70,7 @@ const HowTo = ({ isGitlabEnabled }) => {
           <li><b>Links</b> lists tools and credentials that you will need while going through the use cases.</li>
         </ul>
         <p>
-          In order to ... the following tools have been set up and configured (click on each tab to get an overview of what's been configured):
+          In addition he following tools have been set up and configured (click on each tab to get an overview of what's been configured):
         </p>
       </>
       <ToolTabs isGitlabEnabled={isGitlabEnabled} />
