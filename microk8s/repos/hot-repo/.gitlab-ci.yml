@@ -82,9 +82,9 @@ dynatrace_config_event:
 run-tests:
   extends: .run-jmeter
   before_script: 
-    - echo $(date --utc +%FT%TZ) > keptn.test.starttime
+    - echo $(date --utc +%FT%T.000Z) > keptn.test.starttime
   after_script: 
-    - echo $(date --utc +%FT%TZ) > keptn.test.endtime
+    - echo $(date --utc +%FT%T.000Z) > keptn.test.endtime
   stage: test   
   environment:
     name: test
@@ -92,7 +92,7 @@ run-tests:
     SERVER_URL: simplenode.simplenode-gitlab-staging.xxx.xxx.xxx.xxx.nip.io
     SERVER_PORT: 80
     VUCOUNT: 2
-    LOOPCOUNT: 1
+    LOOPCOUNT: 100
     THINKTIME: 100
     TEST_FILE: jmeter/simplenodeservice_load.jmx
   artifacts:
