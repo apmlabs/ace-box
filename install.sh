@@ -37,8 +37,9 @@ sudo python3.8 -m pip install ansible -q
 ansible --version
 
 echo "INIT - Setting up structure..."
+sudo rm -rf /vagrant
 sudo mkdir /vagrant
-sudo cp -R ~/microk8s/* /vagrant
+sudo cp -R ~/ace-box/microk8s/* /vagrant
 
 echo "INIT - Run Ansible Playbook"
 ansible-playbook -vv /vagrant/ansible/initial.yml --extra-vars "public_ip=$1 acebox_provisioner=terraform non_root_user=$2"
