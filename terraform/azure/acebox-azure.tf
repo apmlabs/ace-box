@@ -140,9 +140,13 @@ resource "azurerm_linux_virtual_machine" "acebox" {
     inline = ["sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y"]
   }
 
+  provisioner "remote-exec" {
+    inline = ["mkdir ~/ace-box/"]
+  }
+
   provisioner "file" {
     source      = "${path.module}/../../microk8s"
-    destination = "~/"
+    destination = "~/ace-box/"
   }
 
   provisioner "file" {

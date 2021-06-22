@@ -4,6 +4,7 @@
 
 - name: Cert Manager - Add Namespace
   shell: /snap/bin/microk8s.kubectl create namespace cert-manager
+  ignore_errors: yes
 
 - name: Cert Manager - Add CRD
   shell: /snap/bin/microk8s.kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.crds.yaml
