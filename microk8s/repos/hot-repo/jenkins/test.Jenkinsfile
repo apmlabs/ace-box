@@ -43,8 +43,8 @@ pipeline {
             steps {
                 script {
                     keptn.keptnInit project:"${env.PROJECT}", service:"${env.APP_NAME}", stage:"${env.ENVIRONMENT}", monitoring:"${env.MONITORING}" , shipyard:'keptn/shipyard.yaml'
-                    keptn.keptnAddResources('keptn/sli.yml','dynatrace/sli.yaml')
-                    keptn.keptnAddResources('keptn/slo.yml','slo.yaml')
+                    keptn.keptnAddResources('keptn/sli.yaml','dynatrace/sli.yaml')
+                    keptn.keptnAddResources('keptn/slo.yaml','slo.yaml')
                     keptn.keptnAddResources('keptn/dynatrace.conf.yaml','dynatrace/dynatrace.conf.yaml')
                 }
             }
