@@ -1,18 +1,35 @@
 - name: Dashboard - Wait for registry to be ready
   shell: /snap/bin/microk8s.kubectl -n container-registry rollout status deployment registry
 
-- name: Dashboard - build index.html
+# - name: Dashboard - build index.html
+#   shell: > 
+#     sed 
+#     -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
+#     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
+#     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
+#     -e "s|GITLAB_ROOT_PASSWORD_PLACEHOLDER|{{ gitlab_root_password | default('N/A') }}|g" 
+#     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
+#     -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
+#     -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"
+#     -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
+#     /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
+
+- name: Dashboard - build environment
   shell: > 
     sed 
     -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
-    -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
+    -e "s|JENKINS_USER_PLACEHOLDER|{{ jenkins_user | default('N/A') }}|g" 
+    -e "s|JENKINS_PASSWORD_PLACEHOLDER|{{ jenkins_password | default('N/A') }}|g" 
+    -e "s|GITEA_USER_PLACEHOLDER|{{ git_user | default('N/A') }}|g" 
+    -e "s|GITEA_PASSWORD_PLACEHOLDER|{{ git_password | default('N/A') }}|g" 
     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
-    -e "s|GITLAB_ROOT_PASSWORD_PLACEHOLDER|{{ gitlab_root_password | default('N/A') }}|g" 
+    -e "s|GITLAB_USER_PLACEHOLDER|{{ gitlab_root_user | default('N/A') }}|g" 
+    -e "s|GITLAB_PASSWORD_PLACEHOLDER|{{ gitlab_root_password | default('N/A') }}|g" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"
-    -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
-    /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
+    -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
+    /vagrant/docker/dashboard/.env-placeholder > /vagrant/docker/dashboard/.env
 
 - name: Encrpyt http basic auth password
   set_fact:

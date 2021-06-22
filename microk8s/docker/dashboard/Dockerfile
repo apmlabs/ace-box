@@ -1,3 +1,16 @@
-FROM nginx:alpine
+# Build
+FROM node:alpine AS builder
 
-COPY ./index-gen.html /usr/share/nginx/html/index.html
+WORKDIR /tmp
+COPY package*.json ./
+
+RUN npm install
+COPY . ./
+
+RUN npm run build
+
+# Run
+FROM nginx:alpine AS runner
+
+WORKDIR /root/
+COPY --from=builder /tmp/build/ /usr/share/nginx/html/
