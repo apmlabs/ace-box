@@ -4,6 +4,7 @@ The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can us
 
 # The ACE-BOX has moved to GitHub!!!
 1.8.0 is the last version of the ACE-BOX to be available on BitBucket. Please check https://github.com/Dynatrace/ace-box for new releases.
+You need a GitHub account linked to the Dynatrace org to gain access. Please lodge an EDE ticket.
 
 ## Check out [Troubleshooting](#troubleshooting) before reaching out!
 

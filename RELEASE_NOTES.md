@@ -2,7 +2,7 @@
 
 ## v1.8 - June 2021
 
-This is the last version of the ACE-BOX to be published in BitBucket. From now on, the repository will be maintained in https://github.com/Dynatrace/ace-box.
+This is the last version of the ACE-BOX to be published in BitBucket. From now on, the repository will be maintained in https://github.com/Dynatrace/ace-box. You need a GitHub account linked to the Dynatrace org to gain access. Please lodge an EDE ticket.
 
 ### New features
 
