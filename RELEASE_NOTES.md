@@ -1,5 +1,35 @@
 # ACE-BOX Release notes
 
+## v1.8 - June 2021
+
+This is the last version of the ACE-BOX to be published in BitBucket. From now on, the repository will be maintained in https://github.com/Dynatrace/ace-box. You need a GitHub account linked to the Dynatrace org to gain access. Please lodge an EDE ticket.
+
+### New features
+
+#### Azure and AWS support for Cloud Edition
+Following on the first release of ACE-BOX CE, support for Azure and AWS using terraform has now been added. Check out the **microk8s/terraform** folder for more info. Terraform config has also been restructured.
+
+#### Basic authentication for ACE Dashboard
+Since the dashboard prints user names and tokens for gitea and other services, basic authentication has been added. User name and password are set to `dynatrace` by default but can be changed by setting the `acebox.config.dashboard.user` and `acebox.config.dashboard.password` in `config.yml`.
+
+#### A brand new ACE Dashboard experience
+We moved the ACE Dashboard to the barista framework to be in line with the Dynatrace design. At the same time, the goal is to make the ACE-BOX more approachable so we have made it even easier to get started!
+
+#### Clean up step for Dynatrace Environment prior to deployment
+An extra step has been added that deletes config from Dynatrace. At the moment the Kubernetes credentials for `127.0.0.1` and `ACE-BOX` are deleted to avoid conflicts with the new Dynatrace Operator and using a Dynatrace environment that was used prior for the ace-box.
+
+#### GitLab CI Demo
+By importing the ace/ace repo from Gitea into the (optional) GitLab environment, you can now showcase Quality Gates and event from within a GitLab environment.
+
+### Fixes/tech updates
+Updated python to v3 and ansible to latest version. Jenkins and plugins updated. Moved to new official Jenkins helm chart and updated to latest version of the chart as well.
+
+### Simplenodeservice now uses nodejs 14
+To avoid usage of an unsuported/EOL version of nodejs, simplenodeservice has now been updated to nodejs 14
+
+### Keptn 0.8.4
+Update to latest Keptn release and dependant services
+
 ## v1.7 - March 16 2021
 ### New features
 #### ACE-BOX Cloud Edition

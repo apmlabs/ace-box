@@ -2,10 +2,15 @@
 
 The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can use as a portable sandbox, demo and testing environment. 
 
+# The ACE-BOX has moved to GitHub!!!
+1.8.0 is the last version of the ACE-BOX to be available on BitBucket. Please check https://github.com/Dynatrace/ace-box for new releases.
+You need a GitHub account linked to the Dynatrace org to gain access. Please lodge an EDE ticket.
+
 ## Check out [Troubleshooting](#troubleshooting) before reaching out!
 
 Vagrant is used for spinning up the VM, Ansible is used for setting up the various components.
 - [Welcome to the ACE-BOX](#welcome-to-the-ace-box)
+- [The ACE-BOX has moved to GitHub!!!](#the-ace-box-has-moved-to-github)
   - [Check out Troubleshooting before reaching out!](#check-out-troubleshooting-before-reaching-out)
   - [Release notes](#release-notes)
   - [Deployment Modes](#deployment-modes)
