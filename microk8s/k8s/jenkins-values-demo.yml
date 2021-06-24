@@ -56,7 +56,7 @@ controller:
       value: INGRESS_DOMAIN_PLACEHOLDER
   installPlugins:
     - command-launcher:1.6
-    - kubernetes:1.29.6
+    - kubernetes:1.30.0
     - kubernetes-credentials-provider:0.18-1
     - workflow-job:2.41
     - workflow-aggregator:2.6

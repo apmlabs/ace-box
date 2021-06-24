@@ -27,7 +27,7 @@
 
 - name: "Gitea - Add files to {{ gitea_org }}/{{ gitea_repo }}"
   become_user: "{{ non_root_user }}"
-  shell: "cp -R /vagrant/repos/{{ gitea_source_folder }}/* /home/{{ non_root_user }}/{{ gitea_repo }}"
+  shell: "cp -rT /vagrant/repos/{{ gitea_source_folder }} /home/{{ non_root_user }}/{{ gitea_repo }}"
   tags:
     - git
 

@@ -111,7 +111,7 @@ var getBackgroundColor = function() {
 // ======================================================================
 // This is for logging
 // ======================================================================
-var logstream = fs.createWriteStream('./serviceoutput.log');
+//var logstream = fs.createWriteStream('./serviceoutput.log');
 var SEVERITY_DEBUG = "Debug";
 var SEVERITY_INFO = "Info";
 var SEVERITY_WARNING = "Warning";
