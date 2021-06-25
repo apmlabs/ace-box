@@ -6,6 +6,8 @@
   vars:     
     non_root_user:                    "{{ non_root_user | default('vagrant')}}"
     public_ip:                        "{{ public_ip }}"
+    use_custom_domain:                "{{ use_custom_domain }}"
+    custom_domain:                    "{{ custom_domain }}"
     acebox_provisioner:               "{{ acebox_provisioner | default('vagrant')}}"
     acebox_mode:                      "{{ acebox['features']['mode'] | default('training') }}"
     feature_activegate:               "{{ acebox['features']['activegate'] | default(false) }}"
@@ -52,6 +54,15 @@
     dashboard_user: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).user | default('dynatrace') }}"
     dashboard_password: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).password | default('dynatrace') }}"
   tasks:
+
+  - debug: var=use_custom_domain
+    tags:
+      - always
+  
+  - debug: var=custom_domain
+    tags:
+      - always
+
   - name: Set Ingress Domain - Vagrant
     set_fact:
       ingress_domain: "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
@@ -62,7 +73,14 @@
   - name: Set Ingress Domain - Terraform
     set_fact:
       ingress_domain: "{{ public_ip }}.{{ microk8s_domain_ext }}"
-    when: acebox_provisioner == "terraform"
+    when: acebox_provisioner == "terraform" and use_custom_domain == "false"
+    tags:
+      - always
+
+  - name: Set Ingress Domain - Terraform - Custom Domain
+    set_fact:
+      ingress_domain: "{{ custom_domain }}"
+    when: acebox_provisioner == "terraform" and use_custom_domain == "true"
     tags:
       - always
 
