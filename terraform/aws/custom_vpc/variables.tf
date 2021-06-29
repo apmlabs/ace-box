@@ -26,7 +26,7 @@ variable "vpc_tags" {
   default = {
     Terraform  = "true"
     GithubRepo  = "ace-box"
-    GithubOrg   = "dynatrace-ace"
+    GithubOrg   = "dynatrace"
   }
 }
 
@@ -51,4 +51,14 @@ variable "acebox_user" {
 variable "custom_domain" {
   description = "Set to overwrite custom domain"
   default     = ""
+}
+
+variable "route53_zone_name" {
+  description = "Name of Route53 zone"
+  default     = ""
+}
+
+variable "route53_private_zone" {
+  description = "Whether the Route53 zone is private"
+  default     = false
 }

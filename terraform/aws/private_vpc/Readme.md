@@ -56,3 +56,17 @@ The configuration process stores your credentials in a file at ~/.aws/credential
     ```bash
     terraform apply
     ```
+
+## Custom domain support
+
+This terraform script supports the use of custom domains via Route53.
+
+1. Ensure your access key can create dns records in the target Route53 zone.
+
+1. Add the following values to the `terraform.tfvars` file:
+
+    ```hcl
+    aws_region = "" # AWS Region to deploy infrastructure to
+    custom_domain = "" # Set to override default domain (ip_address.xip.io)
+    route53_zone_name = "" # Name of route53 zone (defaults to public zones)
+    ```
