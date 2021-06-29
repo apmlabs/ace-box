@@ -18,6 +18,7 @@
   shell: > 
     sed 
     -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
+    -e "s|PROTOCOL_PLACEHOLDER|{{ custom_domain_protocol }}|g" 
     -e "s|JENKINS_USER_PLACEHOLDER|{{ jenkins_user | default('N/A') }}|g" 
     -e "s|JENKINS_PASSWORD_PLACEHOLDER|{{ jenkins_password | default('N/A') }}|g" 
     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user | default('N/A') }}|g" 
