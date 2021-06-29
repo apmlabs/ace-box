@@ -58,3 +58,17 @@
     ```bash
     $ terraform apply
     ```
+
+## Custom domain support
+
+This terraform script supports the use of custom domains via Azure DNS.
+
+1. Ensure your account can create DNS records in the target Azure DNS zone.
+
+1. Add the following values to the `terraform.tfvars` file:
+
+    ```hcl
+    azure_location    = "" # azure location where you want to provision the resources
+    custom_domain     = "acebox.example.com" # Set to override default domain (ip_address.xip.io)
+    dns_zone_name     = "example.com" # Name of Azure DNS zone
+    ```
