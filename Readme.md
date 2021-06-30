@@ -27,6 +27,7 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
       - [Training mode](#training-mode)
     - [Step 4 - Provision](#step-4---provision)
     - [Troubleshooting](#troubleshooting)
+    - [Ansible playbooks](#ansible-playbooks)
   - [Accessing ace-box dashboard](#accessing-ace-box-dashboard)
   - [SSH into the box](#ssh-into-the-box)
   - [Cleaning up](#cleaning-up)
@@ -224,6 +225,29 @@ Check [Behind the scenes](#behind-the-scenes) for more detail about what happens
     fatal: [ace-box]: FAILED! => {"attempts": 60, "changed": false, "content": "", "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>", "redirected": false, "status": -1, "url": "http://gitea.192.168.50.10.nip.io/api/v1/admin/orgs?access_token=1c8d4fcef25b3ae2a15d17d29be64c2c7aa22501"}
     ```
 9. Dynatrace Operator installation fails with "Error: Cluster already exists: ...": If you ever had a cluster created before please remove it from https://<dynatrace tenant>/#settings/kubernetesmonitoring;gf=all
+
+### Ansible playbooks
+All Ansible playbooks run by the auto provisioning script can also be run standalone. Certain tasks (playbooks) can be filtered by using tags as per definition below:
+
+Tag | Result |
+- | - |
+`init` | Prepares VM for further use (e.g. installs apt packages) |
+`post_install` | Cleans up after installation (e.g. prints config details) |
+`k8s` | Installs and configures microk8s, helm and cert manager |
+`monaco` | Installs and configures Monaco |
+`monaco_uninstall` | Uninstalls Monaco |
+`dt_core` | Installs and configures Dynatrace Cluster ActiveGate and OneAgent. To prevent naming conflicts, this tag also removes legacy Kubernetes clusters from the Dynatrace tenant. |
+`git` | Installs and configures Gitea (`feature_gitea` enabled) and / or Gitlab (`feature_gitlab` enabled) |
+`git_uninstall` | Uninstalls Gitea (`feature_gitea` enabled) |
+`keptn` | Installs and configures Keptn |
+`jenkins` | Installs and configures Jenkins |
+`jenkins_uninstall` | Uninstalls Jenkins |
+`dashboard` | Installs the ACE Box Dashboard |
+
+For example:
+```bash
+$ ansible-playbook -vv /vagrant/ansible/initial.yml --extra-vars "ansible_python_interpreter=auto acebox_provisioner=vagrant non_root_user=vagrant" --tags post_install
+```
 
 ## Accessing ace-box dashboard
 At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.

@@ -4,4 +4,12 @@
     dest: "/usr/local/bin/monaco"
     mode: +x
     timeout: 300
+  tags:
+    - monaco
+
+- name: Monaco - Uninstall
+  shell: rm -rf /usr/local/bin/monaco
+  tags:
+    - never
+    - monaco_uninstall
     
