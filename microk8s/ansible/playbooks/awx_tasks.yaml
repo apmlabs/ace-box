@@ -1,0 +1,31 @@
+# - name: AWX - Create namespace
+#   shell: kubectl create namespace awx
+#   tags:
+#     - awx
+
+- name: AWX - Install Operator
+  shell: kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/{{ awx_operator_version }}/deploy/awx-operator.yaml
+  tags:
+    - awx
+
+# - name: Gitea - Wait for gitea to be ready
+#   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
+#   tags:
+#     - git
+
+- name: AWX - Install AWX
+  shell: kubectl apply -f /vagrant/k8s/awx.yml
+  tags:
+    - awx
+
+# - name: AWX - Wait for operator state 'running'
+#   shell: kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/{{ awx_operator_version }}/deploy/awx-operator.yaml
+#   tags:
+#     - awx
+
+# - name: AWX - Uninstall
+#   shell: rm -rf /usr/local/bin/monaco
+#   tags:
+#     - never
+#     - awx_uninstall
+    
