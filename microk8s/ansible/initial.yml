@@ -94,6 +94,7 @@
     tags:
       - monaco
       - monaco_uninstall
+      - dt_core
   
   - name: Clean Up Dynatrace
     include_tasks: playbooks/monaco_cleanup_tasks.yaml
@@ -101,9 +102,9 @@
     args:
       apply:
         tags:
-          - monaco
+          - dt_core
     tags:
-      - monaco
+      - dt_core
   
   - name: Install and configure Dynatrace ActiveGate
     include_tasks: playbooks/dtactivegate_tasks.yaml
