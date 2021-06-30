@@ -52,6 +52,12 @@
     dashboard_user: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).user | default('dynatrace') }}"
     dashboard_password: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).password | default('dynatrace') }}"
   tasks:
+  - set_fact:
+       private_ip: "{{ acebox['specs']['priv_ip'] | default('n/a') }}"
+     when: private_ip is not defined
+     tags:
+       - always
+       
   - name: Set Ingress Domain - Vagrant
     set_fact:
       ingress_domain: "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
