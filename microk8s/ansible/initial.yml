@@ -49,6 +49,7 @@
     monaco_download_version: "v1.5.0"
     dashboard_user: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).user | default('dynatrace') }}"
     dashboard_password: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).password | default('dynatrace') }}"
+    awx_operator_version: "0.12.0"
   tasks:
   - name: Set default Variables
     set_fact:
@@ -215,6 +216,13 @@
           - monaco
     tags:
       - monaco
+
+  - name: AWX
+    include_tasks: playbooks/awx_tasks.yaml
+    when: acebox_mode == "demo"
+    tags:
+      - awx
+      # - awx_uninstall
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml
