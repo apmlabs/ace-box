@@ -33,6 +33,8 @@ The following files/folders exist:
 
 ## Starting the demo
 Check out the detailed pages on what each pipeline does and how to demonstrate:
-- [1. Build](1_Build.md)
+- [1. Build](1_Build.md) => Start here!
 - [2. Deploy Staging](2_DeployStaging.md)
+- [3. Test](3_Test.md)
+- [4. Deploy Production](4_DeployProduction.md)
 - [Monitoring As Code](MonitoringAsCode.md)

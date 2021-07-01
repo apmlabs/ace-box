@@ -5,6 +5,9 @@ This sample app is a modified version of the Node.js sample app from the [AWS El
 
 I mainly use it to demonstrate continuous delivery, automated quality gates and self-healing of the Open Source project [Keptn](www.keptn.sh) as well as the monitoring capabilities of [Dynatrace](www.dynatrace.com)
 
+## Demo flow
+This repo comes with everything to demonstrate an end to end flow for **Monitoring as a Service**, **Monitoring as Code** and **Quality Gates**. Check out [demo](demo/Readme.md) for instructions and details.
+
 ## Extended Feature Set
 I've modified and extended it with a couple of additional API calls such as:
 * echo a string
@@ -12,7 +15,7 @@ I've modified and extended it with a couple of additional API calls such as:
 * "login" with a username
 * get the currently running version
 
-![](/images/simplenodesersviceui.png)
+![](images/simplenodesersviceui.png)
 
 ## 4 Builds with different behavior
 
@@ -27,7 +30,7 @@ The app also comes with 4 built-in "build number" behaviors - meaning - if you l
 |4|20% Failure Rate of /api/invoke and twice as slow when running in production mode|
 
 Every build shows the build number and has its own color:
-![](/images/4buildoverview.png)
+![](images/4buildoverview.png)
 
 ## How to run it
 
