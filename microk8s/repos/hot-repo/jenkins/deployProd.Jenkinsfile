@@ -10,7 +10,7 @@ def tagMatchRules = [
             ["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "${env.APP_NAME}"],
             ["context": "KUBERNETES", "key": "app.kubernetes.io/part-of", "value": "simplenode-app"],
             ["context": "KUBERNETES", "key": "app.kubernetes.io/component", "value": "api"],
-            ["context": "CONTEXTLESS", "key": "environment", "value": "staging"]
+            ["context": "CONTEXTLESS", "key": "environment", "value": "production"]
         ]
     ]
 ]
