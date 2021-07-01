@@ -1,4 +1,4 @@
-Courtesy of Andi Grabner, as I blatantly cloned his repo https://github.com/grabnerandi/simplenodeservice
+
 # Sample application Simplenodeservice
 
 This sample app is a modified version of the Node.js sample app from the [AWS Elastic Beanstalk Tutorial](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/nodejs-getstarted.html)
@@ -22,7 +22,7 @@ The app also comes with 4 built-in "build number" behaviors - meaning - if you l
 | Build | Behavior |
 | ----- | --------- |
 | 1 | Everything good |
-|2|50% Failure Rate of /api/invoke|
+|2|Slow down introduced |
 |3|Everything good|
 |4|20% Failure Rate of /api/invoke and twice as slow when running in production mode|
 
@@ -36,7 +36,7 @@ There are different options on how to run / deploy that app
 | Run where | How |
 | --------- | --- |
 | Local     | npm start |
-| Docker    | docker run grabnerandi/simplenodeservice:1.0.0 |
+| Docker    | docker run dynatraceace/simplenodeservice:1.0.2 |
 | k8s       | https://github.com/grabnerandi/keptn-qualitygate-examples |
 
 ## Build it yourself

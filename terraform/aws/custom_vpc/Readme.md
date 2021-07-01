@@ -54,3 +54,12 @@ The configuration process stores your credentials in a file at ~/.aws/credential
     ```bash
     terraform apply
     ```
+
+## Useful Terraform Commands
+
+
+Command  | Result
+-------- | -------
+`terraform destroy` | deletes any resources created by Terraform |
+`terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
+`terraform show` | Outputs the resources created by Terraform. Useful to verify IP addresses and the dashboard URL. 

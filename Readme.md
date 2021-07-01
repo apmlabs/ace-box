@@ -2,15 +2,10 @@
 
 The ace-box is an all-in-one Autonomous Cloud Enablement machine that you can use as a portable sandbox, demo and testing environment. 
 
-# The ACE-BOX has moved to GitHub!!!
-1.8.0 is the last version of the ACE-BOX to be available on BitBucket. Please check https://github.com/Dynatrace/ace-box for new releases.
-You need a GitHub account linked to the Dynatrace org to gain access. Please lodge an EDE ticket.
-
 ## Check out [Troubleshooting](#troubleshooting) before reaching out!
 
-Vagrant is used for spinning up the VM, Ansible is used for setting up the various components.
+Vagrant (Local) or Terraform (Cloud) are used for spinning up the VM, Ansible is used for setting up the various components.
 - [Welcome to the ACE-BOX](#welcome-to-the-ace-box)
-- [The ACE-BOX has moved to GitHub!!!](#the-ace-box-has-moved-to-github)
   - [Check out Troubleshooting before reaching out!](#check-out-troubleshooting-before-reaching-out)
   - [Release notes](#release-notes)
   - [Deployment Modes](#deployment-modes)
@@ -27,14 +22,11 @@ Vagrant is used for spinning up the VM, Ansible is used for setting up the vario
       - [Training mode](#training-mode)
     - [Step 4 - Provision](#step-4---provision)
     - [Troubleshooting](#troubleshooting)
-  - [Accessing ace-box dashboard](#accessing-ace-box-dashboard)
+  - [Accessing ACE Dashboard](#accessing-ace-dashboard)
   - [SSH into the box](#ssh-into-the-box)
   - [Cleaning up](#cleaning-up)
     - [Vagrant](#vagrant)
-    - [Terraform](#terraform)
   - [Behind the scenes](#behind-the-scenes)
-  - [Triggering a pipeline run](#triggering-a-pipeline-run)
-  - [ACE Box Dashboard](#ace-box-dashboard)
 
 
 ## Release notes
@@ -225,8 +217,8 @@ Check [Behind the scenes](#behind-the-scenes) for more detail about what happens
     ```
 9. Dynatrace Operator installation fails with "Error: Cluster already exists: ...": If you ever had a cluster created before please remove it from https://<dynatrace tenant>/#settings/kubernetesmonitoring;gf=all
 
-## Accessing ace-box dashboard
-At the end of the provisioning, the ACE dashboard can be accessed in the browser by navigating to `http://dashboard.192.168.50.10.nip.io`. It contains all the information and all the links to access the installed services.
+## Accessing ACE Dashboard
+At the end of the provisioning, an ACE Dashboard gets created with more information on how to use the ACE-BOX. Check out [ACE Dashboard](Dashboard.md) for more details.
 
 ## SSH into the box
 Inside the `microk8s` folder, execute `vagrant ssh` to gain access to the VM
@@ -246,14 +238,7 @@ Command  | Result
 `vagrant up` | starts and provisions the vagrant environment |
 `vagrant box update` | update the base box from time to time to ensure it is the latest version. While provisioning a message will be shown that there are updates available |
 
-### Terraform
 
-The terraform destroy command is a convenient way to destroy all remote objects managed by a particular Terraform configuration.
-
-Command  | Result
--------- | -------
-`terraform destroy` | deletes any resources created by Terraform |
-`terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
 
 ## Behind the scenes
 
@@ -275,9 +260,3 @@ When running the `vagrant up` command the following takes place:
    7. If enabled, An ACE dashboard is built and deployed as described in `ansible/playbooks/dashboard_tasks.yaml`
    8. If enabled, an Private Synthetic ActiveGate is installed based on `ansible/playbooks/dtactivegate_tasks.yaml`. This also installs all required packages.
    9. Post installation tasks are also executed, as described in `ansible/playbooks/postinstall_tasks.yaml`. This includes configuring `iptables` for port forwarding
-
-## Triggering a pipeline run
-If you installed the ace-box in `demo` mode, you can navigate to `Jenkins` and trigger the `1. Build` pipeline.
-
-## ACE Box Dashboard
-The ACE Box Dashboard is built in React. In order to run it locally for development purposes a $ npm install and $ npm run start is required in `microk8s/docker/dashboard/`. This however will create artifacts that a) shouldn't be pushed to Git and b) seem to cause issues when provisioning the ACE Box. Therefore, please don't commit the `node_modules` folder and make sure to delete it locally before launching an ACE Box.
