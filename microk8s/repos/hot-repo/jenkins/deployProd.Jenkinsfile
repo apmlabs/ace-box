@@ -2,18 +2,18 @@
 
 def event = new com.dynatrace.ace.Event()
  
- def tagMatchRules = [
-     [
-         "meTypes": [ "PROCESS_GROUP_INSTANCE"],
-         tags: [
-             ["context": "KUBERNETES", "key": "app.kubernetes.io/version", "value": "${env.ART_VERSION}"],
-             ["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "${env.APP_NAME}"],
-             ["context": "KUBERNETES", "key": "app.kubernetes.io/part-of", "value": "simplenode-app"],
-             ["context": "KUBERNETES", "key": "app.kubernetes.io/component", "value": "api"],
-             ["context": "CONTEXTLESS", "key": "environment", "value": "production"]
-         ]
-     ]
- ]
+def tagMatchRules = [
+    [
+        "meTypes": [ "PROCESS_GROUP_INSTANCE"],
+        tags: [
+            ["context": "ENVIRONMENT", "key": "DT_APPLICATION_BUILD_VERSION", "value": "${env.ART_VERSION}"],
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "${env.APP_NAME}"],
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/part-of", "value": "simplenode-app"],
+            ["context": "KUBERNETES", "key": "app.kubernetes.io/component", "value": "api"],
+            ["context": "CONTEXTLESS", "key": "environment", "value": "staging"]
+        ]
+    ]
+]
 
 pipeline {
     parameters {
