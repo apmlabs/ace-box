@@ -8,7 +8,7 @@ Terraform needs to be locally installed.
 A GCP/Azure/AWS account is needed.
 
 ## Installing on GCP, AWS or Azure
-Check the **azure**, **aws** and **gcloud** subfolders for cloud-specific instructions.
+Check the [azure](azure/Readme.md), [aws](aws/Readme.md) and [gcloud](gcloud/Readme.md) subfolders for cloud-specific instructions.
 
 ## Running on a regular (cloud) VM Instance
 BYO Ubuntu Virtual Machine has not been tested, but should be possible.
@@ -31,3 +31,12 @@ Ensure the repo contents are available on the virtual machine and that **ansible
         VM_PUBLIC_IP: public IP if the VM, used for ingress generation
         NON_ROOT_USER: username that will be used, user has to already exist. use $USER to put current user
     ```
+
+## Useful Terraform Commands
+
+
+Command  | Result
+-------- | -------
+`terraform destroy` | deletes any resources created by Terraform |
+`terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
+`terraform show` | Outputs the resources created by Terraform. Useful to verify IP addresses and the dashboard URL. 
