@@ -1,0 +1,400 @@
+- name: AWX - Retrieve URL
+  set_fact:
+    awx_url: "http://awx.{{ ingress_domain }}"
+
+- name: AWX - Wait for API to be up
+  uri:
+    url: "{{ awx_url }}/api/v2/ping"
+    status_code: 200
+    validate_certs: no
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 5
+
+- name: AWX - Retrieve admin username
+  set_fact:
+    awx_admin_username: "admin"
+
+- name: AWX - Retrieve admin password
+  shell: /snap/bin/microk8s.kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
+  register: awx_admin_password_raw
+
+- set_fact:
+    awx_admin_password: "{{ awx_admin_password_raw.stdout }}"
+
+- name: AWX - Retrieve Gitea URL
+  set_fact:
+    gitea_url: "http://gitea.{{ ingress_domain }}"
+
+- name: AWX - Retrieve Gitea org
+  set_fact:
+    gitea_org: "ace"
+
+- name: AWX - Retrieve Gitea repo
+  set_fact:
+    gitea_repo: "sockshop-infrastructure"
+
+- name: AWX - Retrieve Jenkins URL
+  set_fact:
+    jenkins_url: "http://jenkins.{{ ingress_domain }}"
+
+- name: AWX - Retrieve Carts URL
+  set_fact:
+    carts_promotion_url: "http://{{ ingress_domain }}/carts/1/items/promotion"
+
+- name: Create Dynatrace API token credential type
+  uri:
+    url: "{{ awx_url }}/api/v2/credential_types/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: Dynatrace API Token
+      description: ''
+      kind: cloud
+      namespace:
+      managed_by_tower: false
+      inputs: 
+        fields:
+        - id: dt_api_token
+          type: string
+          label: Dynatrace API Token
+          secret: true
+        required:
+        - dt_api_token
+      injectors:
+        extra_vars:
+          DYNATRACE_API_TOKEN: "{{ '{{' }} dt_api_token {{ '}}' }}"
+    body_format: json
+  register: credential_type_result
+  until: credential_type_result.status == 200 or credential_type_result.status == 201 or credential_type_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Create Dynatrace API token credential
+  uri:
+    url: "{{ awx_url }}/api/v2/credentials/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: "{{ dynatrace_tenant_url }} API Token"
+      kind: cloud
+      organization: 1
+      credential_type: "{{ credential_type_result.json.id }}"
+      inputs:
+        dt_api_token: "{{ dynatrace_api_token }}"
+    body_format: json
+  register: dt_credential_result
+  until: dt_credential_result.status == 200 or dt_credential_result.status == 201 or dt_credential_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Create remediation project
+  uri:
+    url: "{{ awx_url }}/api/v2/projects/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: self-healing
+      description: ''
+      scm_type: git
+      scm_url: "{{ gitea_url }}/{{ gitea_org }}/{{ gitea_repo }}"
+      scm_branch: master
+      scm_clean: true
+      scm_delete_on_update: false
+      timeout: 0
+      organization: 1
+      scm_update_on_launch: false
+      scm_update_cache_timeout: 10
+    body_format: json
+  register: project_result
+  until: project_result.status == 200 or project_result.status == 201 or project_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Wait for project to be on successful state
+  uri:
+    url: "{{ awx_url }}/api/v2/projects/{{ project_result.json.id }}"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: GET
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+  register: project_object
+  until: project_object.json.status == "successful"
+  retries: 10
+  delay: 2
+  ignore_errors: yes
+
+- name: Retrigger project on fail
+  uri:
+    url: "{{ awx_url }}/api/v2/projects/{{ project_result.json.id }}/update/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 202, 204]
+  register: project_retrigger_result
+
+- name: Wait for project to be on successful state
+  uri:
+    url: "{{ awx_url }}/api/v2/projects/{{ project_result.json.id }}"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: GET
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+  register: project_object
+  until: project_object.json.status == "successful"
+  retries: 5
+  delay: 2
+
+- name: Create remediation inventory
+  uri:
+    url: "{{ awx_url }}/api/v2/inventories/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: inventory
+      description: ''
+      organization: 1
+      variables: |
+        ---
+        tenant: {{ dynatrace_tenant_url }}
+        carts_promotion_url: {{ carts_promotion_url }}
+        commentuser: Ansible Playbook
+        tower_user: {{ awx_admin_username }}
+        tower_password: {{ awx_admin_password }}
+        dtcommentapiurl: https://{{ '{{' }} tenant {{ '}}' }}/api/v1/problem/details/{{ '{{' }} pid {{ '}}' }}/comments?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}
+        dteventapiurl: https://{{ '{{' }} tenant {{ '}}' }}/api/v1/events/?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}
+    body_format: json
+  register: inventory_result
+  until: inventory_result.status == 200 or inventory_result.status == 201 or inventory_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Create remediation template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'remediation'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/remediation.yaml
+      verbosity: 0
+      ask_variables_on_launch: true
+    body_format: json
+  register: remediation_template_result
+  until: remediation_template_result.status == 200 or remediation_template_result.status == 201 or remediation_template_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: set stop-campaign template id
+  set_fact:
+    stop_campaign_template_id: "{{ remediation_template_result.json.id|int + 1 }}"
+
+- name: Create stop-campaign template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'stop-campaign'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/campaign.yaml
+      verbosity: 0
+      ask_variables_on_launch: false
+      extra_vars: |
+        ---
+        promotion_rate: 0
+        remediation_action: '{{ awx_url }}/api/v2/job_templates/{{ stop_campaign_template_id }}/launch/'
+        dt_application: carts
+        dt_environment: production
+    body_format: json
+  register: stop_campaign_template_result
+  until: stop_campaign_template_result.status == 200 or stop_campaign_template_result.status == 201 or stop_campaign_template_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Create start-campaign template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'start-campaign'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/campaign.yaml
+      verbosity: 0
+      ask_variables_on_launch: true
+      extra_vars: |
+        ---
+        promotion_rate: 0
+        remediation_action: '{{ awx_url }}/api/v2/job_templates/{{ stop_campaign_template_id }}/launch/'
+        dt_application: carts
+        dt_environment: production
+    body_format: json
+  register: start_campaign_template_result
+  until: start_campaign_template_result.status == 200 or start_campaign_template_result.status == 201 or start_campaign_template_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Create reset canary release template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'canary-reset'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/canary.yaml
+      verbosity: 0
+      ask_variables_on_launch: false
+      job_tags: canary_reset
+      extra_vars: |
+        ---
+        dt_app: front-end
+        dt_env: production
+        jenkins_user: '{{ jenkins_user }}'
+        jenkins_password: '{{ jenkins_password }}'
+        jenkins_url: '{{ jenkins_url }}/job/k8s-deploy-production-canary/build?delay=0sec'
+        remediation_url: ''
+    body_format: json
+  register: canary_reset_template_result
+  until: canary_reset_template_result.status == 200 or canary_reset_template_result.status == 201 or canary_reset_template_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Create ramp up canary release template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'canary'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/canary.yaml
+      verbosity: 0
+      ask_variables_on_launch: true
+      skip_tags: canary_reset
+      extra_vars: |
+        ---
+        dt_app: front-end
+        dt_env: production
+        jenkins_user: '{{ jenkins_user }}'
+        jenkins_password: '{{ jenkins_password }}'
+        jenkins_url: '{{ jenkins_url }}/job/k8s-deploy-production-canary/build?delay=0sec'
+        remediation_url: '{{ awx_url }}/api/v2/job_templates/{{ canary_reset_template_result.json.id }}/launch/'
+    body_format: json
+  register: start_ramp_up_template_result
+  until: start_ramp_up_template_result.status == 200 or start_ramp_up_template_result.status == 201 or start_ramp_up_template_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: Assign Dynatrace API Token credential to all templates
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/{{ item }}/credentials/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      '{ "id" : {{ dt_credential_result.json.id | int }} }'
+    body_format: json
+  with_items:
+    - "{{ remediation_template_result.json.id }}"
+    - "{{ stop_campaign_template_result.json.id }}"
+    - "{{ start_campaign_template_result.json.id }}"
+    - "{{ canary_reset_template_result.json.id }}"
+    - "{{ start_ramp_up_template_result.json.id }}"
+  register: assign_dt_token_result
+  until: assign_dt_token_result.status == 200 or assign_dt_token_result.status == 201 or assign_dt_token_result.status == 204
+  retries: 10
+  delay: 1
+
+- name: print remediation template id
+  debug:
+    msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ awx_url }}/#/templates/job_template/{{ remediation_template_result.json.id }}"

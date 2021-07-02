@@ -1,31 +1,64 @@
-# - name: AWX - Create namespace
-#   shell: kubectl create namespace awx
-#   tags:
-#     - awx
-
 - name: AWX - Install Operator
-  shell: kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/{{ awx_operator_version }}/deploy/awx-operator.yaml
+  become_user: "{{ non_root_user }}"
+  shell: helm upgrade --install --wait awx-operator /vagrant/helm-charts/awx-operator
   tags:
     - awx
-
-# - name: Gitea - Wait for gitea to be ready
-#   shell: /snap/bin/microk8s.kubectl -n ace rollout status deployment gitea-gitea
-#   tags:
-#     - git
 
 - name: AWX - Install AWX
-  shell: kubectl apply -f /vagrant/k8s/awx.yml
+  become_user: "{{ non_root_user }}"
+  shell: helm upgrade --install --wait awx /vagrant/helm-charts/awx --namespace awx --create-namespace
   tags:
     - awx
 
-# - name: AWX - Wait for operator state 'running'
-#   shell: kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/{{ awx_operator_version }}/deploy/awx-operator.yaml
-#   tags:
-#     - awx
+- name: AWX - Retrieve URL
+  set_fact:
+    awx_url: "http://awx.{{ ingress_domain }}"
+  tags:
+    - awx_output
 
-# - name: AWX - Uninstall
-#   shell: rm -rf /usr/local/bin/monaco
-#   tags:
-#     - never
-#     - awx_uninstall
+- name: AWX - Retrieve admin username
+  set_fact:
+    awx_admin_username: "admin"
+  tags:
+    - awx_output
+
+- name: AWX - Retrieve admin password
+  shell: /snap/bin/microk8s.kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
+  register: awx_admin_password_raw
+  tags:
+    - awx_output
+
+- set_fact:
+    awx_admin_password: "{{ awx_admin_password_raw.stdout }}"
+  tags:
+    - awx_output
+
+- debug:
+    msg:
+      - "AWX URL: {{ awx_url }}"
+      - "AWX admin username: {{ awx_admin_username }}"
+      - "AWX admin password: {{ awx_admin_password }}"
+  tags:
+    - awx_output
+
+
+- name: AWX - Uninstall AWX
+  become_user: "{{ non_root_user }}"
+  shell: helm delete awx --namespace awx
+  tags:
+    - never
+    - awx_uninstall
+
+- name: AWX - Uninstall Operator
+  become_user: "{{ non_root_user }}"
+  shell: helm delete awx-operator
+  tags:
+    - never
+    - awx_uninstall
+
+- name: AWX - Delete namespace
+  shell: kubectl delete namespace awx
+  tags:
+    - never
+    - awx_uninstall
     
