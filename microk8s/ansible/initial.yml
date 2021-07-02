@@ -14,6 +14,7 @@
     feature_cert_manager:             "{{ acebox['features']['cert_manager'] | default(false) }}"
     feature_gitlab:                   "{{ acebox['features']['gitlab'] | default(false) }}"
     feature_activegatekube:           "{{ acebox['features']['activegatekube'] | default(false) }}"
+    feature_awx:                      "{{ acebox['features']['awx'] | default(false) }}"
     dynatrace_tenant_url:             "{{ dynatrace['tenant'] }}" 
     dynatrace_paas_token:             "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
@@ -217,12 +218,25 @@
     tags:
       - monaco
 
-  - name: AWX
+  - name: Install AWX
     include_tasks: playbooks/awx_tasks.yaml
-    when: acebox_mode == "demo"
+    when: feature_awx
     tags:
       - awx
-      # - awx_uninstall
+      - awx_uninstall
+      - awx_output
+
+  - name: Configure AWX
+    include_tasks: playbooks/awx_config_tasks.yaml
+    when: feature_awx
+    args:
+      apply:
+        tags:
+          - awx
+          - awx_config
+    tags:
+      - awx
+      - awx_config
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml
