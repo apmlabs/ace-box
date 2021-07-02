@@ -232,10 +232,8 @@
     args:
       apply:
         tags:
-          - awx
           - awx_config
     tags:
-      - awx
       - awx_config
 
   - name: Post install tasks
