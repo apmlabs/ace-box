@@ -1,0 +1,13 @@
+# Default values for awx.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# service:
+#   type: ClusterIP
+#   port: 80
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+    - host: awx.192.168.50.11.nip.io

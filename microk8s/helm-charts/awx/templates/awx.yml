@@ -1,0 +1,17 @@
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: {{ include "awx.fullname" . }}
+  labels:
+    {{- include "awx.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  service_type: ClusterIP
+  ingress_type: ingress
+  {{- with (first .Values.ingress.hosts) }}
+  hostname: {{ .host }}
+  {{- end }}
