@@ -10,4 +10,4 @@ ingress:
   enabled: true
   annotations: {}
   hosts:
-    - host: awx.192.168.50.11.nip.io
+    - host: ""

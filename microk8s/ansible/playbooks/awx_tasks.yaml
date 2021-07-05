@@ -4,15 +4,21 @@
   tags:
     - awx
 
+- set_fact:
+    awx_hostname: "awx.{{ ingress_domain }}"
+  tags:
+    - awx
+    - awx_output
+
 - name: AWX - Install AWX
   become_user: "{{ non_root_user }}"
-  shell: helm upgrade --install --wait awx /vagrant/helm-charts/awx --namespace awx --create-namespace
+  shell: helm upgrade --install --wait awx /vagrant/helm-charts/awx --namespace awx --create-namespace --set ingress.hosts[0].host="{{ awx_hostname }}"
   tags:
     - awx
 
 - name: AWX - Retrieve URL
   set_fact:
-    awx_url: "http://awx.{{ ingress_domain }}"
+    awx_url: "http://{{ awx_hostname }}"
   tags:
     - awx_output
 
