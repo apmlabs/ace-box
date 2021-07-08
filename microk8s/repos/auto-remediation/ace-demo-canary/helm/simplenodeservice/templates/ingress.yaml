@@ -1,0 +1,26 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/canary: {{ if .Values.isCanary }}"true"{{ else }}"false"{{ end }}
+    nginx.ingress.kubernetes.io/canary-weight: "{{ .Values.canaryWeight }}"
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: Helm
+    chart: {{ .Chart.Name }}
+    heritage: Helm
+    release: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+spec:
+  rules:
+  - host: {{ .Chart.Name }}.{{ .Values.environment }}.{{ .Values.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Release.Name }}
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific

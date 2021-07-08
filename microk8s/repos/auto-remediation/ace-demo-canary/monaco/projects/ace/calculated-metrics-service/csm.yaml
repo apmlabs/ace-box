@@ -1,0 +1,6 @@
+config:
+    - simplenode.canary: "csm.json"
+
+simplenode.canary:
+    - name: "simplenode.canary"
+    - metricKey: "calc:service.simplenode.canary" 

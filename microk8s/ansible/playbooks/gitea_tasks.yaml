@@ -173,9 +173,19 @@
 - name: Gitea - Configure repo
   include_tasks: gitea_repo_tasks.yaml
   vars:
-    gitea_org: "ace"
-    gitea_repo: "sockshop-infrastructure"
-    gitea_source_folder: "sockshop-infrastructure"
+    gitea_org: "auto-remediation"
+    gitea_repo: "ace-demo-canary"
+    gitea_source_folder: "auto-remediation/"ace-demo-canary"
+  tags:
+    - git
+    - git_uninstall
+
+- name: Gitea - Configure repo
+  include_tasks: gitea_repo_tasks.yaml
+  vars:
+    gitea_org: "auto-remediation"
+    gitea_repo: "ace-demo-canary-awx"
+    gitea_source_folder: "auto-remediation/"ace-demo-canary-awx"
   tags:
     - git
     - git_uninstall
