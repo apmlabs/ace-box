@@ -175,7 +175,7 @@
   vars:
     gitea_org: "auto-remediation"
     gitea_repo: "ace-demo-canary"
-    gitea_source_folder: "auto-remediation/"ace-demo-canary"
+    gitea_source_folder: "auto-remediation/ace-demo-canary"
   tags:
     - git
     - git_uninstall
@@ -185,7 +185,7 @@
   vars:
     gitea_org: "auto-remediation"
     gitea_repo: "ace-demo-canary-awx"
-    gitea_source_folder: "auto-remediation/"ace-demo-canary-awx"
+    gitea_source_folder: "auto-remediation/ace-demo-canary-awx"
   tags:
     - git
     - git_uninstall
