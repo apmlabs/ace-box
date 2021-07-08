@@ -866,3 +866,83 @@ controller:
                     }
                   }
                 }
+          - script: >
+              folder('ace-demo-canary')
+          - script: >
+              pipelineJob('ace-demo-canary/0.0. Prepare Environment') {
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/00.0_prepare.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('ace-demo-canary/0.1. Monaco') {
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/00.1_monaco.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('ace-demo-canary/1. Deploy') {
+                parameters {
+                  stringParam('IMAGE_NAME', 'ace/simplenodeservice', '')
+                  stringParam('IMAGE_TAG', '', '')
+                  stringParam('CANARY_WEIGHT', '0', '')
+                  booleanParam('IS_CANARY', false, '')
+                }
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/01_deploy.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('ace-demo-canary/2. Shift traffic') {
+                parameters {
+                  stringParam('CANARY_WEIGHT', '0', 'Weight of traffic that will be routed to service.')
+                  stringParam('REMEDIATION_URL', '0', 'Remediation script to call if canary release fails.')
+                }
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/02_canary.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
