@@ -30,6 +30,7 @@
     keptn_jmeter_ext_service_version:     "{{ acebox['config']['keptn']['dynatrace_jmeter_ext_service_version'] | default('0.2.0')}}"
     microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns storage registry ingress ') }}"
     microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('nip.io') }}"
+    microk8s_release_channel:   "{{ acebox['config']['microk8s']['release_channel'] | default('1.21/stable') }}"
     #ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
     # git_user:                   "{{ acebox['config']['git']['user'] | default('dynatrace') }}"
     # git_password:               "{{ acebox['config']['git']['password'] | default('dynatrace') }}"
