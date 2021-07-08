@@ -12,10 +12,6 @@
   retries: 60
   delay: 5
 
-- name: AWX - Retrieve admin username
-  set_fact:
-    awx_admin_username: "admin"
-
 - name: AWX - Retrieve admin password
   shell: /snap/bin/microk8s.kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
   register: awx_admin_password_raw
