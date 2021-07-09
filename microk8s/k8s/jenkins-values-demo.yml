@@ -876,7 +876,7 @@ controller:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
                           }
                           branch('*/master')
                       }
@@ -893,7 +893,7 @@ controller:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
                           }
                           branch('*/master')
                       }
@@ -916,7 +916,7 @@ controller:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
                           }
                           branch('*/master')
                       }
@@ -937,7 +937,7 @@ controller:
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/ace/ace-demo-canary')
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
                           }
                           branch('*/master')
                       }
