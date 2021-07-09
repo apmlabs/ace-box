@@ -8,7 +8,7 @@ pipeline {
 	}
 	environment {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
-		APP_NAME = "simplenodeservice-canary-green"
+		RELEASE_NAME = "simplenodeservice-canary-green"
 		NAMESPACE = "canary"
 	}
 	agent {
@@ -18,7 +18,7 @@ pipeline {
 		stage('Shift traffic') {
 			steps {
 				container('kubectl') {
-					sh "kubectl annotate --overwrite ingress ${env.APP_NAME} nginx.ingress.kubernetes.io/canary-weight='${params.CANARY_WEIGHT}' -n ${env.NAMESPACE}"
+					sh "kubectl annotate --overwrite ingress ${env.RELEASE_NAME} nginx.ingress.kubernetes.io/canary-weight='${params.CANARY_WEIGHT}' -n ${env.NAMESPACE}"
 				}
 			}
 		}
@@ -27,7 +27,7 @@ pipeline {
 				script {
 					def status = event.pushDynatraceConfigurationEvent (
 						tagRule : generateTagRules(),
-						description : "${env.APP_NAME} canary weight set to ${params.CANARY_WEIGHT}%",
+						description : "${env.RELEASE_NAME} canary weight set to ${params.CANARY_WEIGHT}%",
 						source : "Jenkins",
 						configuration : "Load Balancer",
 						customProperties : [
