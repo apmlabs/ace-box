@@ -105,6 +105,15 @@
     tags:
       - k8s
 
+  - name: Install and configure helm
+    include_tasks: playbooks/helm.yaml
+    args:
+      apply:
+        tags:
+          - k8s
+    tags:
+      - k8s
+
   - name: Install Monaco
     include_tasks: playbooks/monaco_tasks.yaml
     when: acebox_mode == "demo"
@@ -132,15 +141,6 @@
           - dt_core
     tags:
       - dt_core
-  
-  - name: Install and configure helm
-    include_tasks: playbooks/helm.yaml
-    args:
-      apply:
-        tags:
-          - k8s
-    tags:
-      - k8s
   
   - name: Install and configure Dynatrace OneAgent
     include_tasks: playbooks/dtoneagent_tasks.yaml
