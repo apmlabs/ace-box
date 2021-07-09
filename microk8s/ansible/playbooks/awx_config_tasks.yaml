@@ -392,6 +392,6 @@
   retries: 10
   delay: 1
 
-- name: print remediation template id
-  debug:
-    msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ awx_url }}/#/templates/job_template/{{ remediation_template_result.json.id }}"
+# - name: print remediation template id
+#   debug:
+#     msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ awx_url }}/#/templates/job_template/{{ remediation_template_result.json.id }}"
