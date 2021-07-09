@@ -11,8 +11,8 @@ pipeline {
 	environment {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
 		APP_NAME = "simplenodeservice-canary"
-		NAMESPACE = "${params.IS_CANARY ? 'canary-green' : 'canary-blue'}"
-		// VERSION = "${params.IMAGE_TAG}"
+		RELEASE_NAME = "${env.APP_NAME}-${params.IS_CANARY ? 'green' : 'blue'}"
+		NAMESPACE = "canary"
 		APPLICATION_BUILD_VERSION = "${params.IMAGE_TAG}"
 	}
 	agent {
@@ -53,7 +53,7 @@ pipeline {
 				checkout scm
 				container('helm') {
 					// sh "sed -e \"s|DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|\" -e \"s|ENVIRONMENT_PLACEHOLDER|staging|\" -e \"s|IMAGE_PLACEHOLDER|${env.TAG_STAGING}|\" -e \"s|VERSION_PLACEHOLDER|${env.BUILD}.0.0|\" -e \"s|BUILD_VERSION_PLACEHOLDER|${env.ART_VERSION}|\" -e \"s|DT_TAGS_PLACEHOLDER|${env.DT_TAGS}|\" -e \"s|DT_CUSTOM_PROP_PLACEHOLDER|${env.DT_CUSTOM_PROP}|\" helm/simplenodeservice/values.yaml > helm/simplenodeservice/values-gen.yaml"
-					sh "helm upgrade --install ${env.APP_NAME} helm/simplenodeservice \
+					sh "helm upgrade --install ${env.RELEASE_NAME} helm/simplenodeservice \
 					--set image=${env.IMAGE_FULL} \
 					--set domain=${env.INGRESS_DOMAIN} \
 					--set version=${env.VERSION} \

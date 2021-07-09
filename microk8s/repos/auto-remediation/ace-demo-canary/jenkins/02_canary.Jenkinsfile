@@ -8,8 +8,8 @@ pipeline {
 	}
 	environment {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
-		APP_NAME = "simplenodeservice-canary"
-		NAMESPACE = "canary-green"
+		APP_NAME = "simplenodeservice-canary-green"
+		NAMESPACE = "canary"
 	}
 	agent {
 		label 'kubegit'
