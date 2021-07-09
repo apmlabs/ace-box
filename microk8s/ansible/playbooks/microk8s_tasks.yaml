@@ -8,10 +8,6 @@
   become: true
   command: "usermod -a -G microk8s {{ non_root_user }}"
 
-- name: Microk8s - Allow Priviledged
-  become: true
-  shell: bash -c "echo \"--allow-privileged=true\" >> /var/snap/microk8s/current/args/kube-apiserver"
-
 - name: Microk8s - Alias to kubectl
   shell: snap alias microk8s.kubectl kubectl
 
@@ -27,65 +23,22 @@
 - name: Microk8s - Wait for microk8s to be ready
   shell: /snap/bin/microk8s.status --wait-ready
 
-# - name: Microk8s - Dashboard - Create directory for cert
-#   when: microk8s_addons is search("dashboard")
-#   become_user: vagrant
-#   file:
-#     path: /home/vagrant/certs
-#     state: directory
-
-# - name: Microk8s - Dashboard - Generate keys
-#   when: microk8s_addons is search("dashboard")
-#   become_user: vagrant
-#   shell: openssl req -nodes -newkey rsa:2048 -keyout /home/vagrant/certs/dashboard.key -out /home/vagrant/certs/dashboard.csr -subj "/C=/ST=/L=/O=/OU=/CN=kubernetes-dashboard"
-#   args:  
-#     creates: /home/vagrant/certs/dashboard.key
-
-# - name: Microk8s - Dashboard - Generate cert
-#   when: microk8s_addons is search("dashboard")
-#   become_user: vagrant
-#   shell: openssl x509 -req -sha256 -days 365 -in /home/vagrant/certs/dashboard.csr -signkey /home/vagrant/certs/dashboard.key -out /home/vagrant/certs/dashboard.crt
-#   args:
-#     creates: /home/vagrant/certs/dashboard.crt
-
-# - name: Microk8s - Dashboard - Delete old secret
-#   when: microk8s_addons is search("dashboard")
-#   shell: /snap/bin/microk8s.kubectl delete secret kubernetes-dashboard-certs -n kube-system
-
-# - name: Microk8s - Dashboard - Create new secret
-#   when: microk8s_addons is search("dashboard")
-#   shell: /snap/bin/microk8s.kubectl create secret generic kubernetes-dashboard-certs --from-file=/home/vagrant/certs -n kube-system
-
-# - name: Microk8s - Dashboard - Delete pod to reload cert
-#   when: microk8s_addons is search("dashboard")
-#   shell: /snap/bin/microk8s.kubectl -n kube-system delete pod -l k8s-app=kubernetes-dashboard
-
-#- name: Microk8s - Dashboard - Create nodePort and expose on 31100
-#  when: microk8s_addons is search("dashboard")
-#  shell: "/snap/bin/microk8s.kubectl -n kube-system patch service kubernetes-dashboard -p '{\"spec\": {\"ports\": [{\"port\": 443,\"targetPort\": 8443,\"name\": \"https\",\"protocol\":\"TCP\",\"nodePort\":31100}], \"type\": \"NodePort\"}}'"
-
-- name: Microk8s - Dashboard - Allow skip authentication
-  when: microk8s_addons is search("dashboard")
-  shell: "/snap/bin/microk8s.kubectl -n kube-system patch deployment kubernetes-dashboard -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"kubernetes-dashboard\",\"args\": [\"--auto-generate-certificates\", \"--namespace=kube-system\", \"--enable-skip-login\"]}]}}}}'"
-
 - name: Microk8s - Add namespaces
   shell: /snap/bin/microk8s.kubectl create -f /vagrant/k8s/namespaces.yml
   ignore_errors: yes
 
-- name: Microk8s - Grant viewer role to service accounts ace namespace
-  shell: /snap/bin/microk8s.kubectl -n ace create rolebinding default-view --clusterrole=view --serviceaccount=ace:default
-  ignore_errors: yes
+# - name: Microk8s - Dashboard - Allow skip authentication
+#   when: microk8s_addons is search("dashboard")
+#   shell: "/snap/bin/microk8s.kubectl -n kube-system patch deployment kubernetes-dashboard -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"kubernetes-dashboard\",\"args\": [\"--auto-generate-certificates\", \"--namespace=kube-system\", \"--enable-skip-login\"]}]}}}}'"
 
-- name: Microk8s - Grant viewer role to service accounts staging namespace
-  shell: /snap/bin/microk8s.kubectl -n staging create rolebinding default-view --clusterrole=view --serviceaccount=staging:default
-  ignore_errors: yes
+# - name: Microk8s - Grant viewer role to service accounts ace namespace
+#   shell: /snap/bin/microk8s.kubectl -n ace create rolebinding default-view --clusterrole=view --serviceaccount=ace:default
+#   ignore_errors: yes
 
-- name: Microk8s - Grant viewer role to service accounts production namespace
-  shell: /snap/bin/microk8s.kubectl -n production create rolebinding default-view --clusterrole=view --serviceaccount=production:default
-  ignore_errors: yes
+# - name: Microk8s - Grant viewer role to service accounts staging namespace
+#   shell: /snap/bin/microk8s.kubectl -n staging create rolebinding default-view --clusterrole=view --serviceaccount=staging:default
+#   ignore_errors: yes
 
-# - name: Microk8s - Set domain for simplenode Ingress
-#   shell: sed -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" /vagrant/k8s/simplenode-ingress.yml > /vagrant/k8s/simplenode-ingress-gen.yml
-
-# - name: Microk8s - Apply Ingress for simplenode
-#   shell: /snap/bin/microk8s.kubectl apply -f /vagrant/k8s/simplenode-ingress-gen.yml
+# - name: Microk8s - Grant viewer role to service accounts production namespace
+#   shell: /snap/bin/microk8s.kubectl -n production create rolebinding default-view --clusterrole=view --serviceaccount=production:default
+#   ignore_errors: yes
