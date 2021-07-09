@@ -4,12 +4,14 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ .Chart.Name }}
+    identifier: {{ .Values.bgIdentifier }}
 spec:
   ports:
   - name: http
     port: 80
     targetPort: 8080
   selector:
-    app: {{ .Release.Name }}
+    app: {{ .Chart.Name }}
+    identifier: {{ .Values.bgIdentifier }}
   type: NodePort

@@ -7,3 +7,4 @@ image: IMAGE_PLACEHOLDER
 environment: canary
 canaryWeight: 100
 isCanary: false
+bgIdentifier: blue

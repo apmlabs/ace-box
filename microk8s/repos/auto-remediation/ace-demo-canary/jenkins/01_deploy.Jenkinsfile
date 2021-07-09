@@ -11,7 +11,8 @@ pipeline {
 	environment {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
 		APP_NAME = "simplenodeservice-canary"
-		RELEASE_NAME = "${env.APP_NAME}-${params.IS_CANARY ? 'green' : 'blue'}"
+		BG_IDENTIFIER = "${params.IS_CANARY ? 'green' : 'blue'}"
+		RELEASE_NAME = "${env.APP_NAME}-${env.BG_IDENTIFIER}"
 		NAMESPACE = "canary"
 		APPLICATION_BUILD_VERSION = "${params.IMAGE_TAG}"
 	}
@@ -57,6 +58,7 @@ pipeline {
 					--set image=${env.IMAGE_FULL} \
 					--set domain=${env.INGRESS_DOMAIN} \
 					--set version=${env.VERSION} \
+					--set bgIdentifier=${env.BG_IDENTIFIER} \
 					--set build_version=${env.APPLICATION_BUILD_VERSION} \
 					--set isCanary=${params.IS_CANARY} \
 					--set canaryWeight=${params.CANARY_WEIGHT} \
