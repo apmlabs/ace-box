@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/canary-weight: "{{ .Values.canaryWeight }}"
   labels:
     app: {{ .Chart.Name }}
-    identifier: {{ .Values.bgIdentifier }}
+    version: {{ .Values.version }}
     app.kubernetes.io/managed-by: Helm
     chart: {{ .Chart.Name }}
     heritage: Helm
@@ -17,7 +17,7 @@ metadata:
   name: {{ .Release.Name }}
 spec:
   rules:
-  - host: {{ .Chart.Name }}.{{ .Values.environment }}.{{ .Values.domain }}
+  - host: {{ .Chart.Name }}.{{ .Release.Namespace }}.{{ .Values.domain }}
     http:
       paths:
       - backend:

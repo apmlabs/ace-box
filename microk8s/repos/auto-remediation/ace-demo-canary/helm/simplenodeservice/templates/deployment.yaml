@@ -6,7 +6,7 @@ metadata:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
   labels:
     app: "{{ .Chart.Name }}"
-    identifier: {{ .Values.bgIdentifier }}
+    version: {{ .Values.version }}
     app.kubernetes.io/name: "{{ .Chart.Name }}"
     app.kubernetes.io/component: "api"
     app.kubernetes.io/version: "{{ .Values.version }}"
@@ -19,12 +19,12 @@ spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-      identifier: {{ .Values.bgIdentifier }}
+      version: {{ .Values.version }}
   template:
     metadata:
       labels:
         app: {{ .Chart.Name }}
-        identifier: {{ .Values.bgIdentifier }}
+        version: {{ .Values.version }}
         app.kubernetes.io/name: "{{ .Chart.Name }}"
         app.kubernetes.io/version: "{{ .Values.version }}"
         app.kubernetes.io/managed-by: "Helm"

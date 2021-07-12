@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}
   labels:
     app: {{ .Chart.Name }}
-    identifier: {{ .Values.bgIdentifier }}
+    version: {{ .Values.version }}
 spec:
   ports:
   - name: http
@@ -13,5 +13,5 @@ spec:
     targetPort: 8080
   selector:
     app: {{ .Chart.Name }}
-    identifier: {{ .Values.bgIdentifier }}
+    version: {{ .Values.version }}
   type: NodePort
