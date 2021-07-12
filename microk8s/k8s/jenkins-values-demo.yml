@@ -946,3 +946,20 @@ controller:
                   }
                 }
               }
+          - script: >
+              pipelineJob('ace-demo-canary/z. Generate Load') {
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/z_generateload.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
