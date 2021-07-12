@@ -318,11 +318,8 @@
       job_tags: canary_reset
       extra_vars: |
         ---
-        dt_app: front-end
-        dt_env: production
         jenkins_user: '{{ jenkins_user }}'
-        jenkins_password: '{{ jenkins_password }}'
-        jenkins_token: 'TBD'
+        jenkins_token: '<insert Jenkins token here>'
         jenkins_url: '{{ jenkins_url }}/job/ace-demo-canary/job/2.%20Shift%20traffic/build?delay=0sec'
         remediation_url: ''
     body_format: json
