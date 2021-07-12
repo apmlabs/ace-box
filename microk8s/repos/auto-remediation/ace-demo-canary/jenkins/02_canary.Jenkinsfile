@@ -43,7 +43,7 @@ pipeline {
 def generateTagRules() {
 	def tagMatchRules = [
 		[
-			"meTypes": [ "PROCESS_GROUP_INSTANCE"],
+			"meTypes": [ "SERVICE" ],
 			tags: [
 				["context": "CONTEXTLESS", "key": "environment", "value": "${env.NAMESPACE}"],
 				["context": "CONTEXTLESS", "key": "app", "value": "simplenodeservice"]
