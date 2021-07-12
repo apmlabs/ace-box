@@ -193,8 +193,8 @@
         commentuser: Ansible Playbook
         tower_user: {{ awx_admin_username }}
         tower_password: {{ awx_admin_password }}
-        dtcommentapiurl: {{ '{{' }} tenant {{ '}}' }}/api/v1/problem/details/{{ '{{' }} pid {{ '}}' }}/comments?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}
-        dteventapiurl: {{ '{{' }} tenant {{ '}}' }}/api/v1/events/?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}
+        dtcommentapiurl: "{{ '{{' }} tenant {{ '}}' }}/api/v1/problem/details/{{ '{{' }} pid {{ '}}' }}/comments?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}"
+        dteventapiurl: "{{ '{{' }} tenant {{ '}}' }}/api/v1/events/?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}"
     body_format: json
   register: inventory_result
   until: inventory_result.status == 200 or inventory_result.status == 201 or inventory_result.status == 204
