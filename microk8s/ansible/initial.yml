@@ -199,16 +199,6 @@
     tags:
       - jenkins
       - jenkins_uninstall
-
-  - name: Create ACE Dashboard
-    include_tasks: playbooks/dashboard_tasks.yaml
-    when: feature_dashboard or acebox_mode == "demo"
-    args:
-      apply:
-        tags:
-          - dashboard
-    tags:
-      - dashboard
   
   - name: Configure Dynatrace
     include_tasks: playbooks/monaco_config_tasks.yaml
@@ -237,6 +227,16 @@
           - awx_config
     tags:
       - awx_config
+
+  - name: Create ACE Dashboard
+    include_tasks: playbooks/dashboard_tasks.yaml
+    when: feature_dashboard or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - dashboard
+    tags:
+      - dashboard
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml

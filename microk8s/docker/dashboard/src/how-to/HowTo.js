@@ -1,20 +1,23 @@
 import React, { useState } from "react"
-import { useGitea, useGitlab } from "../libs/credentials"
+import { useAwx, useGitea, useGitlab } from "../libs/credentials"
 
 import Jenkins from "./Jenkins"
 import Gitea from "./Gitea"
 import Gitlab from "./Gitlab"
+import Awx from "./Awx"
 import Keptn from "./Keptn"
 import Dynatrace from "./Dynatrace"
 import Kubernetes from "./Kubernetes"
 
 const ToolTabs = () => {
   const { isEnabled: isGitlabEnabled } = useGitlab()
+  const { isEnabled: isAwxEnabled } = useAwx()
 
   const tabs = {
     "Jenkins": Jenkins,
     "Gitea": Gitea,
     "Gitlab": Gitlab,
+    "AWX": Awx,
     "Keptn": Keptn,
     "Dynatrace": Dynatrace,
     "Kubernetes": Kubernetes
@@ -22,6 +25,10 @@ const ToolTabs = () => {
 
   if (!isGitlabEnabled) {
     delete tabs["Gitlab"]
+  }
+
+  if (!isAwxEnabled) {
+    delete tabs["AWX"]
   }
 
   const [activeTab, setActiveTab] = useState(Object.keys(tabs)[0])
