@@ -201,31 +201,31 @@
   retries: 10
   delay: 1
 
-# - name: Create remediation template
-#   uri:
-#     url: "{{ awx_url }}/api/v2/job_templates/"
-#     user: "{{ awx_admin_username }}"
-#     password: "{{ awx_admin_password }}"
-#     force_basic_auth: yes
-#     validate_certs: false
-#     method: POST
-#     status_code: [200, 201, 204]
-#     return_content: yes
-#     headers:
-#       Content-Type: "application/json"
-#     body:
-#       name: 'remediation'
-#       job_type: run
-#       inventory: "{{ inventory_result.json.id }}"
-#       project: "{{ project_result.json.id }}"
-#       playbook: playbooks/remediation.yaml
-#       verbosity: 0
-#       ask_variables_on_launch: true
-#     body_format: json
-#   register: remediation_template_result
-#   until: remediation_template_result.status == 200 or remediation_template_result.status == 201 or remediation_template_result.status == 204
-#   retries: 10
-#   delay: 1
+- name: Create remediation template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'remediation'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/remediation.yaml
+      verbosity: 0
+      ask_variables_on_launch: true
+    body_format: json
+  register: remediation_template_result
+  until: remediation_template_result.status == 200 or remediation_template_result.status == 201 or remediation_template_result.status == 204
+  retries: 10
+  delay: 1
 
 # - name: set stop-campaign template id
 #   set_fact:
@@ -328,40 +328,38 @@
   retries: 10
   delay: 1
 
-# - name: Create ramp up canary release template
-#   uri:
-#     url: "{{ awx_url }}/api/v2/job_templates/"
-#     user: "{{ awx_admin_username }}"
-#     password: "{{ awx_admin_password }}"
-#     force_basic_auth: yes
-#     validate_certs: false
-#     method: POST
-#     status_code: [200, 201, 204]
-#     return_content: yes
-#     headers:
-#       Content-Type: "application/json"
-#     body:
-#       name: 'canary'
-#       job_type: run
-#       inventory: "{{ inventory_result.json.id }}"
-#       project: "{{ project_result.json.id }}"
-#       playbook: playbooks/canary.yaml
-#       verbosity: 0
-#       ask_variables_on_launch: true
-#       skip_tags: canary_reset
-#       extra_vars: |
-#         ---
-#         dt_app: front-end
-#         dt_env: production
-#         jenkins_user: '{{ jenkins_user }}'
-#         jenkins_password: '{{ jenkins_password }}'
-#         jenkins_url: '{{ jenkins_url }}/job/k8s-deploy-production-canary/build?delay=0sec'
-#         remediation_url: '{{ awx_url }}/api/v2/job_templates/{{ canary_reset_template_result.json.id }}/launch/'
-#     body_format: json
-#   register: start_ramp_up_template_result
-#   until: start_ramp_up_template_result.status == 200 or start_ramp_up_template_result.status == 201 or start_ramp_up_template_result.status == 204
-#   retries: 10
-#   delay: 1
+- name: Create ramp up canary release template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+    body:
+      name: 'canary'
+      job_type: run
+      inventory: "{{ inventory_result.json.id }}"
+      project: "{{ project_result.json.id }}"
+      playbook: playbooks/canary.yaml
+      verbosity: 0
+      ask_variables_on_launch: true
+      skip_tags: canary_reset
+      extra_vars: |
+        ---
+        jenkins_user: '{{ jenkins_user }}'
+        jenkins_token: '<insert Jenkins token here>'
+        jenkins_url: '{{ jenkins_url }}/job/ace-demo-canary/job/2.%20Shift%20traffic/build?delay=0sec'
+        remediation_url: '{{ awx_url }}/api/v2/job_templates/{{ canary_reset_template_result.json.id }}/launch/'
+    body_format: json
+  register: start_ramp_up_template_result
+  until: start_ramp_up_template_result.status == 200 or start_ramp_up_template_result.status == 201 or start_ramp_up_template_result.status == 204
+  retries: 10
+  delay: 1
 
 - name: Assign Dynatrace API Token credential to all templates
   uri:
@@ -379,16 +377,16 @@
       '{ "id" : {{ dt_credential_result.json.id | int }} }'
     body_format: json
   with_items:
-    # - "{{ remediation_template_result.json.id }}"
+    - "{{ remediation_template_result.json.id }}"
     # - "{{ stop_campaign_template_result.json.id }}"
     # - "{{ start_campaign_template_result.json.id }}"
     - "{{ canary_reset_template_result.json.id }}"
-    # - "{{ start_ramp_up_template_result.json.id }}"
+    - "{{ start_ramp_up_template_result.json.id }}"
   register: assign_dt_token_result
   until: assign_dt_token_result.status == 200 or assign_dt_token_result.status == 201 or assign_dt_token_result.status == 204
   retries: 10
   delay: 1
 
-# - name: print remediation template id
-#   debug:
-#     msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ awx_url }}/#/templates/job_template/{{ remediation_template_result.json.id }}"
+- name: print remediation template id
+  debug:
+    msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ awx_url }}/#/templates/job_template/{{ remediation_template_result.json.id }}"
