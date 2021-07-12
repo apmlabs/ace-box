@@ -8,7 +8,7 @@ pipeline {
 	}
 	environment {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
-		RELEASE_NAME = "simplenodeservice-canary-green"
+		RELEASE_NAME = "simplenodeservice-canary-v2"
 		NAMESPACE = "canary"
 	}
 	agent {

@@ -4,17 +4,17 @@ def event = new com.dynatrace.ace.Event()
 pipeline {
 	parameters {
 		string(name: 'IMAGE_NAME', defaultValue: 'ace/simplenodeservice', description: 'The image name of the service to deploy.', trim: true)
-		string(name: 'IMAGE_TAG', defaultValue: '', description: 'The image tag of the service to deploy.', trim: true)
+		string(name: 'IMAGE_TAG', defaultValue: '1.0.3', description: 'The image tag of the service to deploy.', trim: true)
 		string(name: 'CANARY_WEIGHT', defaultValue: '0', description: 'Weight of traffic that will be routed to service.', trim: true)
 		booleanParam(name: 'IS_CANARY', defaultValue: false, description: 'Is canary version of service.')
 	}
 	environment {
-		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
 		APP_NAME = "simplenodeservice-canary"
-		BG_IDENTIFIER = "${params.IS_CANARY ? 'green' : 'blue'}"
-		RELEASE_NAME = "${env.APP_NAME}-${env.BG_IDENTIFIER}"
+		CANARY_VERSION = "${params.IS_CANARY ? 'v2' : 'v1'}"
+		RELEASE_NAME = "${env.APP_NAME}-${env.CANARY_VERSION}"
 		NAMESPACE = "canary"
 		APPLICATION_BUILD_VERSION = "${params.IMAGE_TAG}"
+		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
 	}
 	agent {
 		label 'kubegit'
@@ -41,25 +41,23 @@ pipeline {
 		//         }
 		//     }
 		// }    
-		stage('Generate meta') {
-			steps {
-				script {
-					// env.APPLICATION_BUILD_VERSION = sh(returnStdout: true, script: "echo ${params.IMAGE_TAG} | cut -c1-5 | tr -d '\n'")
-					env.VERSION = sh(returnStdout: true, script: "echo ${params.IMAGE_TAG} | cut -c1-5 | tr -d '\n'")
-				}
-			}
-		}  
+		// stage('Generate meta') {
+		// 	steps {
+		// 		script {
+		// 			// env.APPLICATION_BUILD_VERSION = sh(returnStdout: true, script: "echo ${params.IMAGE_TAG} | cut -c1-5 | tr -d '\n'")
+		// 			env.VERSION = sh(returnStdout: true, script: "echo ${params.IMAGE_TAG} | cut -c1-5 | tr -d '\n'")
+		// 		}
+		// 	}
+		// }  
 		stage('Deploy via Helm') {
 			steps {
 				checkout scm
 				container('helm') {
-					// sh "sed -e \"s|DOMAIN_PLACEHOLDER|${env.INGRESS_DOMAIN}|\" -e \"s|ENVIRONMENT_PLACEHOLDER|staging|\" -e \"s|IMAGE_PLACEHOLDER|${env.TAG_STAGING}|\" -e \"s|VERSION_PLACEHOLDER|${env.BUILD}.0.0|\" -e \"s|BUILD_VERSION_PLACEHOLDER|${env.ART_VERSION}|\" -e \"s|DT_TAGS_PLACEHOLDER|${env.DT_TAGS}|\" -e \"s|DT_CUSTOM_PROP_PLACEHOLDER|${env.DT_CUSTOM_PROP}|\" helm/simplenodeservice/values.yaml > helm/simplenodeservice/values-gen.yaml"
 					sh "helm upgrade --install ${env.RELEASE_NAME} helm/simplenodeservice \
 					--set image=${env.IMAGE_FULL} \
 					--set domain=${env.INGRESS_DOMAIN} \
-					--set version=${env.VERSION} \
-					--set bgIdentifier=${env.BG_IDENTIFIER} \
-					--set build_version=${env.APPLICATION_BUILD_VERSION} \
+					--set version=${env.CANARY_VERSION} \
+					--set build_version=${params.IMAGE_TAG} \
 					--set isCanary=${params.IS_CANARY} \
 					--set canaryWeight=${params.CANARY_WEIGHT} \
 					--namespace ${env.NAMESPACE} --create-namespace \
@@ -74,41 +72,24 @@ pipeline {
 		
 					def status = event.pushDynatraceDeploymentEvent (
 						tagRule: generateTagRules(),
-						deploymentName: "simplenodeservice ${params.IMAGE_TAG} deployed",
-						deploymentVersion: "${env.VERSION}",
+						deploymentName: "${env.RELEASE_NAME} deployed",
+						deploymentVersion: "${env.CANARY_VERSION}",
 						deploymentProject: "simplenode-app",
 						customProperties : [
-							"Jenkins Build Number": "${env.APPLICATION_BUILD_VERSION}",
+							"Jenkins Build Number": "${params.IMAGE_TAG}",
 							"Approved by": "ACE"
 						]
 					)
 				}
 			}
-		}
-
-		// build_version: BUILD_VERSION_PLACEHOLDER = ${env.ART_VERSION} = ${env.BUILD}.0.0-${env.V_TAG} w/ V_TAG = sh(returnStdout: true, script: "echo ${env.GIT_COMMIT} | cut -c1-6 | tr -d '\n'")
-		// version: VERSION_PLACEHOLDER = ${env.BUILD}.0.0
-		// dt_tags: DT_TAGS_PLACEHOLDER
-		// dt_custom_prop: DT_CUSTOM_PROP_PLACEHOLDER
-
-		// stage('Launch tests') {
-		//     steps {
-		//         build job: "ace-demo/3. Test",
-		//         wait: false,
-		//         parameters: [
-		//             string(name: 'APP_NAME', value: "${env.APP_NAME}"),
-		//             string(name: 'BUILD', value: "${env.BUILD}"),
-		//             string(name: 'ART_VERSION', value: "${env.ART_VERSION}")
-		//         ]
-		//     }
-		// }         
+		}      
 	}
 }
 
 def generateTagRules() {
 	def tagMatchRules = [
 		[
-			"meTypes": [ "PROCESS_GROUP_INSTANCE"],
+			"meTypes": [ "PROCESS_GROUP_INSTANCE" ],
 			tags: [
 				["context": "ENVIRONMENT", "key": "DT_APPLICATION_BUILD_VERSION", "value": "${env.APPLICATION_BUILD_VERSION}"],
 				["context": "KUBERNETES", "key": "app.kubernetes.io/name", "value": "simplenodeservice"],

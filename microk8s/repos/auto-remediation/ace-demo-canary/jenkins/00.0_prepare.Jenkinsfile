@@ -1,7 +1,6 @@
 pipeline {
 	environment {
-		APP_NAME = "simplenodeservice"
-		ARTEFACT_ID = "ace/" + "${env.APP_NAME}"
+		IMAGE_NAME = "ace/simplenodeservice"
 	}
 	agent {
 		label 'nodejs'
@@ -12,8 +11,7 @@ pipeline {
 				stage('Build 1') {
 					environment {
 						BUILD = "1"
-						IMAGE_NAME = "${env.ARTEFACT_ID}"
-						IMAGE_TAG = "${env.BUILD}.0.0-${env.GIT_COMMIT}"
+						IMAGE_TAG = "${env.BUILD}.0.3"
 						IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
 					}
 					stages {
@@ -51,11 +49,10 @@ pipeline {
 						}
 					}
 				}
-				stage('Build 2') {
+				stage('Build 4') {
 					environment {
-						BUILD = "2"
-						IMAGE_NAME = "${env.ARTEFACT_ID}"
-						IMAGE_TAG = "${env.BUILD}.0.0-${env.GIT_COMMIT}"
+						BUILD = "4"
+						IMAGE_TAG = "${env.BUILD}.0.3"
 						IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
 					}
 					stages {
