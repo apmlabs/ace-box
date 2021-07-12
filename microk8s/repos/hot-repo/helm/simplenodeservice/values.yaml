@@ -5,3 +5,7 @@ dt_tags: DT_TAGS_PLACEHOLDER
 dt_custom_prop: DT_CUSTOM_PROP_PLACEHOLDER
 image: IMAGE_PLACEHOLDER
 environment: ENVIRONMENT_PLACEHOLDER
+
+# microk8s >1.20 expects class "public"
+ingress:
+  class: public
