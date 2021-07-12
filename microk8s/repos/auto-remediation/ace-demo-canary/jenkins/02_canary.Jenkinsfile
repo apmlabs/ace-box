@@ -4,7 +4,7 @@ def event = new com.dynatrace.ace.Event()
 pipeline {
 	parameters {
 		string(name: 'CANARY_WEIGHT', defaultValue: '0', description: 'Weight of traffic that will be routed to service.', trim: true)
-    // string(name: 'REMEDIATION_URL', description: 'Remediation script to call if canary release fails', trim: true)
+    string(name: 'REMEDIATION_URL', defaultValue: '', description: 'Remediation script to call if canary release fails', trim: true)
 	}
 	environment {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
@@ -31,7 +31,7 @@ pipeline {
 						source : "Jenkins",
 						configuration : "Load Balancer",
 						customProperties : [
-							"remediationAction": "TBD"
+							"remediationAction": "${params.REMEDIATION_URL}"
 						]
 					)
 				}
