@@ -165,7 +165,7 @@ const useAwx = () => {
 	const Link = () =>
 		<LinkTemplate
 			href={href}
-			label="Gitlab"
+			label="AWX"
 		/>
 
 	const Username = ({ variant }) => variant === "inline"
@@ -294,6 +294,7 @@ const useLinks = () => {
 	const { href: jenkinsHref, Link: JenkinsLink } = useJenkins()
 	const { href: giteaHref, Link: GiteaLink } = useGitea()
 	const { href: gitlabHref, Link: GitlabLink } = useGitlab()
+	const { href: awxHref, Link: AwxLink } = useAwx()
 	const { href: keptnBridgeHref, Link: KeptnBridgeLink } = useKeptnBridge()
 	const { href: keptnApiHref, Link: KeptnApiLink } = useKeptnApi()
 	const { href: dynatraceHref } = useDynatrace()
@@ -302,6 +303,7 @@ const useLinks = () => {
 		jenkins: jenkinsHref,
 		gitea: giteaHref,
 		gitlab: gitlabHref,
+		awx: awxHref,
 		keptnBridge: keptnBridgeHref,
 		keptnApi: keptnApiHref,
 		dynatrace: dynatraceHref
@@ -312,6 +314,7 @@ const useLinks = () => {
 		JenkinsLink,
 		GiteaLink,
 		GitlabLink,
+		AwxLink,
 		KeptnBridgeLink,
 		KeptnApiLink
 	}
