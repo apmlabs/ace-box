@@ -221,12 +221,9 @@
   - name: Configure AWX
     include_tasks: playbooks/awx_config_tasks.yaml
     when: feature_awx
-    args:
-      apply:
-        tags:
-          - awx_config
     tags:
       - awx_config
+      - awx_unconfig
 
   - name: Create ACE Dashboard
     include_tasks: playbooks/dashboard_tasks.yaml
