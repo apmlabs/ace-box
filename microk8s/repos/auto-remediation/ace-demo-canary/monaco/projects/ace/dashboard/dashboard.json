@@ -1,0 +1,290 @@
+{
+    "dashboardMetadata": {
+      "name": "{{ .name }}",
+      "shared": true,
+      "owner": "",
+      "sharingDetails": {
+        "linkShared": true,
+        "published": true
+      },
+      "dashboardFilter": {
+        "timeframe": "-30m",
+        "managementZone": {
+          "id": "{{ .managementZoneId }}",
+          "name": "{{ .managementZoneName }}"
+        }
+      }
+    },
+    "tiles": [
+      {
+        "name": "Custom chart",
+        "tileType": "CUSTOM_CHARTING",
+        "configured": true,
+        "bounds": {
+          "top": 0,
+          "left": 38,
+          "width": 684,
+          "height": 380
+        },
+        "tileFilter": {
+          "timeframe": null,
+          "managementZone": null
+        },
+        "filterConfig": {
+          "type": "MIXED",
+          "customName": "Failure rate by version",
+          "defaultName": "Custom chart",
+          "chartConfig": {
+            "legendShown": true,
+            "type": "TIMESERIES",
+            "series": [
+              {
+                "metric": "calc:service.simplenode.canary.failure_rate_by_version",
+                "aggregation": "OF_INTEREST_RATIO",
+                "percentile": null,
+                "type": "BAR",
+                "entityType": "SERVICE",
+                "dimensions": [
+                  {
+                    "id": "1",
+                    "name": "version",
+                    "values": [],
+                    "entityDimension": false
+                  }
+                ],
+                "sortAscending": false,
+                "sortColumn": true,
+                "aggregationRate": "TOTAL"
+              }
+            ],
+            "resultMetadata": {}
+          },
+          "filtersPerEntityType": {}
+        }
+      },
+      {
+        "name": "Custom chart",
+        "tileType": "CUSTOM_CHARTING",
+        "configured": true,
+        "bounds": {
+          "top": 0,
+          "left": 722,
+          "width": 570,
+          "height": 380
+        },
+        "tileFilter": {
+          "timeframe": null,
+          "managementZone": null
+        },
+        "filterConfig": {
+          "type": "MIXED",
+          "customName": "Top failed versions",
+          "defaultName": "Custom chart",
+          "chartConfig": {
+            "legendShown": true,
+            "type": "TOP_LIST",
+            "series": [
+              {
+                "metric": "calc:service.simplenode.canary.failure_rate_by_version",
+                "aggregation": "OF_INTEREST_RATIO",
+                "percentile": null,
+                "type": "LINE",
+                "entityType": "SERVICE",
+                "dimensions": [
+                  {
+                    "id": "1",
+                    "name": "version",
+                    "values": [],
+                    "entityDimension": false
+                  }
+                ],
+                "sortAscending": false,
+                "sortColumn": true,
+                "aggregationRate": "TOTAL"
+              }
+            ],
+            "resultMetadata": {}
+          },
+          "filtersPerEntityType": {}
+        }
+      },
+      {
+        "name": "Service health",
+        "tileType": "SERVICES",
+        "configured": true,
+        "bounds": {
+          "top": 380,
+          "left": 722,
+          "width": 570,
+          "height": 380
+        },
+        "tileFilter": {
+          "timeframe": null,
+          "managementZone": null
+        },
+        "filterConfig": null,
+        "chartVisible": true
+      },
+      {
+        "name": "Custom chart",
+        "tileType": "CUSTOM_CHARTING",
+        "configured": true,
+        "bounds": {
+          "top": 380,
+          "left": 38,
+          "width": 684,
+          "height": 380
+        },
+        "tileFilter": {
+          "timeframe": null,
+          "managementZone": null
+        },
+        "filterConfig": {
+          "type": "MIXED",
+          "customName": "Response time by version",
+          "defaultName": "Custom chart",
+          "chartConfig": {
+            "legendShown": true,
+            "type": "TIMESERIES",
+            "series": [
+              {
+                "metric": "calc:service.simplenode.canary.response_time_by_version",
+                "aggregation": "AVG",
+                "percentile": null,
+                "type": "LINE",
+                "entityType": "SERVICE",
+                "dimensions": [
+                  {
+                    "id": "1",
+                    "name": "version",
+                    "values": [],
+                    "entityDimension": false
+                  }
+                ],
+                "sortAscending": false,
+                "sortColumn": true,
+                "aggregationRate": "TOTAL"
+              }
+            ],
+            "resultMetadata": {}
+          },
+          "filtersPerEntityType": {}
+        }
+      },
+      {
+        "name": "Service-level objective",
+        "tileType": "SLO",
+        "configured": true,
+        "bounds": {
+          "top": 0,
+          "left": 1292,
+          "width": 304,
+          "height": 152
+        },
+        "tileFilter": {
+          "timeframe": "-1w",
+          "managementZone": null
+        },
+        "assignedEntities": [
+          "{{ .sloId }}"
+        ]
+      },
+      {
+        "name": "Data explorer results",
+        "tileType": "DATA_EXPLORER",
+        "configured": true,
+        "bounds": {
+          "top": 152,
+          "left": 1292,
+          "width": 304,
+          "height": 304
+        },
+        "tileFilter": {
+          "timeframe": null,
+          "managementZone": null
+        },
+        "customName": "Data explorer results",
+        "queries": [
+          {
+            "id": "A",
+            "metric": "calc:service.simplenode.canary.failure_rate_by_version",
+            "spaceAggregation": "AVG",
+            "timeAggregation": "DEFAULT",
+            "splitBy": [
+              "version"
+            ],
+            "sortBy": null,
+            "filterBy": null,
+            "limit": null,
+            "metricSelector": null,
+            "foldTransformation": null,
+            "enabled": true
+          },
+          {
+            "id": "B",
+            "metric": "calc:service.simplenode.canary.response_time_by_version",
+            "spaceAggregation": "AVG",
+            "timeAggregation": "DEFAULT",
+            "splitBy": [
+              "version"
+            ],
+            "sortBy": null,
+            "filterBy": null,
+            "limit": null,
+            "metricSelector": null,
+            "foldTransformation": null,
+            "enabled": true
+          }
+        ],
+        "visualConfig": {
+          "type": "GRAPH_CHART",
+          "global": {
+            "theme": "DEFAULT",
+            "threshold": {
+              "axisTarget": "LEFT",
+              "columnId": null,
+              "rules": [
+                {
+                  "value": 0,
+                  "color": "#7dc540"
+                },
+                {
+                  "value": 15,
+                  "color": "#f5d30f"
+                },
+                {
+                  "value": 20,
+                  "color": "#dc172a"
+                }
+              ]
+            },
+            "seriesType": "LINE",
+            "hasTrendline": null
+          },
+          "rules": [
+            {
+              "matcher": "A:",
+              "properties": {
+                "color": "ROYALBLUE",
+                "seriesType": "COLUMN"
+              }
+            },
+            {
+              "matcher": "B:",
+              "properties": {
+                "color": null,
+                "seriesType": "AREA"
+              }
+            }
+          ],
+          "axes": {
+            "xAxis": {
+              "displayName": null,
+              "visible": true
+            },
+            "yAxes": []
+          }
+        }
+      }
+    ]
+  }
