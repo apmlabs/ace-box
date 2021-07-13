@@ -332,6 +332,21 @@
   tags:
     - awx_config
 
+- set_fact:
+    jenkins_project_folder_shift_traffic: "ace-demo-canary"
+  tags:
+    - always
+
+- set_fact:
+    jenkins_pipeline_name_shift_traffic: "5. Shift traffic"
+  tags:
+    - always
+
+- set_fact:
+    jenkins_pipeline_url_shift_traffic: "{{ jenkins_url }}/job/{{ jenkins_project_folder_shift_traffic | urlencode() }}/job/{{ jenkins_pipeline_name_shift_traffic | urlencode() }}/build?delay=0sec"
+  tags:
+    - always
+
 - name: Create reset canary release template
   uri:
     url: "{{ awx_url }}/api/v2/job_templates/"
@@ -355,7 +370,7 @@
       job_tags: canary_reset
       extra_vars: |
         ---
-        jenkins_url: '{{ jenkins_url }}/job/ace-demo-canary/job/2.%20Shift%20traffic/build?delay=0sec'
+        jenkins_url: '{{ jenkins_pipeline_url_shift_traffic }}'
         remediation_url: ''
     body_format: json
   register: canary_reset_template_result
@@ -388,7 +403,7 @@
       skip_tags: canary_reset
       extra_vars: |
         ---
-        jenkins_url: '{{ jenkins_url }}/job/ace-demo-canary/job/2.%20Shift%20traffic/build?delay=0sec'
+        jenkins_url: '{{ jenkins_pipeline_url_shift_traffic }}'
         remediation_url: '{{ awx_url }}/api/v2/job_templates/{{ canary_reset_template_result.json.id }}/launch/'
     body_format: json
   register: start_ramp_up_template_result
