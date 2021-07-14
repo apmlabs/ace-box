@@ -869,10 +869,10 @@ controller:
           - script: >
               folder('ace-demo-canary')
           - script: >
-              pipelineJob('ace-demo-canary/0.0. Prepare Environment') {
+              pipelineJob('ace-demo-canary/1. Build images') {
                 definition {
                   cpsScm {
-                    scriptPath('jenkins/00.0_prepare.Jenkinsfile')
+                    scriptPath('jenkins/01_build_images.Jenkinsfile')
                     scm {
                       git {
                           remote { 
@@ -886,10 +886,10 @@ controller:
                 }
               }
           - script: >
-              pipelineJob('ace-demo-canary/0.1. Monaco') {
+              pipelineJob('ace-demo-canary/2. Monaco') {
                 definition {
                   cpsScm {
-                    scriptPath('jenkins/00.1_monaco.Jenkinsfile')
+                    scriptPath('jenkins/02_monaco.Jenkinsfile')
                     scm {
                       git {
                           remote { 
@@ -903,16 +903,16 @@ controller:
                 }
               }
           - script: >
-              pipelineJob('ace-demo-canary/1. Deploy') {
+              pipelineJob('ace-demo-canary/3. Deploy') {
                 parameters {
-                  stringParam('IMAGE_NAME', 'ace/simplenodeservice', '')
-                  stringParam('IMAGE_TAG', '', '')
-                  stringParam('CANARY_WEIGHT', '0', '')
-                  booleanParam('IS_CANARY', false, '')
+                  stringParam('IMAGE_NAME', 'ace/simplenodeservice', 'The image name of the service to deploy.')
+                  stringParam('IMAGE_TAG', '', 'The image tag of the service to deploy.')
+                  stringParam('CANARY_WEIGHT', '0', 'Weight of traffic that will be routed to service.')
+                  booleanParam('IS_CANARY', false, 'Is canary version of service?')
                 }
                 definition {
                   cpsScm {
-                    scriptPath('jenkins/01_deploy.Jenkinsfile')
+                    scriptPath('jenkins/03_deploy.Jenkinsfile')
                     scm {
                       git {
                           remote { 
@@ -926,31 +926,31 @@ controller:
                 }
               }
           - script: >
-              pipelineJob('ace-demo-canary/2. Shift traffic') {
+              pipelineJob('ace-demo-canary/4. Generate Load') {
+                definition {
+                  cpsScm {
+                    scriptPath('jenkins/04_generate_load.Jenkinsfile')
+                    scm {
+                      git {
+                          remote { 
+                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
+                          }
+                          branch('*/master')
+                      }
+                    }
+                    lightweight()
+                  }
+                }
+              }
+          - script: >
+              pipelineJob('ace-demo-canary/5. Shift traffic') {
                 parameters {
                   stringParam('CANARY_WEIGHT', '0', 'Weight of traffic that will be routed to service.')
                   stringParam('REMEDIATION_URL', '0', 'Remediation script to call if canary release fails.')
                 }
                 definition {
                   cpsScm {
-                    scriptPath('jenkins/02_canary.Jenkinsfile')
-                    scm {
-                      git {
-                          remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/auto-remediation/ace-demo-canary')
-                          }
-                          branch('*/master')
-                      }
-                    }
-                    lightweight()
-                  }
-                }
-              }
-          - script: >
-              pipelineJob('ace-demo-canary/z. Generate Load') {
-                definition {
-                  cpsScm {
-                    scriptPath('jenkins/z_generateload.Jenkinsfile')
+                    scriptPath('jenkins/05_canary.Jenkinsfile')
                     scm {
                       git {
                           remote { 

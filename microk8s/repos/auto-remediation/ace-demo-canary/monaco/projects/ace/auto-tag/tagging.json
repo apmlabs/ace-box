@@ -24,25 +24,6 @@
             }
           }
         ]
-      },
-      {
-        "type": "SERVICE",
-        "enabled": true,
-        "valueFormat": null,
-        "propagationTypes": [],
-        "conditions": [
-          {
-            "key": {
-              "attribute": "SERVICE_TYPE"
-            },
-            "comparisonInfo": {
-              "type": "SERVICE_TYPE",
-              "operator": "EQUALS",
-              "value": "DATABASE_SERVICE",
-              "negate": false
-            }
-          }
-        ]
       }
     ]
   }
