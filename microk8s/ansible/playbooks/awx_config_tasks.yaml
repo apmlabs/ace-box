@@ -270,6 +270,47 @@
   tags:
     - awx_config
 
+- name: AWX - Retrieve Jenkins Crumb
+  uri:
+    url: "{{ jenkins_url }}/crumbIssuer/api/json"
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: GET
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Content-Type: "application/json"
+  register: jenkins_crumb_raw
+  tags:
+    - awx_config
+
+- name: AWX - Generate Jenkins API token
+  uri:
+    url: "{{ jenkins_url }}/user/admin/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken"
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Cookie: "{{ jenkins_crumb_raw.cookies_string }}"
+      Jenkins-Crumb: "{{ jenkins_crumb_raw.json.crumb }}"
+    body_format: form-urlencoded
+    body:
+      newTokenName: "ace-demo-canary-AWX-{{ ansible_date_time.iso8601 }}"
+  register: jenkins_token_raw
+  tags:
+    - awx_config
+
+- set_fact:
+    jenkins_api_token: "{{ jenkins_token_raw.json.data.tokenValue }}"
+  tags:
+    - awx_config
+
 - name: Create remediation inventory
   uri:
     url: "{{ awx_url }}/api/v2/inventories/"
@@ -293,7 +334,7 @@
         tower_user: {{ awx_admin_username }}
         tower_password: {{ awx_admin_password }}
         jenkins_user: {{ jenkins_user }}
-        jenkins_token: '<insert Jenkins token here>'
+        jenkins_token: {{ jenkins_api_token }}
         dtcommentapiurl: "{{ '{{' }} tenant {{ '}}' }}/api/v1/problem/details/{{ '{{' }} pid {{ '}}' }}/comments?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}"
         dteventapiurl: "{{ '{{' }} tenant {{ '}}' }}/api/v1/events/?Api-Token={{ '{{' }} DYNATRACE_API_TOKEN {{ '}}' }}"
     body_format: json
