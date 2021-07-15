@@ -2,17 +2,7 @@
 
 # Prepare environment
 
-Before we get started with the actual use case, let's familiarize ourselves with the demo setup.
-
-First, a dashboard has been deployed and is available at `http(s)://dashboard.<ingress domain>` . Basic auth credentials were provided at the end of the provisioning process. The dashboard is where you can find all relevant links and credentials.
-
-All code and info material has been made available in the *auto-remediation* organization on *Gitea* ( `http(s)://gitea.<ingress domain>/auto-remediation` ):
-
-- ace-demo-canary contains all application source code, Jenkins pipelines and Monaco resources.
-- ace-demo-canary-awx contains playbooks which will be run from AWX.
-- ace-demo-canary-docs contains step-by-step instructions for the use case (the one you're probably reading right now).
-
-In addition, Jenkins and a Jenkins project "ace-demo-canary" was set up. This project contains pipelines relevant for the use case:
+Before we get started with the actual use case, we leverage a Jenkins pipeline to prepare our demo environment. All pipelines that we use as part of this use case can be found in Jenkins, project "ace-demo-canary".
 
 ![jenkins_pipeline_overview](../assets/images/jenkins_pipeline_overview.png)
 
