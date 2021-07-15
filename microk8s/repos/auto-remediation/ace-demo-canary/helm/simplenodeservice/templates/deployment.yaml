@@ -35,10 +35,10 @@ spec:
       - name: {{ .Chart.Name }}
         image: {{ .Values.image }}
         env:
-        - name: DT_TAGS
-          value: {{ .Values.dt_tags }}
-        - name: DT_CUSTOM_PROP
-          value: {{ .Values.dt_custom_prop }}
+        # - name: DT_TAGS
+        #   value: {{ .Values.dt_tags }}
+        # - name: DT_CUSTOM_PROP
+        #   value: {{ .Values.dt_custom_prop }}
         - name: DT_APPLICATION_RELEASE_VERSION
           value: "{{ .Values.version }}"
         - name: DT_APPLICATION_BUILD_VERSION
