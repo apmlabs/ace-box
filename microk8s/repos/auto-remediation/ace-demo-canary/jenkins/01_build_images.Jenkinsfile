@@ -6,7 +6,15 @@ pipeline {
 		label 'nodejs'
 	}
 	stages {
-		stage('Build and push') {
+		stage('Node build') {
+			steps {
+				checkout scm
+				container('nodejs') {
+					sh 'npm install'
+				}
+			}
+		}
+		stage('Docker build and push') {
 			parallel {
 				stage('Build 1') {
 					environment {
@@ -15,14 +23,6 @@ pipeline {
 						IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
 					}
 					stages {
-						stage('Node build') {
-							steps {
-								checkout scm
-								container('nodejs') {
-									sh 'npm install'
-								}
-							}
-						} 
 						stage('Docker build') {
 							steps {
 								container('docker') {
@@ -56,14 +56,6 @@ pipeline {
 						IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
 					}
 					stages {
-						stage('Node build') {
-							steps {
-								checkout scm
-								container('nodejs') {
-									sh 'npm install'
-								}
-							}
-						} 
 						stage('Docker build') {
 							steps {
 								container('docker') {
