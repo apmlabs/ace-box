@@ -154,6 +154,51 @@ const useGitlab = () => {
 	}
 }
 
+const useAwx = () => {
+	const href = process.env.REACT_APP_AWX_URL
+	const isEnabled = !!process.env.REACT_APP_AWX_URL && process.env.REACT_APP_AWX_URL.toLowerCase() !== "n/a" && process.env.REACT_APP_AWX_URL !== ""
+		&& !!process.env.REACT_APP_AWX_USER && process.env.REACT_APP_AWX_USER.toLowerCase() !== "n/a" && process.env.REACT_APP_AWX_USER !== ""
+		&& !!process.env.REACT_APP_AWX_PASSWORD && process.env.REACT_APP_AWX_PASSWORD.toLowerCase() !== "n/a" && process.env.REACT_APP_AWX_PASSWORD !== ""
+	const username = process.env.REACT_APP_AWX_USER
+	const password = process.env.REACT_APP_AWX_PASSWORD
+
+	const Link = () =>
+		<LinkTemplate
+			href={href}
+			label="AWX"
+		/>
+
+	const Username = ({ variant }) => variant === "inline"
+		? <AceBoxCredentialInline
+				value={username}
+			/>
+		: <AceBoxCredential
+				name="User"
+				value={username}
+			/>
+
+	const Password = ({ variant }) => variant === "inline"
+		? <AceBoxCredentialInline
+				type="password"
+				value={password}
+			/>
+		: <AceBoxCredential
+				name="Password"
+				type="password"
+				value={password}
+			/>
+
+	return {
+		isEnabled,
+		href,
+		username,
+		password,
+		Link,
+		Username,
+		Password
+	}
+}
+
 const useKeptnBridge = () => {
 	const href = process.env.REACT_APP_KEPTN_BRIDGE_URL
 	const isEnabled = true
@@ -249,6 +294,7 @@ const useLinks = () => {
 	const { href: jenkinsHref, Link: JenkinsLink } = useJenkins()
 	const { href: giteaHref, Link: GiteaLink } = useGitea()
 	const { href: gitlabHref, Link: GitlabLink } = useGitlab()
+	const { href: awxHref, Link: AwxLink } = useAwx()
 	const { href: keptnBridgeHref, Link: KeptnBridgeLink } = useKeptnBridge()
 	const { href: keptnApiHref, Link: KeptnApiLink } = useKeptnApi()
 	const { href: dynatraceHref } = useDynatrace()
@@ -257,6 +303,7 @@ const useLinks = () => {
 		jenkins: jenkinsHref,
 		gitea: giteaHref,
 		gitlab: gitlabHref,
+		awx: awxHref,
 		keptnBridge: keptnBridgeHref,
 		keptnApi: keptnApiHref,
 		dynatrace: dynatraceHref
@@ -267,9 +314,10 @@ const useLinks = () => {
 		JenkinsLink,
 		GiteaLink,
 		GitlabLink,
+		AwxLink,
 		KeptnBridgeLink,
 		KeptnApiLink
 	}
 }
 
-export { useLinks as default, useJenkins, useGitea, useGitlab, useKeptnBridge, useKeptnApi, useDynatrace }
+export { useLinks as default, useJenkins, useGitea, useGitlab, useAwx, useKeptnBridge, useKeptnApi, useDynatrace }

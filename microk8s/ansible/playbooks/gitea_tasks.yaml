@@ -170,6 +170,36 @@
     - git
     - git_uninstall
 
+- name: Gitea - Configure repo
+  include_tasks: gitea_repo_tasks.yaml
+  vars:
+    gitea_org: "auto-remediation"
+    gitea_repo: "ace-demo-canary"
+    gitea_source_folder: "auto-remediation/ace-demo-canary"
+  tags:
+    - git
+    - git_uninstall
+
+- name: Gitea - Configure repo
+  include_tasks: gitea_repo_tasks.yaml
+  vars:
+    gitea_org: "auto-remediation"
+    gitea_repo: "ace-demo-canary-awx"
+    gitea_source_folder: "auto-remediation/ace-demo-canary-awx"
+  tags:
+    - git
+    - git_uninstall
+
+- name: Gitea - Configure repo
+  include_tasks: gitea_repo_tasks.yaml
+  vars:
+    gitea_org: "auto-remediation"
+    gitea_repo: "ace-demo-canary-docs"
+    gitea_source_folder: "auto-remediation/ace-demo-canary-docs"
+  tags:
+    - git
+    - git_uninstall
+
 - name: Gitea - Uninstall Gitea
   become_user: "{{ non_root_user }}"
   shell: /snap/bin/helm uninstall --namespace ace gitea

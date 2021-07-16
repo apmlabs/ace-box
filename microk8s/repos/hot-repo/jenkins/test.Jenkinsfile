@@ -116,7 +116,7 @@ pipeline {
             steps {
                 script {
                     def labels=[:]
-                    labels.put("art_version", "${env.BUILD}.0.0")
+                    labels.put("art_version", "${env.ART_VERSION}")
                     labels.put("component", "${env.COMPONENT}")
                     labels.put("part_of", "${env.PARTOF}")
                     

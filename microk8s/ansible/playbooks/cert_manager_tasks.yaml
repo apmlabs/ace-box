@@ -18,3 +18,4 @@
 
 - name: Cert Manager - Apply Letsencrypt YAML
   shell: /snap/bin/microk8s.kubectl apply -f /vagrant/k8s/letsencrypt.yml
+  ignore_errors: yes

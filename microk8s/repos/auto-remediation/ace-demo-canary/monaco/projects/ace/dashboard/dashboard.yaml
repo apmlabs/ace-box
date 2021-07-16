@@ -1,0 +1,8 @@
+config:
+    - dashboard-canary: "dashboard.json"
+  
+dashboard-canary:
+    - name: "ace-demo-canary - Dashboard"
+    - managementZoneId: "/ace/management-zone/management-zone-canary.id"
+    - managementZoneName: "/ace/management-zone/management-zone-canary.name"
+    - sloId: "/ace/slo/simplenode-canary.id"
