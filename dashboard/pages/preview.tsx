@@ -1,33 +1,32 @@
-import dynamic from 'next/dynamic'
+import { FunctionComponent } from 'react'
 import Head from 'next/head'
+import PreviewComponent from '../components/preview/index'
+import PreviewProvider from '../components/preview/provider'
 
-import '@dynatrace/groundhog/dist/css/main.css'
-// import '@dynatrace/groundhog/dist/js/main.js'
-
-const Preview = () => {
-  dynamic(() => import('@dynatrace/groundhog/dist/js/main.js' as string), { ssr: false })
-
-  return (
-  <div>
+const Preview: FunctionComponent<any> = ({ staging, production, canary }) =>
+  <PreviewProvider.Provider value={{ staging, production, canary }}>
     <Head>
       <title>ACE Dashboard - Preview</title>
       <meta name="description" content="ACE Dashboard" />
-      {/* <link rel="icon" href="/favicon.ico" /> */}
+      <link rel="icon" href="/favicon.ico" />
     </Head>
-    <main>
-      Sth: {process.env.NEXT_PUBLIC_SIMPLENODEAPP_URL_STAGING}
-    </main>
-    <footer>
-      <a
-        href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Powered by ACE
-      </a>
-    </footer>
-  </div>
-  )
+    <PreviewComponent />
+  </PreviewProvider.Provider>
+
+const getServerSideProps = async () => {
+  return {
+    props: {
+      staging: {
+        href: process.env.SIMPLENODEAPP_URL_STAGING
+      },
+      production: {
+        href: process.env.SIMPLENODEAPP_URL_PRODUCTION
+      },
+      canary: {
+        href: process.env.SIMPLENODEAPP_URL_CANARY
+      }
+    }
+  }
 }
 
-export { Preview as default }
+export { Preview as default, getServerSideProps }

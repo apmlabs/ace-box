@@ -1,33 +1,48 @@
-import dynamic from 'next/dynamic'
+import { FunctionComponent } from 'react'
 import Head from 'next/head'
+import LinksComponent from '../components/links/index'
+import CredentialProvider from '../components/credentials/provider'
 
-import '@dynatrace/groundhog/dist/css/main.css'
-// import '@dynatrace/groundhog/dist/js/main.js'
+import {
+  getJenkinsCredentials,
+	getGiteaCredentials,
+	getGitlabCredentials,
+	getAwxCredentials,
+	getKeptnBridgeCredentials,
+	getKeptnApiCredentials,
+	getDynatraceCredentials
+} from '../libs/credentials'
 
-const Links = () => {
-  dynamic(() => import('@dynatrace/groundhog/dist/js/main.js' as string), { ssr: false })
-
-  return (
-  <div>
+const Links: FunctionComponent<any> = ({ jenkins, gitea, gitlab, awx, keptnBridge, keptnApi, dynatrace }) =>
+  <CredentialProvider.Provider value={{ jenkins, gitea, gitlab, awx, keptnBridge, keptnApi, dynatrace }}>
     <Head>
       <title>ACE Dashboard - Links</title>
       <meta name="description" content="ACE Dashboard" />
-      {/* <link rel="icon" href="/favicon.ico" /> */}
+      <link rel="icon" href="/favicon.ico" />
     </Head>
-    <main>
-      Sth: {process.env.NEXT_PUBLIC_SIMPLENODEAPP_URL_STAGING}
-    </main>
-    <footer>
-      <a
-        href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Powered by ACE
-      </a>
-    </footer>
-  </div>
-  )
+    <LinksComponent />
+  </CredentialProvider.Provider>
+
+const getServerSideProps = async () => {
+  const jenkins = getJenkinsCredentials()
+  const gitea = getGiteaCredentials()
+	const gitlab = getGitlabCredentials()
+	const awx = getAwxCredentials()
+	const keptnBridge = getKeptnBridgeCredentials()
+	const keptnApi = getKeptnApiCredentials()
+	const dynatrace = getDynatraceCredentials()
+
+  return {
+    props: {
+      jenkins,
+      gitea,
+      gitlab,
+      awx,
+      keptnBridge,
+      keptnApi,
+      dynatrace
+    }
+  }
 }
 
-export { Links as default }
+export { Links as default, getServerSideProps }
