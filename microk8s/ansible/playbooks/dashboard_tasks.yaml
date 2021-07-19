@@ -8,6 +8,13 @@
 - set_fact:
     gitlab_root_user: "root"
 
+- name: "AWXS - Extract generated credentials for AWX admin user"
+  shell: /snap/bin/microk8s.kubectl -n awx get secret awx-admin-password -ojsonpath='{.data.password}' | base64 -d
+  register: awx_admin_password_raw
+
+- set_fact:
+    awx_admin_password: "{{  awx_admin_password_raw.stdout }}"
+
 - name: Encrpyt http basic auth password
   set_fact:
     password_encrypted: "{{ dashboard_password | password_hash('md5') }}"
@@ -40,8 +47,8 @@
     --set env.GITLAB_USER={{ gitlab_root_user | default('N/A') }}
     --set env.GITLAB_PASSWORD={{ gitlab_root_password | default('N/A') }}
     --set env.AWX_URL=http://awx.{{ ingress_domain }}
-    --set env.AWX_USER="N/A"
-    --set env.AWX_PASSWORD="N/A"
+    --set env.AWX_USER={{ awx_admin_username | default('N/A') }}
+    --set env.AWX_PASSWORD={{ awx_admin_password | default('N/A') }}
     --set env.KEPTN_API_URL=http://keptn.{{ ingress_domain }}/api
     --set env.KEPTN_API_TOKEN={{ keptn_api_token | default('N/A') }}
     --set env.KEPTN_BRIDGE_URL=http://keptn.{{ ingress_domain }}/bridge

@@ -14,6 +14,7 @@
     feature_cert_manager:             "{{ acebox['features']['cert_manager'] | default(false) }}"
     feature_gitlab:                   "{{ acebox['features']['gitlab'] | default(false) }}"
     feature_activegatekube:           "{{ acebox['features']['activegatekube'] | default(false) }}"
+    feature_awx:                      "{{ acebox['features']['awx'] | default(false) }}"
     dynatrace_tenant_url:             "{{ dynatrace['tenant'] }}" 
     dynatrace_paas_token:             "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
@@ -49,6 +50,9 @@
     monaco_download_version: "v1.5.0"
     dashboard_user: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).user | default('dynatrace') }}"
     dashboard_password: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).password | default('dynatrace') }}"
+    awx_operator_version: "0.12.0"
+    awx_admin_username: "admin"
+    # awx_admin_password: "" # A secret will be created automatically. Password can be retrieved by running $ kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
   tasks:
   - name: Set default Variables
     set_fact:
@@ -195,16 +199,6 @@
     tags:
       - jenkins
       - jenkins_uninstall
-
-  - name: Create ACE Dashboard
-    include_tasks: playbooks/dashboard_tasks.yaml
-    when: feature_dashboard or acebox_mode == "demo"
-    args:
-      apply:
-        tags:
-          - dashboard
-    tags:
-      - dashboard
   
   - name: Configure Dynatrace
     include_tasks: playbooks/monaco_config_tasks.yaml
@@ -215,6 +209,31 @@
           - monaco
     tags:
       - monaco
+
+  - name: Install AWX
+    include_tasks: playbooks/awx_tasks.yaml
+    when: feature_awx
+    tags:
+      - awx
+      - awx_uninstall
+      - awx_output
+
+  - name: Configure AWX
+    include_tasks: playbooks/awx_config_tasks.yaml
+    when: feature_awx
+    tags:
+      - awx_config
+      - awx_unconfig
+
+  - name: Create ACE Dashboard
+    include_tasks: playbooks/dashboard_tasks.yaml
+    when: feature_dashboard or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - dashboard
+    tags:
+      - dashboard
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml

@@ -103,6 +103,7 @@ acebox.features.gitea | Install Gitea local git server | no | false
 acebox.features.dashboard | Install ACE dashboard | no | false
 acebox.features.keptn | Install Keptn Quality Gates | no | false
 acebox.features.gitlab | Install Gitlab | no | false
+acebox.features.awx | Install AWX | no | false
 acebox.config.keptn.version | Keptn version to install | no | 0.8.0
 acebox.config.keptn.dynatrace_service_version | Keptn Dynatrace Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.11.0
 acebox.config.keptn.dynatrace_sli_service_version | Keptn Dynatrace SLI Service version to install **WARNING:** when overwriting keptn services versions, make sure they are compatible with keptn base version! | no | 0.8.0
@@ -238,6 +239,10 @@ Tag | Result |
 `jenkins` | Installs and configures Jenkins |
 `jenkins_uninstall` | Uninstalls Jenkins |
 `dashboard` | Installs the ACE Box Dashboard |
+`awx` | Installs AWX |
+`awx_uninstall` | Uninstalls AWX |
+`awx_config` | Configures AWX (can't be re-run at the moment, i.e. requires awx_uninstall + awx + awx_config ) |
+`awx_output` | Shows AWX info (e.g. credentials) |
 
 For example:
 ```bash

@@ -6,8 +6,8 @@ attachRules:
   - meTypes:
     - PROCESS_GROUP_INSTANCE
     tags:
-    - context: KUBERNETES
-      key: app.kubernetes.io/version
+    - context: ENVIRONMENT
+      key: DT_APPLICATION_BUILD_VERSION
       value: $LABEL.art_version
     - context: KUBERNETES
       key: app.kubernetes.io/name
