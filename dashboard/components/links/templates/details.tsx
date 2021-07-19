@@ -2,7 +2,7 @@ import { useState, FunctionComponent } from 'react'
 
 type DetailsProps = {
   title: string
-  href?: string
+  href: string
   credentials?: any[]
 }
 

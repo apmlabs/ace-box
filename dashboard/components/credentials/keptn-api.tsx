@@ -10,7 +10,7 @@ const Link: FunctionComponent<CredentialProps> = () => {
   const { href, label } = keptnApi
 
   return (
-    <LinkTemplate href={href} label={label} />
+    <LinkTemplate href={href || '#'} label={label || 'Keptn API'} />
   )
 }
 
@@ -33,8 +33,8 @@ const DetailedLink = () => {
 
   return (
     <DetailTemplate
-      title={label}
-      href={href}
+      title={label || 'Keptn API'}
+      href={href || '#'}
       credentials={[KeptnApiToken]}
     />
   )

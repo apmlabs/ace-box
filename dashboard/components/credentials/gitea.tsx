@@ -12,7 +12,7 @@ const Link: FunctionComponent<CredentialProps> = () => {
   const { href, label } = gitea
 
   return (
-    <LinkTemplate href={href} label={label} />
+    <LinkTemplate href={href || '#'} label={label || 'Gitea'} />
   )
 }
 
@@ -57,8 +57,8 @@ const DetailedLink = () => {
 
   return (
     <DetailTemplate
-      title={label}
-      href={href}
+      title={label || 'Gitea'}
+      href={href || '#'}
       credentials={[GiteaUsername, GiteaPassword, GiteaToken]}
     />
   )

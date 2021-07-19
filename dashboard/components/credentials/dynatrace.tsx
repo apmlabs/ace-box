@@ -9,7 +9,7 @@ const Link: FunctionComponent<CredentialProps> = () => {
   const { href, label } = dynatrace
 
   return (
-    <LinkTemplate href={href} label={label} />
+    <LinkTemplate href={href || '#'} label={label || 'Dynatrace'} />
   )
 }
 
@@ -21,8 +21,8 @@ const DetailedLink = () => {
 
   return (
     <DetailTemplate
-      title={label}
-      href={href}
+      title={label || 'Dynatrace'}
+      href={href || '#'}
       credentials={[]}
     />
   )

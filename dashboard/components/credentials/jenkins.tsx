@@ -11,7 +11,7 @@ const Link: FunctionComponent<CredentialProps> = () => {
   const { href, label } = jenkins
 
   return (
-    <LinkTemplate href={href} label={label} />
+    <LinkTemplate href={href || '#'} label={label || 'Jenkins'} />
   )
 }
 
@@ -45,8 +45,8 @@ const DetailedLink = () => {
 
   return (
     <DetailTemplate
-      title={label}
-      href={href}
+      title={label || 'Jenkins'}
+      href={href || '#'}
       credentials={[JenkinsUsername, JenkinsPassword]}
     />
   )

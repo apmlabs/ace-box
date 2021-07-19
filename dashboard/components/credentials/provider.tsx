@@ -1,6 +1,15 @@
 import { createContext } from 'react'
 
-const credential = {
+type CredentialProps = {
+	isEnabled: boolean
+	href: string
+	label: string
+	username: string
+	password: string
+	token: string
+} | {}
+
+const credential: CredentialProps = {
 	isEnabled: false,
 	href: '',
 	label: '',

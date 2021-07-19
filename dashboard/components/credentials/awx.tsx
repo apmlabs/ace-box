@@ -11,7 +11,7 @@ const Link: FunctionComponent<CredentialProps> = () => {
   const { href, label } = awx
 
   return (
-    <LinkTemplate href={href} label={label} />
+    <LinkTemplate href={href || '#'} label={label || 'AWX'} />
   )
 }
 
@@ -45,8 +45,8 @@ const DetailedLink = () => {
 
   return isEnabled
     ? <DetailTemplate
-        title={label}
-        href={href}
+        title={label || 'AWX'}
+        href={href || '#'}
         credentials={[AwxUsername, AwxPassword]}
       />
     : null

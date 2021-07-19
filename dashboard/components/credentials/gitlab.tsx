@@ -11,7 +11,7 @@ const Link: FunctionComponent<CredentialProps> = () => {
   const { href, label } = gitlab
 
   return (
-    <LinkTemplate href={href} label={label} />
+    <LinkTemplate href={href || '#'} label={label || 'Gitlab'} />
   )
 }
 
@@ -45,8 +45,8 @@ const DetailedLink = () => {
 
   return isEnabled
     ? <DetailTemplate
-        title={label}
-        href={href}
+        title={label || 'Gitlab'}
+        href={href || '#'}
         credentials={[GitlabUsername, GitlabPassword]}
       />
     : null
