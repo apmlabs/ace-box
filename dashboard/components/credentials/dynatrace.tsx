@@ -23,7 +23,6 @@ const DetailedLink = () => {
     <DetailTemplate
       title={label || 'Dynatrace'}
       href={href || '#'}
-      credentials={[]}
     />
   )
 }

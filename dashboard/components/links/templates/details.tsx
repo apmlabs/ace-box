@@ -9,6 +9,8 @@ type DetailsProps = {
 const Details: FunctionComponent<DetailsProps> = ({ title, href, credentials }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const isCredentialsPresent = !!credentials && Array.isArray(credentials) && credentials.length > 0 || false
+
   return (
     <tbody className={`expandable ${isExpanded ? "is-active" : ""}`}>
       <tr>
@@ -16,7 +18,7 @@ const Details: FunctionComponent<DetailsProps> = ({ title, href, credentials }) 
         <td><a href={href} target="_blank" rel="noreferrer">{href}</a></td>
         <td>
           {
-            !!credentials &&
+            isCredentialsPresent &&
               <button className="expandable__trigger" style={{ backgroundColor: "transparent", border: "none", cursor: "pointer" }} onClick={() => setIsExpanded(isExpanded => !isExpanded)}>more</button>
           }
         </td>
@@ -27,7 +29,7 @@ const Details: FunctionComponent<DetailsProps> = ({ title, href, credentials }) 
             <td colSpan={3}>
               <div style={{ display: "grid", gridTemplateColumns: "auto", rowGap: "10px" }}>
                 {
-                  !!credentials && credentials.map((Credential, key) =>
+                  isCredentialsPresent && (credentials || []).map((Credential, key) =>
                     <Credential key={key} />
                   )
                 }
