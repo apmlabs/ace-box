@@ -11,7 +11,7 @@ variable "security_group_ids" {
 }
 
 variable "aws_instance_type" {
-  default = "t2.2xlarge"
+  default = "t3.2xlarge"
 }
 
 variable "ubuntu_image" {

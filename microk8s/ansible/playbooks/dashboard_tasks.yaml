@@ -1,18 +1,22 @@
 - name: Dashboard - Wait for registry to be ready
   shell: /snap/bin/microk8s.kubectl -n container-registry rollout status deployment registry
 
-# - name: Dashboard - build index.html
-#   shell: > 
-#     sed 
-#     -e "s|DOMAIN_PLACEHOLDER|{{ ingress_domain }}|g" 
-#     -e "s|GITEA_USER_PLACEHOLDER|{{ git_user }}|g" 
-#     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
-#     -e "s|GITLAB_ROOT_PASSWORD_PLACEHOLDER|{{ gitlab_root_password | default('N/A') }}|g" 
-#     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
-#     -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
-#     -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"
-#     -e "s|DYNATRACE_TENANT_PLACEHOLDER|{{ dynatrace_tenant_url | default('N/A') }}|g"
-#     /vagrant/docker/dashboard/index.html > /vagrant/docker/dashboard/index-gen.html
+- name: "Dashboard - Extract generated credentials for Gitlab root user"
+  shell: /snap/bin/microk8s.kubectl -n gitlab get secret gitlab-gitlab-initial-root-password -ojsonpath='{.data.password}' | base64 -d
+  register: gitlab_root_password_raw
+
+- set_fact:
+    gitlab_root_password: "{{  gitlab_root_password_raw.stdout }}"
+
+- set_fact:
+    gitlab_root_user: "root"
+
+- name: "AWXS - Extract generated credentials for AWX admin user"
+  shell: /snap/bin/microk8s.kubectl -n awx get secret awx-admin-password -ojsonpath='{.data.password}' | base64 -d
+  register: awx_admin_password_raw
+
+- set_fact:
+    awx_admin_password: "{{  awx_admin_password_raw.stdout }}"
 
 - name: Dashboard - build environment
   shell: > 
@@ -26,6 +30,8 @@
     -e "s|GITEA_PAT_PLACEHOLDER|{{ gitea_access_token | default('N/A') }}|g" 
     -e "s|GITLAB_USER_PLACEHOLDER|{{ gitlab_root_user | default('N/A') }}|g" 
     -e "s|GITLAB_PASSWORD_PLACEHOLDER|{{ gitlab_root_password | default('N/A') }}|g" 
+    -e "s|AWX_USER_PLACEHOLDER|{{ awx_admin_username | default('N/A') }}|g" 
+    -e "s|AWX_PASSWORD_PLACEHOLDER|{{ awx_admin_password | default('N/A') }}|g" 
     -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_USER_PLACEHOLDER|{{ keptn_bridge_user | default('N/A') }}|g"
     -e "s|KEPTN_BRIDGE_PASSWORD_PLACEHOLDER|{{ keptn_bridge_password | default('N/A') }}|g"

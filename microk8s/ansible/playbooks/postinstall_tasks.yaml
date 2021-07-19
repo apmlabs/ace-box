@@ -2,9 +2,8 @@
     become: true
     shell: iptables -P FORWARD ACCEPT
 
-  # print out dashboard config (username + password + link + link to how-to)
   - name: Print some dashboard config
-    debug: 
+    debug:
       msg:
         # - "How-To: http://dashboard.{{ public_ip }}.nip.io" # TBD
         - "Dashboard URL: {{ custom_domain_protocol }}://dashboard.{{ ingress_domain }}"

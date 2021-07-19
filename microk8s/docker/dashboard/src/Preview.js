@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useAwx } from "./libs/credentials"
 
 const Preview = () => {
+  const { isEnabled: isAwxEnabled } = useAwx()
+
   const [iframeKey, setIframeKey] = useState(Math.random().toString(36).substring(7))
 
   useEffect(() => {
@@ -13,7 +16,7 @@ const Preview = () => {
 
   return (
     <div>
-      <h2>Deployment preview</h2>
+      <h2>Deployment preview - Demo</h2>
       <div className="section">
         <div className="column column--1-of-2">
           <h3>Staging</h3>
@@ -21,9 +24,21 @@ const Preview = () => {
         </div>
         <div className="column column--1-of-2">
           <h3>Production</h3>
-          <iframe title="production" key={iframeKey} id="iframe1" height="600px" width="100%" src={process.env.REACT_APP_SIMPLENODEAPP_URL_PRODUCTION} />
+          <iframe title="production" key={iframeKey} id="iframe2" height="600px" width="100%" src={process.env.REACT_APP_SIMPLENODEAPP_URL_PRODUCTION} />
         </div>
       </div>
+      {
+        isAwxEnabled &&
+          <>
+            <h2>Deployment preview - Demo Canary</h2>
+            <div className="section">
+              <div className="column column--1-of-2">
+                <h3>Canary</h3>
+                <iframe title="canary" key={iframeKey} id="iframe3" height="600px" width="100%" src={process.env.REACT_APP_SIMPLENODEAPP_URL_CANARY} />
+              </div>
+            </div>
+          </>
+      }
     </div>
   )
 }

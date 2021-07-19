@@ -52,10 +52,10 @@ global:
   
     ## doc/charts/globals.md#configure-ingress-settings
     ingress:
-      class: "nginx"
+      class: public
       configureCertmanager: false
       annotations:
-        kubernetes.io/ingress.class: nginx
+        kubernetes.io/ingress.class: public
       enabled: true
       tls:
         enabled: false

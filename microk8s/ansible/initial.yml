@@ -20,6 +20,7 @@
     feature_cert_manager:             "{{ acebox['features']['cert_manager'] | default(false) }}"
     feature_gitlab:                   "{{ acebox['features']['gitlab'] | default(false) }}"
     feature_activegatekube:           "{{ acebox['features']['activegatekube'] | default(false) }}"
+    feature_awx:                      "{{ acebox['features']['awx'] | default(false) }}"
     dynatrace_tenant_url:             "{{ dynatrace['tenant'] }}" 
     dynatrace_paas_token:             "{{ dynatrace['paastoken'] }}"
     dynatrace_api_token:              "{{ dynatrace['apitoken'] }}"
@@ -36,6 +37,7 @@
     keptn_jmeter_ext_service_version:     "{{ acebox['config']['keptn']['dynatrace_jmeter_ext_service_version'] | default('0.2.0')}}"
     microk8s_addons:            "{{ acebox['config']['microk8s']['addons'] | default('dns storage registry ingress ') }}"
     microk8s_domain_ext:        "{{ acebox['config']['microk8s']['domain_ext'] | default('nip.io') }}"
+    microk8s_release_channel:   "{{ acebox['config']['microk8s']['release_channel'] | default('1.21/stable') }}"
     #ingress_domain:             "{{ acebox['specs']['priv_ip'] | default('192.168.50.10')}}.{{ microk8s_domain_ext }}"
     # git_user:                   "{{ acebox['config']['git']['user'] | default('dynatrace') }}"
     # git_password:               "{{ acebox['config']['git']['password'] | default('dynatrace') }}"
@@ -54,13 +56,32 @@
     monaco_download_version: "v1.5.0"
     dashboard_user: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).user | default('dynatrace') }}"
     dashboard_password: "{{ (((acebox | default({})).config | default({}) ).dashboard | default({}) ).password | default('dynatrace') }}"
+    awx_operator_version: "0.12.0"
+    awx_admin_username: "admin"
+    # awx_admin_password: "" # A secret will be created automatically. Password can be retrieved by running $ kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
   tasks:
-
   - debug: var=use_custom_domain
     tags:
       - always
   
   - debug: var=custom_domain
+  - name: Set default Variables
+    set_fact:
+      non_root_user: "vagrant"
+    when: non_root_user is not defined
+    tags:
+      - always
+
+  - set_fact:
+      public_ip: "n/a"
+    when: public_ip is not defined
+    tags:
+      - always
+
+  - set_fact:
+      acebox_provisioner: "vagrant"
+    when: acebox_provisioner is not defined
+
     tags:
       - always
 
@@ -107,15 +128,22 @@
     tags:
       - k8s
 
-  - name: Set up Monaco
-    include_tasks: playbooks/monaco_tasks.yaml
-    when: acebox_mode == "demo"
+  - name: Install and configure helm
+    include_tasks: playbooks/helm.yaml
     args:
       apply:
         tags:
-          - monaco
+          - k8s
+    tags:
+      - k8s
+
+  - name: Install Monaco
+    include_tasks: playbooks/monaco_tasks.yaml
+    when: acebox_mode == "demo"
     tags:
       - monaco
+      - monaco_uninstall
+      - dt_core
   
   - name: Clean Up Dynatrace
     include_tasks: playbooks/monaco_cleanup_tasks.yaml
@@ -123,9 +151,9 @@
     args:
       apply:
         tags:
-          - monaco
+          - dt_core
     tags:
-      - monaco
+      - dt_core
   
   - name: Install and configure Dynatrace ActiveGate
     include_tasks: playbooks/dtactivegate_tasks.yaml
@@ -136,15 +164,6 @@
           - dt_core
     tags:
       - dt_core
-  
-  - name: Install and configure helm
-    include_tasks: playbooks/helm.yaml
-    args:
-      apply:
-        tags:
-          - k8s
-    tags:
-      - k8s
   
   - name: Install and configure Dynatrace OneAgent
     include_tasks: playbooks/dtoneagent_tasks.yaml
@@ -199,16 +218,6 @@
     tags:
       - jenkins
       - jenkins_uninstall
-
-  - name: Create ACE Dashboard
-    include_tasks: playbooks/dashboard_tasks.yaml
-    when: feature_dashboard or acebox_mode == "demo"
-    args:
-      apply:
-        tags:
-          - dashboard
-    tags:
-      - dashboard
   
   - name: Configure Dynatrace
     include_tasks: playbooks/monaco_config_tasks.yaml
@@ -219,6 +228,31 @@
           - monaco
     tags:
       - monaco
+
+  - name: Install AWX
+    include_tasks: playbooks/awx_tasks.yaml
+    when: feature_awx
+    tags:
+      - awx
+      - awx_uninstall
+      - awx_output
+
+  - name: Configure AWX
+    include_tasks: playbooks/awx_config_tasks.yaml
+    when: feature_awx
+    tags:
+      - awx_config
+      - awx_unconfig
+
+  - name: Create ACE Dashboard
+    include_tasks: playbooks/dashboard_tasks.yaml
+    when: feature_dashboard or acebox_mode == "demo"
+    args:
+      apply:
+        tags:
+          - dashboard
+    tags:
+      - dashboard
 
   - name: Post install tasks
     include_tasks: playbooks/postinstall_tasks.yaml

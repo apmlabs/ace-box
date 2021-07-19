@@ -59,6 +59,7 @@
     $ terraform apply
     ```
 
+
 ## Custom domain support
 
 This terraform script supports the use of custom domains via Azure DNS.
@@ -72,3 +73,13 @@ This terraform script supports the use of custom domains via Azure DNS.
     custom_domain     = "acebox.example.com" # Set to override default domain (ip_address.xip.io)
     dns_zone_name     = "example.com" # Name of Azure DNS zone
     ```
+
+## Useful Terraform Commands
+
+
+Command  | Result
+-------- | -------
+`terraform destroy` | deletes any resources created by Terraform |
+`terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
+`terraform show` | Outputs the resources created by Terraform. Useful to verify IP addresses and the dashboard URL. 
+

@@ -1,9 +1,12 @@
-Courtesy of Andi Grabner, as I blatantly cloned his repo https://github.com/grabnerandi/simplenodeservice
+
 # Sample application Simplenodeservice
 
 This sample app is a modified version of the Node.js sample app from the [AWS Elastic Beanstalk Tutorial](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/nodejs-getstarted.html)
 
 I mainly use it to demonstrate continuous delivery, automated quality gates and self-healing of the Open Source project [Keptn](www.keptn.sh) as well as the monitoring capabilities of [Dynatrace](www.dynatrace.com)
+
+## Demo flow
+This repo comes with everything to demonstrate an end to end flow for **Monitoring as a Service**, **Monitoring as Code** and **Quality Gates**. Check out [demo](demo/Readme.md) for instructions and details.
 
 ## Extended Feature Set
 I've modified and extended it with a couple of additional API calls such as:
@@ -12,7 +15,7 @@ I've modified and extended it with a couple of additional API calls such as:
 * "login" with a username
 * get the currently running version
 
-![](/images/simplenodesersviceui.png)
+![](images/simplenodesersviceui.png)
 
 ## 4 Builds with different behavior
 
@@ -22,12 +25,12 @@ The app also comes with 4 built-in "build number" behaviors - meaning - if you l
 | Build | Behavior |
 | ----- | --------- |
 | 1 | Everything good |
-|2|50% Failure Rate of /api/invoke|
+|2|Slow down introduced |
 |3|Everything good|
 |4|20% Failure Rate of /api/invoke and twice as slow when running in production mode|
 
 Every build shows the build number and has its own color:
-![](/images/4buildoverview.png)
+![](images/4buildoverview.png)
 
 ## How to run it
 
@@ -36,7 +39,7 @@ There are different options on how to run / deploy that app
 | Run where | How |
 | --------- | --- |
 | Local     | npm start |
-| Docker    | docker run grabnerandi/simplenodeservice:1.0.0 |
+| Docker    | docker run dynatraceace/simplenodeservice:1.0.2 |
 | k8s       | https://github.com/grabnerandi/keptn-qualitygate-examples |
 
 ## Build it yourself

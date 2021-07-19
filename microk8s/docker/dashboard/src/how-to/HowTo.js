@@ -1,20 +1,23 @@
 import React, { useState } from "react"
-import { useGitea, useGitlab } from "../libs/credentials"
+import { useAwx, useGitea, useGitlab } from "../libs/credentials"
 
 import Jenkins from "./Jenkins"
 import Gitea from "./Gitea"
 import Gitlab from "./Gitlab"
+import Awx from "./Awx"
 import Keptn from "./Keptn"
 import Dynatrace from "./Dynatrace"
 import Kubernetes from "./Kubernetes"
 
 const ToolTabs = () => {
   const { isEnabled: isGitlabEnabled } = useGitlab()
+  const { isEnabled: isAwxEnabled } = useAwx()
 
   const tabs = {
     "Jenkins": Jenkins,
     "Gitea": Gitea,
     "Gitlab": Gitlab,
+    "AWX": Awx,
     "Keptn": Keptn,
     "Dynatrace": Dynatrace,
     "Kubernetes": Kubernetes
@@ -22,6 +25,10 @@ const ToolTabs = () => {
 
   if (!isGitlabEnabled) {
     delete tabs["Gitlab"]
+  }
+
+  if (!isAwxEnabled) {
+    delete tabs["AWX"]
   }
 
   const [activeTab, setActiveTab] = useState(Object.keys(tabs)[0])
@@ -82,14 +89,13 @@ const HowTo = ({ isGitlabEnabled }) => {
         <dl className="definition-list">
           <dt>All-in-one</dt>
           <dd><a href={`${giteaHref}/ace/ace`} target="_blank" rel="noreferrer">Step-by-step instructions</a></dd>
-          {/* <dt>monaco-gitops-demo</dt>
-          <dd><a href={`${giteaHref}/`}>Step-by-step instructions</a></dd> */}
           <dt>Monaco - Hands-on Training</dt>
           <dd><a href={`${giteaHref}/monaco-hot/monaco-hot`}>Step-by-step instructions</a></dd>
           <dt>Quality Gates - Hands-on Training</dt>
           <dd><a href={`${giteaHref}/quality-gates-hot/lab-guides`} target="_blank" rel="noreferrer">Step-by-step instructions</a></dd>
+          <dt>Canary deployment and auto remediation - Hands-on Training</dt>
+          <dd><a href={`${giteaHref}/auto-remediation/ace-demo-canary-docs`} target="_blank" rel="noreferrer">Step-by-step instructions</a></dd>
         </dl>
-        {/* <p>In case you have any questions, please reach out to: ...Email / Slack / etc?... You can also find us on ...Github link... </p> */}
       </>
     </div>
   )

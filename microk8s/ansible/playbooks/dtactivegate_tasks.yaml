@@ -25,6 +25,7 @@
     block: |
       [connectivity]
       dnsEntryPoint = http://{{ ansible_facts.fqdn }}:9999
+
 - name: ActiveGate - Restart ActiveGate service
   service:
     name: dynatracegateway
@@ -53,80 +54,7 @@
     synthetic_nodes_query: "nodes[?hostname=='{{ ansible_facts.fqdn }}'].entityId"
   when: acebox_mode == 'demo' and item != ""
 
-# - name: get IP geolocation data
-#   ipinfoio_facts:
-
-# - name: ActiveGate - Get all private locations
-#   uri:
-#     url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/locations?type=PRIVATE"
-#     method: GET
-#     headers:
-#       Content-Type: "application/json"
-#       Authorization: "Api-token {{ dynatrace_api_token }}"
-#     return_content: no
-#     status_code: 200, 201, 204
-#   register: privatelocresponse
-#   when: acebox_mode == 'demo'
-
-# - name: ActiveGate - Set synthetic location id
-#   set_fact:
-#     location_id: "{{ item }}"
-#   loop: "{{ privatelocresponse.json | json_query(synthetic_locations_query) }}"
-#   vars:
-#     synthetic_locations_query: "locations[?name=='Private Location ACEBOX'].entityId"
-#   when: acebox_mode == 'demo' and item != ""
-
-# - name: ActiveGate - Create private synthetic location
-#   uri:
-#     url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/locations"
-#     method: POST
-#     headers:
-#       Content-Type: "application/json"
-#       Authorization: "Api-token {{ dynatrace_api_token }}"
-#     body_format: json
-#     body: '{
-#           "type": "PRIVATE",
-#           "name": "Private Location ACEBOX",
-#           "latitude": "51.2194",
-#           "longitude": "4.4025",
-#           "nodes": [
-#             "{{ dt_node_id }}"
-#           ]
-#           }'
-#     return_content: no
-#     status_code: 200, 201, 204
-#   register: newsyntheticlocresponse
-#   when: acebox_mode == 'demo' and location_id is not defined
-
-# - name: ActiveGate - Update private synthetic location
-#   uri:
-#     url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/locations/{{ location_id }}"
-#     method: PUT
-#     headers:
-#       Content-Type: "application/json"
-#       Authorization: "Api-token {{ dynatrace_api_token }}"
-#     body_format: json
-#     body: '{
-#           "type": "PRIVATE",
-#           "name": "Private Location ACEBOX",
-#           "latitude": "51.2194",
-#           "longitude": "4.4025",
-#           "nodes": [
-#             "{{ dt_node_id }}"
-#           ]
-#           }'
-#     return_content: no
-#     status_code: 200, 201, 204
-#   when: acebox_mode == 'demo' and location_id is defined
-
-# - name: "ActiveGate - Register new DT synthetic location id {{ newsyntheticlocresponse.json.entityId }}"
-#   set_fact: 
-#     dynatrace_synthetic_location_id: "{{ newsyntheticlocresponse.json.entityId}} "
-#   when: acebox_mode == 'demo' and newsyntheticlocresponse.json.entityId is defined 
-
-# - name: "ActiveGate - Register existing DT synthetic location id {{ location_id }}"
-#   set_fact: 
-#     dynatrace_synthetic_location_id: "{{ location_id }}"
-#   when: acebox_mode == 'demo' and location_id is defined
-
-# - debug: var=dynatrace_synthetic_location_id
+- name: ActiveGate - Restart Docker service
+  service:
+    name: docker
+    state: restarted

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useJenkins, useGitea, useGitlab, useKeptnApi, useKeptnBridge, useDynatrace } from "./libs/credentials"
+import { useJenkins, useGitea, useGitlab, useAwx, useKeptnApi, useKeptnBridge, useDynatrace } from "./libs/credentials"
 
 const AceBoxLinkDetails = ({ title, href, credentials }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -38,6 +38,7 @@ const AceBoxLinks = () => {
   const { href: jenkinsHref, Username: JenkinsUsername, Password: JenkinsPassword } = useJenkins()
   const { href: giteaHref, Username: GiteaUsername, Password: GiteaPassword, Token: GiteaToken } = useGitea()
   const { isEnabled: isGitlabEnabled, href: gitlabHref, Username: GitlabUsername, Password: GitlabPassword } = useGitlab()
+  const { isEnabled: isAwxEnabled, href: awxHref, Username: AwxUsername, Password: AwxPassword } = useAwx()
   const { href: keptnApiHref, Token: KeptnApiToken } = useKeptnApi()
   const { href: keptnBridgeHref, Username: KeptnBridgeUsername, Password: KeptnBridgePassword } = useKeptnBridge()
   const { href: dynatraceHref } = useDynatrace()
@@ -70,6 +71,14 @@ const AceBoxLinks = () => {
                 title="Gitlab"
                 href={gitlabHref}
                 credentials={[GitlabUsername, GitlabPassword]}
+              />
+          }
+          {
+            isAwxEnabled &&
+              <AceBoxLinkDetails
+                title="AWX"
+                href={awxHref}
+                credentials={[AwxUsername, AwxPassword]}
               />
           }
           <AceBoxLinkDetails
