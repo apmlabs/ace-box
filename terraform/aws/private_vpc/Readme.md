@@ -57,6 +57,21 @@ The configuration process stores your credentials in a file at ~/.aws/credential
     terraform apply
     ```
 
+
+## Custom domain support
+
+This terraform script supports the use of custom domains via Route53.
+
+1. Ensure your access key can create dns records in the target Route53 zone.
+
+1. Add the following values to the `terraform.tfvars` file:
+
+    ```hcl
+    aws_region = "" # AWS Region to deploy infrastructure to
+    custom_domain = "" # Set to override default domain (ip_address.xip.io)
+    route53_zone_name = "" # Name of route53 zone (defaults to public zones)
+    ```
+
 ## Useful Terraform Commands
 
 
@@ -65,3 +80,4 @@ Command  | Result
 `terraform destroy` | deletes any resources created by Terraform |
 `terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
 `terraform show` | Outputs the resources created by Terraform. Useful to verify IP addresses and the dashboard URL. 
+
