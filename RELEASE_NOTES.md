@@ -1,5 +1,43 @@
 # ACE-BOX Release notes
 
+## v1.9 - July 2021
+
+### New Features
+
+#### Custom domains support
+[#3](https://github.com/Dynatrace/ace-box/issues/3)
+
+This allows you to use custom domains, either directly in terraform or by running the install script on a VM.
+
+#### Canary Release and Auto Remediation usecase
+[#11](https://github.com/Dynatrace/ace-box/issues/11) and [#20](https://github.com/Dynatrace/ace-box/issues/20)
+
+You can now demo a canary deployment together with auto remediation using the ACE-BOX. This will use Jenkins, Nginx Ingress and AWX to drive the workflow. Check out the new usecase from the ACE Dashboard!
+> Note: this usecase works only on a cloud ace-box as Dynatrace has to be able to send the problem back to AWX
+
+#### AWX
+[#11](https://github.com/Dynatrace/ace-box/issues/11) and [#20](https://github.com/Dynatrace/ace-box/issues/20)
+
+AWX Is used by the Auto Remediation usecase and thus also gets installed on the ACE-BOX.
+
+#### Complete demo walkthrough
+[#29](https://github.com/Dynatrace/ace-box/issues/29)
+
+On the ACE Dashboard there is now a detailed walkthrough for the demo scenarios of MaaS/Quality Gates and also Canary/Auto Remediation.
+
+### Fixes/tech updates
+
+#### K8s 1.21
+[#38](https://github.com/Dynatrace/ace-box/issues/38)
+
+Microk8s has been upgraded from 1.18/stable to 1.21/stable. This was done for tech currency reasons and also to support the canary scenario using the nginx ingress controller
+
+#### Update AWS Instance Type to T3
+[#15](https://github.com/Dynatrace/ace-box/issues/15)
+
+#### Added CODEOWNERS
+[#21](https://github.com/Dynatrace/ace-box/issues/21)
+
 ## v1.8 - June 2021
 
 This is the last version of the ACE-BOX to be published in BitBucket. From now on, the repository will be maintained in https://github.com/Dynatrace/ace-box. You need a GitHub account linked to the Dynatrace org to gain access. Please lodge an EDE ticket.
