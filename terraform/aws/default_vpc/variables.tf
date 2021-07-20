@@ -19,3 +19,18 @@ variable "acebox_user" {
   description = "Initial user when ace-box is created"
   default     = "ubuntu"
 }
+
+variable "custom_domain" {
+  description = "Set to overwrite custom domain"
+  default     = ""
+}
+
+variable "route53_zone_name" {
+  description = "Name of Route53 zone"
+  default     = ""
+}
+
+variable "route53_private_zone" {
+  description = "Whether the Route53 zone is private"
+  default     = false
+}

@@ -32,3 +32,18 @@ variable "associate_public_ip_address" {
   description = "Whether to associate a public IP address with an instance in a VPC"
   default = false
 }
+
+variable "custom_domain" {
+  description = "Set to overwrite custom domain"
+  default     = ""
+}
+
+variable "route53_zone_name" {
+  description = "Name of Route53 zone"
+  default     = ""
+}
+
+variable "route53_private_zone" {
+  description = "Whether the Route53 zone is private"
+  default     = false
+}

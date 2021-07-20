@@ -1,7 +1,4 @@
-# Using Terraform to spin up a ACE-BOX Cloud 
-
-Since the ACE-BOX uses Ansible underneath for configuration management and deploying services, it is also possible to use Terraform for the provisioning.
-At the moment, GCP and Azure are supported with a ready-made Terraform config.
+# Azure
 
 ## Requirements
 
@@ -62,6 +59,21 @@ At the moment, GCP and Azure are supported with a ready-made Terraform config.
     $ terraform apply
     ```
 
+
+## Custom domain support
+
+This terraform script supports the use of custom domains via Azure DNS.
+
+1. Ensure your account can create DNS records in the target Azure DNS zone.
+
+1. Add the following values to the `terraform.tfvars` file:
+
+    ```hcl
+    azure_location    = "" # azure location where you want to provision the resources
+    custom_domain     = "acebox.example.com" # Set to override default domain (ip_address.xip.io)
+    dns_zone_name     = "example.com" # Name of Azure DNS zone
+    ```
+
 ## Useful Terraform Commands
 
 
@@ -70,3 +82,4 @@ Command  | Result
 `terraform destroy` | deletes any resources created by Terraform |
 `terraform plan -destroy` | view a speculative destroy plan, to see what the effect of destroying would be |
 `terraform show` | Outputs the resources created by Terraform. Useful to verify IP addresses and the dashboard URL. 
+
