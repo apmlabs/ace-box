@@ -4,10 +4,10 @@
   vars_files:
     - ../config.yml
   vars:     
-    non_root_user:                    "{{ non_root_user | default('vagrant')}}"
-    public_ip:                        "{{ public_ip }}"
-    use_custom_domain:                "{{ use_custom_domain }}"
-    custom_domain:                    "{{ custom_domain }}"
+    # non_root_user:                    # Set as parameter, otherwise as fact below
+    # public_ip:                        # Set as parameter, otherwise as fact below
+    # use_custom_domain:                # Set as parameter, otherwise as fact below
+    # custom_domain:                    # Set as parameter, otherwise as fact below
     custom_domain_protocol:           "{{ acebox['config']['microk8s']['domain_protocol'] | default('http') }}"
     acebox_provisioner:               "{{ acebox_provisioner | default('vagrant')}}"
     acebox_mode:                      "{{ acebox['features']['mode'] | default('training') }}"
@@ -59,12 +59,7 @@
     awx_operator_version: "0.12.0"
     awx_admin_username: "admin"
     # awx_admin_password: "" # A secret will be created automatically. Password can be retrieved by running $ kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
-  tasks:
-  - debug: var=use_custom_domain
-    tags:
-      - always
-  
-  - debug: var=custom_domain
+  tasks:  
   - name: Set default Variables
     set_fact:
       non_root_user: "vagrant"
@@ -81,7 +76,18 @@
   - set_fact:
       acebox_provisioner: "vagrant"
     when: acebox_provisioner is not defined
+    tags:
+      - always
 
+  - set_fact:
+      use_custom_domain: false
+    when: use_custom_domain is not defined
+    tags:
+      - always
+
+  - set_fact:
+      custom_domain: "n/a"
+    when: use_custom_domain is not defined or custom_domain is not defined
     tags:
       - always
 
