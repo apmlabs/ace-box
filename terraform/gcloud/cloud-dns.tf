@@ -1,5 +1,5 @@
 resource "google_dns_record_set" "ace_box" {
-  count = var.custom_domain == "" ? 0 : 1
+  count = (var.custom_domain == "" || var.managed_zone_name == "") ? 0 : 1
 
   managed_zone = var.managed_zone_name
   name         = "*.${var.custom_domain}."
