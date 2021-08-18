@@ -46,10 +46,10 @@ controller:
     - name: KEPTN_API_TOKEN
       value: {{ keptn_api_token | default('') if acebox_mode == 'demo' else '' }}
     - name: SYNTH_NODE_ID
-      value: {{ dt_node_id | default('') if acebox_mode == 'demo' else '' }}
+      value: "{{ dt_node_id | default('') if acebox_mode == 'demo' else '' }}"
     - name: KUBE_BEARER_TOKEN
       value: {{ kube_bearer_token | default('') if acebox_mode == 'demo' else '' }}
-    - name: INRESS_DOMAIN
+    - name: INGRESS_DOMAIN
       value: {{ ingress_domain }}
     - name: ACE_LIB
       value: {{ jenkins_ace_lib_url if acebox_mode == 'demo' else '' }}
