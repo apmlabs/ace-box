@@ -53,95 +53,50 @@
   tags:
     - jenkins
 
-- name: Jenkins - Set environment variables TRAINING MODE
-  shell: >
-    sed 
-    -e "s|GITHUB_USER_EMAIL_PLACEHOLDER||" 
-    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|" 
-    -e "s|GITHUB_USER_NAME_PLACEHOLDER||" 
-    -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER||" 
-    -e "s|GITHUB_ORGANIZATION_PLACEHOLDER||" 
-    -e "s|GIT_REPO_PLACEHOLDER||" 
-    -e "s|GIT_DOMAIN_PLACEHOLDER||" 
-    -e "s|GIT_PROTOCOL_PLACEHOLDER||"
-    -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" 
-    -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" 
-    -e "s|DT_SYNTHETIC_LOCATION_PLACEHOLDER||" 
-    -e "s|KEPTN_ENDPOINT_PLACEHOLDER||" 
-    -e "s|KEPTN_BRIDGE_PLACEHOLDER||" 
-    -e "s|ACE_LIB_PLACEHOLDER||" 
-    -e "s|KEPTN_LIB_PLACEHOLDER||" 
-    -e "s|KEPTN_API_TOKEN_PLACEHOLDER||" 
-    -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" 
-    -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|"
-    -e "s|SYNTH_NODE_ID_PLACEHOLDER||" 
-    -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER||"  
-    -e "s|INGRESS_DOMAIN_PLACEHOLDER|{{ ingress_domain }}|"
-    -e "s|INGRESS_PROTOCOL_PLACEHOLDER|{{ custom_domain_protocol }}|" 
-    /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
-  when: jenkins_setcreds == true and acebox_mode == 'training'
+- set_fact:
+    jenkins_keptn_endpoint: "{{ custom_domain_protocol }}://keptn.{{ ingress_domain }}/api"
   tags:
     - jenkins
 
-- name: Jenkins - Empty environment variables
-  shell: >
-    sed 
-    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|"
-    -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|"
-    -e "s|GITHUB_USER_EMAIL_PLACEHOLDER||" 
-    -e "s|GITHUB_USER_NAME_PLACEHOLDER||" 
-    -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER||" 
-    -e "s|GITHUB_ORGANIZATION_PLACEHOLDER||" 
-    -e "s|DT_TENANT_URL_PLACEHOLDER||" 
-    -e "s|DT_API_TOKEN_PLACEHOLDER||" 
-    -e "s|DT_SYNTHETIC_LOCATION_PLACEHOLDER||" 
-    -e "s|ACE_LIB_PLACEHOLDER||" 
-    -e "s|KEPTN_LIB_PLACEHOLDER||" 
-    -e "s|KEPTN_API_TOKEN_PLACEHOLDER||" 
-    -e "s|KEPTN_ENDPOINT_PLACEHOLDER||" 
-    -e "s|KEPTN_BRIDGE_PLACEHOLDER||"
-    -e "s|SYNTH_NODE_ID_PLACEHOLDER||" 
-    -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER||"  
-    /vagrant/k8s/jenkins-values.yml > /vagrant/k8s/jenkins-values-gen.yml
-  when: jenkins_setcreds != true and acebox_mode == 'training'
+- set_fact:
+    jenkins_keptn_bridge: "{{ custom_domain_protocol }}://keptn.{{ ingress_domain }}/bridge"
   tags:
     - jenkins
 
-#- name: Jenkins - Set environment variables DEMO MODE
-#  shell: sed -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git['email'] }}|" -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|" -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git['username'] }}|" -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ git['pat'] }}|" -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git['org'] }}|" -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" -e "s|KEPTN_ENDPOINT_PLACEHOLDER|https://api.keptn.{{ ingress_domain }}|" -e "s|KEPTN_BRIDGE_PLACEHOLDER|https://bridge.keptn.{{ ingress_domain }}|" -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
-#  when: acebox_mode == 'demo'
-
-- debug: var=gitea_access_token
-  tags:
-    - jenkins
-
-- name: Jenkins - Set environment variables DEMO MODE
-  shell: >
-    sed 
-    -e "s|GITHUB_USER_EMAIL_PLACEHOLDER|{{ git_email }}|" 
-    -e "s|DOCKER_REGISTRY_URL_PLACEHOLDER|localhost:{{ registry_port }}|" 
-    -e "s|GITHUB_USER_NAME_PLACEHOLDER|{{ git_user }}|" 
-    -e "s|GITHUB_PERSONAL_ACCESS_TOKEN_PLACEHOLDER|{{ gitea_access_token }}|" 
-    -e "s|GITHUB_ORGANIZATION_PLACEHOLDER|{{ git_org }}|" 
-    -e "s|DT_TENANT_URL_PLACEHOLDER|{{ dynatrace['tenant'] }}|" 
-    -e "s|DT_API_TOKEN_PLACEHOLDER|{{ dynatrace['apitoken'] }}|" 
-    -e "s|DT_SYNTHETIC_LOCATION_PLACEHOLDER|{{ dynatrace_synthetic_location_id | default('')}}|" 
-    -e "s|KEPTN_API_TOKEN_PLACEHOLDER|{{ keptn_api_token | default('') }}|" 
-    -e "s|KEPTN_ENDPOINT_PLACEHOLDER|{{ custom_domain_protocol }}://keptn.{{ ingress_domain }}/api|" 
-    -e "s|KEPTN_BRIDGE_PLACEHOLDER|{{ custom_domain_protocol }}://keptn.{{ ingress_domain }}/bridge|" 
-    -e "s|JENKINS_INGRESS_PLACEHOLDER|jenkins.{{ ingress_domain }}|" 
-    -e "s|JENKINS_VERSION_PLACEHOLDER|{{ jenkins_version }}|" 
-    -e "s|GIT_REPO_PLACEHOLDER|{{ git_repo }}|" 
-    -e "s|GIT_DOMAIN_PLACEHOLDER|{{ gitea_domain }}|"
-    -e "s|GIT_PROTOCOL_PLACEHOLDER|{{ custom_domain_protocol }}|"
-    -e "s|ACE_LIB_PLACEHOLDER|{{ jenkins_ace_lib_url }}|" 
-    -e "s|KEPTN_LIB_PLACEHOLDER|{{ jenkins_keptn_lib_url }}|"
-    -e "s|SYNTH_NODE_ID_PLACEHOLDER|{{ dt_node_id | default('') }}|"  
-    -e "s|KUBE_BEARER_TOKEN_PLACEHOLDER|{{ kube_bearer_token | default('')}}|" 
-    -e "s|INGRESS_DOMAIN_PLACEHOLDER|{{ ingress_domain }}|" 
-    -e "s|INGRESS_PROTOCOL_PLACEHOLDER|{{ custom_domain_protocol }}|" 
-    /vagrant/k8s/jenkins-values-demo.yml > /vagrant/k8s/jenkins-values-gen.yml
+- name: Jenkins - Get all DT Synthetic nodes
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/nodes"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    return_content: no
+    status_code: 200, 201, 204
+  register: nodesresponse
   when: acebox_mode == 'demo'
+  until: nodesresponse.json | json_query("nodes[?hostname=='{{ ansible_facts.fqdn }}'].entityId")
+  retries: 15
+  delay: 10
+  tags:
+    - jenkins
+
+- name: Jenkins - Set DT Synthetic node entityId
+  set_fact:
+    dt_node_id: "{{ item }}"
+  loop: "{{ nodesresponse.json | json_query(synthetic_nodes_query) }}"
+  vars:
+    synthetic_nodes_query: "nodes[?hostname=='{{ ansible_facts.fqdn }}'].entityId"
+  when: item != ""
+  tags:
+    - jenkins
+
+- name: Jenkins - Template Helm values file
+  ansible.builtin.template:
+    src: /vagrant/k8s/jenkins-values.yml.j2
+    dest: /vagrant/k8s/jenkins-values.yml
+    owner: root
+    group: root
+    mode: '0644'
   tags:
     - jenkins
 
@@ -153,7 +108,7 @@
 
 - name: Jenkins - Install jenkins
   become_user: "{{ non_root_user }}"
-  shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values-gen.yml --version {{ jenkins_helm_chart_version }} --namespace ace jenkins jenkins/jenkins --wait --timeout 600s
+  shell: /snap/bin/helm upgrade -i -f /vagrant/k8s/jenkins-values.yml --version {{ jenkins_helm_chart_version }} --namespace ace jenkins jenkins/jenkins --wait --timeout 600s
   ignore_errors: yes
   tags:
     - jenkins

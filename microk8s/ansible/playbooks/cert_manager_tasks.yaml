@@ -11,7 +11,7 @@
   
 - name: Cert Manager - Install cert-manager
   become_user: "{{ non_root_user }}"
-  shell: /snap/bin/helm install cert-manager --namespace cert-manager jetstack/cert-manager --version v1.2.0
+  shell: /snap/bin/helm upgrade --install cert-manager --namespace cert-manager jetstack/cert-manager --version v1.2.0
 
 - name: Gitea - Wait for cert-manager to be ready
   shell: /snap/bin/microk8s.kubectl -n cert-manager rollout status deployment cert-manager-webhook
