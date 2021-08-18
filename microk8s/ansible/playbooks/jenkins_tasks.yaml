@@ -63,6 +63,33 @@
   tags:
     - jenkins
 
+- name: Jenkins - Get all DT Synthetic nodes
+  uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/nodes"
+    method: GET
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Api-token {{ dynatrace_api_token }}"
+    return_content: no
+    status_code: 200, 201, 204
+  register: nodesresponse
+  when: acebox_mode == 'demo'
+  until: nodesresponse.json | json_query("nodes[?hostname=='{{ ansible_facts.fqdn }}'].entityId")
+  retries: 15
+  delay: 10
+  tags:
+    - jenkins
+
+- name: Jenkins - Set DT Synthetic node entityId
+  set_fact:
+    dt_node_id: "{{ item }}"
+  loop: "{{ nodesresponse.json | json_query(synthetic_nodes_query) }}"
+  vars:
+    synthetic_nodes_query: "nodes[?hostname=='{{ ansible_facts.fqdn }}'].entityId"
+  when: item != ""
+  tags:
+    - jenkins
+
 - name: Jenkins - Template Helm values file
   ansible.builtin.template:
     src: /vagrant/k8s/jenkins-values.yml.j2
