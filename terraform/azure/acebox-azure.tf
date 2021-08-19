@@ -99,6 +99,17 @@ resource "azurerm_network_security_group" "acebox_nsg" {
     }
 }
 
+resource "tls_private_key" "acebox_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "acebox_pem" { 
+  filename = "${path.module}/${var.private_ssh_key}"
+  content = tls_private_key.acebox_key.private_key_pem
+  file_permission = 400
+}
+
 resource "azurerm_linux_virtual_machine" "acebox" {
   name                  = "ace-box"  
   location              = var.azure_location
@@ -109,7 +120,7 @@ resource "azurerm_linux_virtual_machine" "acebox" {
 
   admin_ssh_key {
       username = var.acebox_user
-      public_key = file(var.ssh_keys["public"])
+      public_key = tls_private_key.acebox_key.public_key_openssh
   }
 
   source_image_reference {
@@ -133,7 +144,7 @@ resource "azurerm_linux_virtual_machine" "acebox" {
     host        = self.public_ip_address
     type        = "ssh"
     user        = var.acebox_user
-    private_key = file(var.ssh_keys["private"])
+    private_key = tls_private_key.acebox_key.private_key_pem
   }
 
   provisioner "remote-exec" {
@@ -161,7 +172,7 @@ resource "null_resource" "provisioner" {
     host        = azurerm_public_ip.acebox_publicip.ip_address
     type        = "ssh"
     user        = var.acebox_user
-    private_key = file(var.ssh_keys["private"])
+    private_key = tls_private_key.acebox_key.private_key_pem
   }
 
   depends_on = [azurerm_dns_a_record.ace_box, azurerm_linux_virtual_machine.acebox]

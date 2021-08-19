@@ -29,6 +29,18 @@ resource "google_compute_firewall" "acebox-http" {
   target_tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
 }
 
+## Create key pair
+resource "tls_private_key" "acebox_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "acebox_pem" { 
+  filename = "${path.module}/${var.private_ssh_key}"
+  content = tls_private_key.acebox_key.private_key_pem
+  file_permission = 400
+}
+
 ## Create acebox host
 resource "google_compute_instance" "acebox" {
   name         = "${var.name_prefix}-${random_id.uuid.hex}"
@@ -51,7 +63,7 @@ resource "google_compute_instance" "acebox" {
   }
 
   metadata = {
-    sshKeys = "${var.acebox_user}:${file(var.ssh_keys["public"])}"
+    sshKeys = "${var.acebox_user}:${tls_private_key.acebox_key.public_key_openssh}"
   }
 
   tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
@@ -60,7 +72,7 @@ resource "google_compute_instance" "acebox" {
     host        = self.network_interface.0.access_config.0.nat_ip
     type        = "ssh"
     user        = var.acebox_user
-    private_key = file(var.ssh_keys["private"])
+    private_key = tls_private_key.acebox_key.private_key_pem
   }
 
   provisioner "remote-exec" {
@@ -89,7 +101,7 @@ resource "null_resource" "provisioner" {
     host        = google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip
     type        = "ssh"
     user        = var.acebox_user
-    private_key = file(var.ssh_keys["private"])
+    private_key = tls_private_key.acebox_key.private_key_pem
   }
 
   depends_on = [google_dns_record_set.ace_box, google_compute_instance.acebox]

@@ -47,3 +47,8 @@ variable "route53_private_zone" {
   description = "Whether the Route53 zone is private"
   default     = false
 }
+
+variable "private_ssh_key" {
+  description = "Path of where to store private key on current module directory"
+  default = "./key"
+}
