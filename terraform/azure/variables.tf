@@ -18,12 +18,9 @@ variable "acebox_os_azure" {
   }
 }
 
-variable "ssh_keys" {
-  description = "Paths to public and private SSH keys for ace-box user"
-  default = {
-    private = "./key"
-    public  = "./key.pub"
-  }
+variable "private_ssh_key" {
+  description = "Path of where to store private key on current module directory"
+  default = "./key"
 }
 
 variable "azure_location" {
