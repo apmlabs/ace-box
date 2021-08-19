@@ -20,14 +20,6 @@ A GCP account is needed.
     $ cd microk8s/terraform/gcloud
     ```
 
-1. Create key pair for ssh authentication
-
-    ```bash
-    $ ssh-keygen -b 2048 -t rsa -f key
-    ```
-
-    Enter through the defaults.
-
 1. Initialize terraform
 
     ```bash

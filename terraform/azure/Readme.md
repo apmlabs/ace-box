@@ -24,14 +24,6 @@
     $ cd terraform/azure
     ```
 
-1. Create a key pair for ssh authentication
-
-    ```bash
-    $ ssh-keygen -b 2048 -t rsa -f key
-    ```
-
-    Enter through the defaults.
-
 1. Initialize terraform
 
     ```bash
