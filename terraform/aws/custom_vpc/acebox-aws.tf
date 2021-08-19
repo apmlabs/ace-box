@@ -20,7 +20,7 @@ resource "tls_private_key" "acebox_key" {
 }
 
 resource "local_file" "acebox_pem" { 
-  filename = "${path.module}/key"
+  filename = "${path.module}/${var.private_ssh_key}"
   content = tls_private_key.acebox_key.private_key_pem
   file_permission = 400
 }
