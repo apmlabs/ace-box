@@ -50,7 +50,7 @@ resource "aws_instance" "acebox" {
   key_name                    = aws_key_pair.generated_key.key_name
 
   root_block_device {
-    volume_size = 60
+    volume_size = var.disk_size
   }
 
   tags = {

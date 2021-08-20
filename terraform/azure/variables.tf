@@ -42,3 +42,8 @@ variable "dns_zone_name" {
   description = "Name of the Azure DNS zone"
   default     = ""
 }
+
+variable "disk_size" {
+  description = "Size of disk that will be available to ace-box instance"
+  default     = "60"
+}

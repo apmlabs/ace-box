@@ -44,3 +44,8 @@ variable "managed_zone_name" {
   description = "Name of GCP managed zone"
   default     = ""
 }
+
+variable "disk_size" {
+  description = "Size of disk that will be available to ace-box instance"
+  default     = "60"
+}

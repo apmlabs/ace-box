@@ -50,7 +50,7 @@ resource "google_compute_instance" "acebox" {
   boot_disk {
     initialize_params {
       image = var.acebox_os
-      size  = "60"
+      size  = var.disk_size
     }
   }
 
