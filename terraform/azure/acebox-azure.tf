@@ -133,7 +133,7 @@ resource "azurerm_linux_virtual_machine" "acebox" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
-    disk_size_gb         = "40"
+    disk_size_gb         = var.disk_size
   }
 
   tags = {

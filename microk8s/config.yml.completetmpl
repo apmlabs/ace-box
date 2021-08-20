@@ -7,7 +7,7 @@ acebox:
     cpu: 4                      # number of cpu vcores
     mem: 12288                   # memory assignment in MB
     priv_ip: "192.168.50.10"    # private IP - do NOT change, will BREAK things
-    disk: "50GB"
+    disk: "60GB"
   features:
     oneagent: true              # install Dynatrace OneAgent, defaults to true
     activegate:  true            # install Dynatrace ActiveGate for Private Synthetic, defaults to false
