@@ -42,7 +42,7 @@ resource "aws_instance" "acebox" {
   }
 
   root_block_device {
-    volume_size = 40
+    volume_size = 60
   }
 
   tags = {
