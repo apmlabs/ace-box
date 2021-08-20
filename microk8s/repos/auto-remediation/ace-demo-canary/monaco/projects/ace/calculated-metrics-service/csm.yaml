@@ -4,9 +4,6 @@ config:
 
 simplenode.canary.response_time_by_version:
     - name: "simplenode.canary.response_time_by_version"
-    - metricKey: "calc:service.simplenode.canary.response_time_by_version"
-
 
 simplenode.canary.failure_rate_by_version:
     - name: "simplenode.canary.failure_rate_by_version"
-    - metricKey: "calc:service.simplenode.canary.failure_rate_by_version"
