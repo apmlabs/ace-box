@@ -1,5 +1,5 @@
 {
-  "tsmMetricKey": "{{ .metricKey }}",
+  "tsmMetricKey": "calc:service.{{ .name }}",
   "name": "{{ .name }}",
   "enabled": true,
   "metricDefinition": {

@@ -36,7 +36,7 @@
           "type": "TIMESERIES",
           "series": [
             {
-              "metric": "calc:service.failure_rate_by_version",
+              "metric": "calc:service.{{ .metricNameFailureRateByVersion }}",
               "aggregation": "OF_INTEREST_RATIO",
               "type": "BAR",
               "entityType": "SERVICE",
@@ -78,7 +78,7 @@
           "type": "TOP_LIST",
           "series": [
             {
-              "metric": "calc:service.failure_rate_by_version",
+              "metric": "calc:service.{{ .metricNameFailureRateByVersion }}",
               "aggregation": "OF_INTEREST_RATIO",
               "type": "LINE",
               "entityType": "SERVICE",
@@ -133,7 +133,7 @@
           "type": "TIMESERIES",
           "series": [
             {
-              "metric": "calc:service.response_time_by_version",
+              "metric": "calc:service.{{ .metricNameResponseTimeByVersion }}",
               "aggregation": "AVG",
               "type": "LINE",
               "entityType": "SERVICE",
@@ -187,11 +187,11 @@
       "queries": [
         {
           "id": "A",
-          "metric": "calc:service.response_time_by_version",
+          "metric": "calc:service.{{ .metricNameResponseTimeByVersion }}",
           "spaceAggregation": "COUNT",
           "timeAggregation": "DEFAULT",
           "splitBy": [
-            "version"
+            "Version"
           ],
           "enabled": true
         }
