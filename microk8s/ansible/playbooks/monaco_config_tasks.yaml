@@ -1,5 +1,5 @@
 - name: Monaco - Retrieve Gitea access token
-  shell: /snap/bin/microk8s.kubectl -n ace get secret gitea -o jsonpath='{.data.access_token}' | base64 -d
+  shell: /snap/bin/microk8s.kubectl -n ace get secret gitea-admin -o jsonpath='{.data.access_token}' | base64 -d
   register: gitea_access_token_raw
   ignore_errors: yes
 

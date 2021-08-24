@@ -50,7 +50,7 @@
     git_org:                    "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).org | default('ace') }}"
     git_repo:                   "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).repo | default('ace') }}"
     #gitea_version:               "{{ acebox.config.git.version | default('1.11.6') }}"
-    gitea_version:               "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).version |default('1.13.2') }}"
+    gitea_version:               "{{ (((acebox | default({})).config | default({}) ).git | default({}) ).version |default('1.14.6') }}"
     #gitea_version:               "{{ acebox|json_query('config.git.version') | default('1.11.6') }}"
     activegate_download_location: "{{ acebox['config']['activegate']['download_location'] | default('/tmp/Dynatrace-ActiveGate-Linux-x86-latest.sh') }}"
     monaco_download_version: "v1.5.0"

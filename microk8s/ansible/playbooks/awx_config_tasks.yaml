@@ -45,6 +45,27 @@
   tags:
     - always
 
+- name: AWX - Retrieve Gitea credentials
+  shell: /snap/bin/microk8s.kubectl -n ace get secret gitea-admin -o jsonpath='{.data.git_user}' | base64 -d
+  register: git_user_raw
+  tags:
+    - always
+
+- set_fact:
+    git_user: "{{ git_user_raw.stdout }}"
+  tags:
+    - always
+
+- shell: /snap/bin/microk8s.kubectl -n ace get secret gitea-admin -o jsonpath='{.data.git_password}' | base64 -d
+  register: git_password_raw
+  tags:
+    - always
+
+- set_fact:
+    git_password: "{{ git_password_raw.stdout }}"
+  tags:
+    - always
+
 - name: AWX - Retrieve Jenkins URL
   set_fact:
     jenkins_url: "http://jenkins.{{ ingress_domain }}"
@@ -99,38 +120,6 @@
   tags:
     - awx_config
 
-- name: Get Dynatrace API token credential type
-  uri:
-    url: "{{ awx_url }}/api/v2/credential_types/?name={{ awx_credential_type_name_dt | urlencode() }}"
-    user: "{{ awx_admin_username }}"
-    password: "{{ awx_admin_password }}"
-    force_basic_auth: yes
-    validate_certs: false
-    method: GET
-    status_code: [200]
-    headers:
-      Content-Type: "application/json"
-  register: credential_type_result
-  tags:
-    - never
-    - awx_unconfig
-
-- name: Delete Dynatrace API token credential type
-  when: credential_type_result.json.count == 1
-  uri:
-    url: "{{ awx_url }}/api/v2/credential_types/{{ credential_type_result.json.results[0].id }}/"
-    user: "{{ awx_admin_username }}"
-    password: "{{ awx_admin_password }}"
-    force_basic_auth: yes
-    validate_certs: false
-    method: DELETE
-    status_code: [200, 201, 204]
-    headers:
-      Content-Type: "application/json"
-  tags:
-    - never
-    - awx_unconfig
-
 - name: Create Dynatrace API token credential
   uri:
     url: "{{ awx_url }}/api/v2/credentials/"
@@ -157,9 +146,19 @@
   tags:
     - awx_config
 
-- name: Get Dynatrace API token credential
+- set_fact:
+    gitea_credential_type_name: "Source Control"
+  tags:
+    - always
+
+- set_fact:
+    gitea_credential_name: "{{ custom_domain_protocol }}://gitea.{{ ingress_domain }} Credentials"
+  tags:
+    - always
+
+- name: AWX - Get SCM credential type
   uri:
-    url: "{{ awx_url }}/api/v2/credentials/?name={{ awx_credential_name_dt | urlencode() }}"
+    url: "{{ awx_url }}/api/v2/credential_types/?name={{ gitea_credential_type_name | urlencode() }}"
     user: "{{ awx_admin_username }}"
     password: "{{ awx_admin_password }}"
     force_basic_auth: yes
@@ -168,26 +167,37 @@
     status_code: [200]
     headers:
       Content-Type: "application/json"
-  register: dt_credential_result
+  register: gitea_credential_type_result
   tags:
-    - never
-    - awx_unconfig
+    - always
 
-- name: Delete Dynatrace API token credential
-  when: dt_credential_result.json.count == 1
+- name: AWX - Create Gitea token credential
+  when: gitea_credential_type_result.json.count == 1
   uri:
-    url: "{{ awx_url }}/api/v2/credentials/{{ dt_credential_result.json.results[0].id }}/"
+    url: "{{ awx_url }}/api/v2/credentials/"
     user: "{{ awx_admin_username }}"
     password: "{{ awx_admin_password }}"
     force_basic_auth: yes
     validate_certs: false
-    method: DELETE
+    method: POST
     status_code: [200, 201, 204]
     headers:
       Content-Type: "application/json"
+    body:
+      name: "{{ gitea_credential_name }}"
+      kind: scm
+      organization: 1
+      credential_type: "{{ gitea_credential_type_result.json.results[0].id }}"
+      inputs:
+        password: "{{ git_password }}"
+        username: "{{ git_user }}"
+    body_format: json
+  register: gitea_credential_result
+  until: gitea_credential_result.status == 200 or gitea_credential_result.status == 201 or gitea_credential_result.status == 204
+  retries: 10
+  delay: 1
   tags:
-    - never
-    - awx_unconfig
+    - awx_config
 
 - name: Create remediation project
   uri:
@@ -208,6 +218,7 @@
       scm_branch: master
       scm_clean: true
       scm_delete_on_update: false
+      credential: "{{ gitea_credential_result.json.id }}"
       timeout: 0
       organization: 1
       scm_update_on_launch: false
@@ -495,3 +506,103 @@
     msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ remediation_template_url }}"
   tags:
     - awx_config
+
+#  Unconfig
+
+- name: Get Dynatrace API token credential
+  uri:
+    url: "{{ awx_url }}/api/v2/credentials/?name={{ awx_credential_name_dt | urlencode() }}"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: GET
+    status_code: [200]
+    headers:
+      Content-Type: "application/json"
+  register: dt_credential_result
+  tags:
+    - never
+    - awx_unconfig
+
+- name: Delete Dynatrace API token credential
+  when: dt_credential_result.json.count == 1
+  uri:
+    url: "{{ awx_url }}/api/v2/credentials/{{ dt_credential_result.json.results[0].id }}/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: DELETE
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+  tags:
+    - never
+    - awx_unconfig
+
+- name: Get Dynatrace API token credential type
+  uri:
+    url: "{{ awx_url }}/api/v2/credential_types/?name={{ awx_credential_type_name_dt | urlencode() }}"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: GET
+    status_code: [200]
+    headers:
+      Content-Type: "application/json"
+  register: credential_type_result
+  tags:
+    - never
+    - awx_unconfig
+
+- name: Delete Dynatrace API token credential type
+  when: credential_type_result.json.count == 1
+  uri:
+    url: "{{ awx_url }}/api/v2/credential_types/{{ credential_type_result.json.results[0].id }}/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: DELETE
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+  tags:
+    - never
+    - awx_unconfig
+
+- name: AWX Unconfig - Get Gitea credential
+  uri:
+    url: "{{ awx_url }}/api/v2/credentials/?name={{ gitea_credential_name | urlencode() }}"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: GET
+    status_code: [200]
+    headers:
+      Content-Type: "application/json"
+  register: gitea_credential_result
+  ignore_errors: yes
+  tags:
+    - never
+    - awx_unconfig
+
+- name: AWX Unconfig - Delete Gitea credential
+  when: gitea_credential_result.json.count == 1
+  uri:
+    url: "{{ awx_url }}/api/v2/credentials/{{ gitea_credential_result.json.results[0].id }}/"
+    user: "{{ awx_admin_username }}"
+    password: "{{ awx_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: false
+    method: DELETE
+    status_code: [200, 201, 204]
+    headers:
+      Content-Type: "application/json"
+  ignore_errors: yes
+  tags:
+    - never
+    - awx_unconfig
