@@ -25,7 +25,7 @@
     }
   ],
   "dimensionDefinition": {
-    "name": "Version",
+    "name": "version",
     "dimension": "{Request:ApplicationBuildVersion}",
     "placeholders": [],
     "topX": 100,
