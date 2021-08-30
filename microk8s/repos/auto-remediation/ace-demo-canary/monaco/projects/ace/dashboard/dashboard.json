@@ -191,7 +191,7 @@
           "spaceAggregation": "COUNT",
           "timeAggregation": "DEFAULT",
           "splitBy": [
-            "Version"
+            "version"
           ],
           "enabled": true
         }
