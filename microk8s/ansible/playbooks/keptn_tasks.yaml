@@ -73,16 +73,12 @@
   shell: /snap/bin/microk8s.kubectl -n keptn create secret generic dynatrace --from-literal="DT_TENANT={{ dynatrace_tenant_nohttps }}" --from-literal="DT_API_TOKEN={{ dynatrace_api_token }}"  --from-literal="DT_PAAS_TOKEN={{ dynatrace_api_token }}" --from-literal="KEPTN_API_URL={{ custom_domain_protocol }}://keptn.{{ ingress_domain }}/api" --from-literal="KEPTN_API_TOKEN={{ keptn_api_token }}" --from-literal="KEPTN_BRIDGE_URL={{ custom_domain_protocol }}://keptn.{{ ingress_domain }}/bridge"
 
 - name: Keptn - Install Dynatrace service
-  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-service/{{ keptn_dynatrace_service_version }}/deploy/service.yaml -n keptn"
+  become_user: "{{ non_root_user }}"
+  shell: helm upgrade --install dynatrace-service -n keptn https://github.com/keptn-contrib/dynatrace-service/releases/download/{{ keptn_dynatrace_service_version }}/dynatrace-service-{{ keptn_dynatrace_service_version }}.tgz
 
-- name: Keptn - Install Dynatrace SLI service
-  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn-contrib/dynatrace-sli-service/{{ keptn_dynatrace_sli_service_version }}/deploy/service.yaml -n keptn"
-
-
-- name: Keptn - Install JMeter Extended service
-  shell: "/snap/bin/microk8s.kubectl apply -f https://raw.githubusercontent.com/keptn/keptn/release-{{ keptn_version }}/jmeter-service/deploy/service.yaml"  
-#- name: Keptn - Configure monitoring Dynatrace
-#  shell: /usr/local/bin/keptn configure monitoring dynatrace --suppress-websocket
+- name: Keptn - Install JMeter service
+  become_user: "{{ non_root_user }}"
+  shell: helm upgrade --install jmeter-service -n keptn https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/jmeter-service-{{ keptn_version }}.tgz
 
 - name: Keptn - Authenticate CLI
   become_user: "{{ non_root_user }}"
