@@ -14,6 +14,7 @@ resource "google_compute_firewall" "acebox-https" {
   }
 
   target_tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
+  source_ranges = ["0.0.0.0/0"]
 }
 
 ## Allow access to acebox via HTTPS
@@ -27,6 +28,7 @@ resource "google_compute_firewall" "acebox-http" {
   }
 
   target_tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
+  source_ranges = ["0.0.0.0/0"]
 }
 
 ## Create key pair
