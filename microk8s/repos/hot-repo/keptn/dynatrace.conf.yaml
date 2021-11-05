@@ -8,13 +8,13 @@ attachRules:
     tags:
     - context: ENVIRONMENT
       key: DT_APPLICATION_BUILD_VERSION
-      value: $LABEL.art_version
+      value: $LABEL.DT_APPLICATION_BUILD_VERSION
     - context: KUBERNETES
       key: app.kubernetes.io/name
       value: $SERVICE
     - context: KUBERNETES
       key: app.kubernetes.io/part-of
-      value: $LABEL.part_of
+      value: $LABEL.DT_APPLICATION_NAME
     - context: KUBERNETES
       key: app.kubernetes.io/component
-      value: $LABEL.component
+      value: api
