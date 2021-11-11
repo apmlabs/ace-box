@@ -1,4 +1,5 @@
 ---
 gitlab_username: "root"
 gitlab_namespace: "gitlab"
+gitlab_group_name: "ace"
 feature_gitlab: false

@@ -16,11 +16,6 @@
   rescue:
     - name: "'set-url' gitea"
       shell: "cd {{ repo_src }} && git remote set-url gitea {{ ingress_protocol }}://{{ gitea_username }}:{{ gitea_password }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}"
-  when: feature_gitea and push_to_gitea 
-
-- name: Repository - Publish {{ gitea_org }}/{{ gitea_repo }} to Gitea
-  become_user: "{{ non_root_user }}"
-  shell: "cd {{ repo_src }} && git push gitea master"
   when: feature_gitea and push_to_gitea
 
 - name: Repository - Add remote Gitlab {{ gitlab_group }}/{{ gitlab_repo }}
@@ -33,7 +28,14 @@
       shell: "cd {{ repo_src }} && git remote set-url gitlab {{ ingress_protocol }}://{{ gitlab_username }}:{{ gitlab_password }}@{{ gitlab_domain }}/{{ gitlab_group }}/{{ gitlab_repo }}.git"
   when: feature_gitlab and push_to_gitlab
 
+- name: Repository - Publish {{ gitea_org }}/{{ gitea_repo }} to Gitea
+  become_user: "{{ non_root_user }}"
+  shell: "cd {{ repo_src }} && git push gitea master"
+  when: feature_gitea and push_to_gitea
+  ignore_errors: yes
+
 - name: Repository - Publish {{ gitlab_group }}/{{ gitlab_repo }}.git to Gitlab
   become_user: "{{ non_root_user }}"
   shell: "cd {{ repo_src }} && git push gitlab master"
   when: feature_gitlab and push_to_gitlab
+  ignore_errors: yes

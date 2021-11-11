@@ -1,0 +1,29 @@
+- include: roles/gitlab/tasks/source-secret.yml
+  when: feature_gitlab
+
+- include: roles/gitlab/tasks/ensure-group.yml
+  when: feature_gitlab
+
+- include_role:
+    name: keptn
+    tasks_from: source-secret
+  when: feature_gitlab and feature_keptn
+
+- include_role:
+    name: keptn
+    tasks_from: source-endpoints
+  when: feature_gitlab and feature_keptn
+
+- name: Gitlab - Create variables
+  include: roles/gitlab/tasks/ensure-group-var.yml
+  vars:
+    gitlab_var_key: "{{ item.key }}"
+    gitlab_var_value: "{{ item.value }}"
+  loop:
+     - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
+     - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
+     - { key: 'KEPTN_API_TOKEN', value: '{{ keptn_api_token | default("N/A") }}' }
+     - { key: 'KEPTN_ENDPOINT', value: '{{ keptn_endpoint | default("N/A") | replace("/api","") }}' }
+     - { key: 'DT_TENANT_URL', value: '{{ dynatrace_tenant_url }}' }
+     - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
+  when: feature_gitlab

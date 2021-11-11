@@ -35,7 +35,7 @@
   vars:
     repo_src: "{{ item.repo_src }}"
     push_to_gitlab: "{{ item.push_to_gitlab }}"
-    gitlab_group: "{{ item.gitlab_group | default('root') }}"
+    gitlab_group: "{{ item.gitlab_group | default('ace') }}"
     gitlab_repo: "{{ item.repo_target }}"
     push_to_gitea: "{{ item.push_to_gitea }}"
     gitea_org: "{{ item.gitea_org }}"

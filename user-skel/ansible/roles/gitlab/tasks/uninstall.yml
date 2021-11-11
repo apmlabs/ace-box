@@ -1,0 +1,7 @@
+- name: Gitlab - Uninstall Helm chart
+  become_user: "{{ non_root_user }}"
+  shell: /snap/bin/helm uninstall gitlab --namespace {{ gitlab_namespace }} --wait
+
+- name: Gitlab delete Namespace
+  become_user: "{{ non_root_user }}"
+  shell: /snap/bin/microk8s.kubectl delete namespace {{ gitlab_namespace }}

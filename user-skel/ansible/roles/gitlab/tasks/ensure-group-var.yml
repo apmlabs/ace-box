@@ -1,0 +1,38 @@
+- name: Gitlab - Ensure group variable "{{ gitlab_var_key }} exists"
+  block:
+  - name: Update var
+    uri:
+      url: "{{ ingress_protocol }}://gitlab.{{ ingress_domain }}/api/v4/groups/{{ gitlab_group_id }}/variables/{{ gitlab_var_key }}"
+      validate_certs: false
+      method: PUT
+      status_code: [200, 201]
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Bearer {{ gitlab_oauth_token }}"
+      body:
+        key: "{{ gitlab_var_key }}"
+        value: "{{ gitlab_var_value }}"
+        variable_type: "env_var"
+        protected: false
+        masked: false
+        environment_scope: "*"
+      body_format: json
+  rescue:
+  - name: Create var
+    uri:
+      url: "{{ ingress_protocol }}://gitlab.{{ ingress_domain }}/api/v4/groups/{{ gitlab_group_id }}/variables"
+      validate_certs: false
+      method: POST
+      status_code: [200, 201]
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Bearer {{ gitlab_oauth_token }}"
+      body:
+        key: "{{ gitlab_var_key }}"
+        value: "{{ gitlab_var_value }}"
+        variable_type: "env_var"
+        protected: false
+        masked: false
+        environment_scope: "*"
+      body_format: json
+    register: gitlab_post_groups_result
