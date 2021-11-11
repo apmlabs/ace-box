@@ -13,6 +13,11 @@
   - role: common
     tags:
       - always
+  - role: features
+    tags:
+      - never
+      - gitlab
+      # - gitea
   - role: init
     tags:
       - never
@@ -82,3 +87,13 @@
     tags:
       - never
       - all
+  tasks:
+  - name: Uninstall Gitlab
+    include_tasks:
+      file: roles/gitlab/tasks/uninstall.yml
+      apply:
+        tags:
+          - gitlab_uninstall
+    tags:
+      - never
+      - gitlab_uninstall

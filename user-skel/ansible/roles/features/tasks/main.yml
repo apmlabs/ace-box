@@ -1,0 +1,8 @@
+---
+- name: Enable feature_gitlab
+  include: roles/features/tasks/enable-feature.yml
+  vars:
+    feature_to_enable: "gitlab"
+  when: not feature_gitlab
+  tags:
+    - gitlab
