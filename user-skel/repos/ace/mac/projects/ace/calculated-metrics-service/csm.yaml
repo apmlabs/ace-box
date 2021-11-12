@@ -1,6 +1,13 @@
 config:
     - simplenode.staging: "csm.json"
+    - simplenode.simplenode-gitlab-staging: "csm.json"
 
 simplenode.staging:
     - name: "simplenode.staging"
-    - metricKey: "calc:service.simplenode.staging" 
+    - metricKey: "calc:service.simplenode.staging"
+    - environment: "staging"
+
+simplenode.simplenode-gitlab-staging:
+    - name: "simplenode.simplenode_gitlab_staging.response_time_by_method"
+    - metricKey: "calc:service.simplenode.simplenode_gitlab_staging.response_time_by_method"
+    - environment: "simplenode-gitlab-staging"
