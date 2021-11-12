@@ -48,7 +48,7 @@ controller:
     - name: SYNTH_NODE_ID
       value: "{{ dt_node_id | default('') if acebox_mode == 'demo' else '' }}"
     - name: KUBE_BEARER_TOKEN
-      value: {{ kube_bearer_token | default('') if acebox_mode == 'demo' else '' }}
+      value: {{ dt_operator_kube_bearer_token | default('') if acebox_mode == 'demo' else '' }}
     - name: INGRESS_DOMAIN
       value: {{ ingress_domain }}
     - name: ACE_LIB

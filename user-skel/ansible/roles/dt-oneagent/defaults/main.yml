@@ -1,2 +1,3 @@
 ---
 dt_operator_release: "latest"
+dt_operator_namespace: "dynatrace"

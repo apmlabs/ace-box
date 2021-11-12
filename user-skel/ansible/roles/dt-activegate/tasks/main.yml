@@ -11,7 +11,7 @@
 - name: ActiveGate - Install synthetic-enabled ActiveGate
   shell:
     cmd: DYNATRACE_SYNTHETIC_AUTO_INSTALL=true /bin/sh "{{ activegate_download_location }}" --enable-synthetic
-    creates: /opt/dynatrace/synthetic/uninstall.sh
+    creates: "{{ activegate_uninstall_script_location }}"
   when: feature_activegate
 
 - name: ActiveGate - Update dnsEntryPoint on custom.properties
@@ -27,6 +27,7 @@
   service:
     name: dynatracegateway
     state: restarted
+  ignore_errors: yes
   when: feature_activegate
 
 - name: ActiveGate - Get node id

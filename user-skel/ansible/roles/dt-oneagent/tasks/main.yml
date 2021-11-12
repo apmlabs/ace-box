@@ -1,6 +1,6 @@
 - name: "Dynatrace OneAgent 1 - Create Dynatrace namespace"
   shell: 
-    cmd: "/snap/bin/microk8s.kubectl create ns dynatrace"
+    cmd: "/snap/bin/microk8s.kubectl create namespace {{ dt_operator_namespace }}"
   ignore_errors: yes
   when: feature_oneagent
 
@@ -12,7 +12,7 @@
 
 - name: "Dynatrace OneAgent 3 - Create Secret"
   shell: 
-    cmd: "/snap/bin/microk8s.kubectl -n dynatrace create secret generic dynakube --from-literal=\"apiToken={{ dynatrace['apitoken'] }}\" --from-literal=\"paasToken={{ dynatrace['paastoken'] }}\""
+    cmd: "/snap/bin/microk8s.kubectl -n {{ dt_operator_namespace }} create secret generic dynakube --from-literal=\"apiToken={{ dynatrace['apitoken'] }}\" --from-literal=\"paasToken={{ dynatrace['paastoken'] }}\""
   ignore_errors: yes
   when: feature_oneagent
 
@@ -27,6 +27,6 @@
 
 - name: "Dynatrace OneAgent 5 - Apply CR"
   shell: 
-    cmd: "/snap/bin/microk8s.kubectl apply -f /tmp/dynakube.yaml"
+    cmd: "/snap/bin/microk8s.kubectl apply -n {{ dt_operator_namespace }} -f /tmp/dynakube.yaml"
   ignore_errors: yes
   when: feature_oneagent

@@ -14,16 +14,30 @@
     tasks_from: source-endpoints
   when: feature_gitlab and feature_keptn
 
+- include_role:
+    name: dt-oneagent
+    tasks_from: source-secrets
+  when: feature_gitlab and feature_oneagent
+
+- include_role:
+    name: dt-activegate
+    tasks_from: source-node-id
+  when: feature_gitlab and feature_activegate
+
 - name: Gitlab - Create variables
-  include: roles/gitlab/tasks/ensure-group-var.yml
+  include_role:
+    name: gitlab
+    tasks_from: ensure-group-var
   vars:
     gitlab_var_key: "{{ item.key }}"
     gitlab_var_value: "{{ item.value }}"
   loop:
-     - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
-     - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
-     - { key: 'KEPTN_API_TOKEN', value: '{{ keptn_api_token | default("N/A") }}' }
-     - { key: 'KEPTN_ENDPOINT', value: '{{ keptn_endpoint | default("N/A") | replace("/api","") }}' }
-     - { key: 'DT_TENANT_URL', value: '{{ dynatrace_tenant_url }}' }
-     - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
+    - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
+    - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
+    - { key: 'KEPTN_API_TOKEN', value: '{{ keptn_api_token | default("N/A") }}' }
+    - { key: 'KEPTN_ENDPOINT', value: '{{ keptn_endpoint | default("N/A") | replace("/api","") }}' }
+    - { key: 'DT_TENANT_URL', value: '{{ dynatrace_tenant_url }}' }
+    - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
+    - { key: 'KUBE_BEARER_TOKEN', value: '{{ dt_operator_kube_bearer_token | default("N/A") }}' }
+    - { key: 'SYNTH_NODE_ID', value: '{{ dt_node_id | default("N/A") }}' }
   when: feature_gitlab

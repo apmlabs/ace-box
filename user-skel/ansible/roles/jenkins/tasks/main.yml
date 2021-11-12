@@ -18,11 +18,11 @@
 
 - name: Jenkins - Retrieve Dynatrace Operator bearer token
   shell: "/snap/bin/microk8s.kubectl get secret $(kubectl get sa dynatrace-kubernetes-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.token}' -n dynatrace | base64 --decode"
-  register: kube_bearer_token_raw
+  register: dt_operator_kube_bearer_token_raw
   when: feature_jenkins
 
 - set_fact:
-    kube_bearer_token: "{{  kube_bearer_token_raw.stdout }}"
+    dt_operator_kube_bearer_token: "{{  dt_operator_kube_bearer_token_raw.stdout }}"
   when: feature_jenkins
 
 - name: Jenkins - Retrieve registry nodeport

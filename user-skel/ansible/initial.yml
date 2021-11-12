@@ -97,3 +97,21 @@
     tags:
       - never
       - gitlab_uninstall
+  - name: Uninstall Dynatrace ActiveGate
+    include_tasks:
+      file: roles/dt-activegate/tasks/uninstall.yml
+      apply:
+        tags:
+          - dynatrace_uninstall
+    tags:
+      - never
+      - dynatrace_uninstall
+  - name: Uninstall Dynatrace Operator
+    include_tasks:
+      file: roles/dt-oneagent/tasks/uninstall.yml
+      apply:
+        tags:
+          - dynatrace_uninstall
+    tags:
+      - never
+      - dynatrace_uninstall

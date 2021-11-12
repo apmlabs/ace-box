@@ -1,0 +1,5 @@
+- name: "ActiveGate - Uninstall synthetic-enabled ActiveGate"
+  become: yes
+  shell: "{{ activegate_uninstall_script_location }}"
+  ignore_errors: yes
+  when: feature_activegate

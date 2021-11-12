@@ -91,6 +91,7 @@ def ace(
 
   uninstall_target_options = {
     'gitlab': True,
+    'dynatrace': True,
   }
 
   if action[0] == 'prepare' and action_options['prepare']:

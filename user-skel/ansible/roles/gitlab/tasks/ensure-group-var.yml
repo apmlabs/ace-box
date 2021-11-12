@@ -36,3 +36,4 @@
         environment_scope: "*"
       body_format: json
     register: gitlab_post_groups_result
+  when: feature_gitlab
