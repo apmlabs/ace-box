@@ -94,6 +94,11 @@ def ace(
     'dynatrace': True,
   }
 
+  if len(action) == 0:
+    ctx = click.get_current_context()
+    click.echo(ctx.get_help())
+    ctx.exit()
+
   if action[0] == 'prepare' and action_options['prepare']:
     logging.info('Preparing ACE-Box...')
 
