@@ -6,3 +6,11 @@
   when: not feature_gitlab
   tags:
     - gitlab
+
+- name: Enable feature_awx
+  include: roles/features/tasks/enable-feature.yml
+  vars:
+    feature_to_enable: "awx"
+  when: not feature_awx
+  tags:
+    - awx

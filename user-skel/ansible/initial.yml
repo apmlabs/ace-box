@@ -17,6 +17,7 @@
     tags:
       - never
       - gitlab
+      - awx
       # - gitea
   - role: init
     tags:
