@@ -107,3 +107,12 @@
     tags:
     - never
     - dynatrace_uninstall
+  - name: Uninstall AWX
+    include_tasks:
+      file: roles/awx/tasks/uninstall.yml
+      apply:
+        tags:
+        - awx_uninstall
+    tags:
+    - never
+    - awx_uninstall

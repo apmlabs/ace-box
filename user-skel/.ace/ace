@@ -9,7 +9,7 @@ import click
 cli_version = '0.0.2'
 default_ansible_workdir = os.path.expanduser('~/ansible/')
 install_targets = ['default', 'microk8s', 'helm', 'k8s', 'gitea', 'gitlab', 'dynatrace', 'repositories', 'keptn', 'monaco', 'jenkins', 'dashboard', 'awx']
-uninstall_targets = ['gitlab', 'dynatrace']
+uninstall_targets = ['gitlab', 'dynatrace', 'awx']
 
 def set_log_level(
   verbosity,
