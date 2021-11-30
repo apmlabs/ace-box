@@ -8,7 +8,7 @@
     return_content: no
     status_code: 200, 201, 204
   register: nodes_response_raw
-  when: feature_activegate and acebox_mode == 'demo'
+  when: feature_activegate
   until: "{{ nodes_response_raw.json | json_query(synthetic_nodes_query) }}"
   retries: 15
   delay: 10

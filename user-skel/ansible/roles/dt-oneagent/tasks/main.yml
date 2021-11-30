@@ -12,7 +12,7 @@
 
 - name: "Dynatrace OneAgent 3 - Create Secret"
   shell: 
-    cmd: "/snap/bin/microk8s.kubectl -n {{ dt_operator_namespace }} create secret generic dynakube --from-literal=\"apiToken={{ dynatrace['apitoken'] }}\" --from-literal=\"paasToken={{ dynatrace['paastoken'] }}\""
+    cmd: "/snap/bin/microk8s.kubectl -n {{ dt_operator_namespace }} create secret generic dynakube --from-literal=\"apiToken={{ dynatrace_api_token }}\" --from-literal=\"paasToken={{ dynatrace_paas_token }}\""
   ignore_errors: yes
   when: feature_oneagent
 

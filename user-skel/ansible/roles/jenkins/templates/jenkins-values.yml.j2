@@ -34,9 +34,9 @@ controller:
     - name: DOCKER_REGISTRY_URL
       value: localhost:{{ registry_port }}
     - name: DT_TENANT_URL
-      value: {{ '' if jenkins_setcreds != true and acebox_mode == 'training' else dynatrace['tenant'] }}
+      value: {{ '' if jenkins_setcreds != true and acebox_mode == 'training' else dynatrace_tenant_url }}
     - name: DT_API_TOKEN
-      value: {{ '' if jenkins_setcreds != true and acebox_mode == 'training' else dynatrace['apitoken'] }}
+      value: {{ '' if jenkins_setcreds != true and acebox_mode == 'training' else dynatrace_api_token }}
     - name: DT_SYNTHETIC_LOCATION
       value: {{ dynatrace_synthetic_location_id | default('') if acebox_mode == 'demo' else '' }}
     - name: KEPTN_ENDPOINT
