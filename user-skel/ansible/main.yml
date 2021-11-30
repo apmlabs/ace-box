@@ -1,0 +1,107 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  vars:
+    ace_config_file_path: "./ace.config.yml"
+  roles:
+  - role: common
+    tags:
+    - always
+  - role: config
+  - role: init
+    tags:
+    - never
+    - init
+    - default
+  - role: microk8s
+    tags:
+    - never
+    - microk8s
+    - default
+  - role: helm
+    tags:
+    - never
+    - helm
+    - default
+  - role: dt-activegate
+    tags:
+    - never
+    - dynatrace
+    - default
+  - role: dt-oneagent
+    tags:
+    - never
+    - dynatrace
+    - default
+  - role: gitea
+    tags:
+    - never
+    - gitea
+    - default
+  - role: gitlab
+    tags:
+    - never
+    - gitlab
+  - role: repositories
+    tags:
+    - never
+    - repositories
+    - default
+  - role: monaco
+    tags:
+    - never
+    - monaco
+    - default
+  - role: keptn
+    tags:
+    - never
+    - keptn
+    - default
+  - role: jenkins
+    tags:
+    - never
+    - jenkins
+    - default
+  - role: awx
+    tags:
+    - never
+    - awx
+  - role: dashboard
+    tags:
+    - never
+    - dashboard
+    - default
+  - role: post-install
+    tags:
+    - never
+    - dashboard
+    - default
+  tasks:
+  - name: Uninstall Gitlab
+    include_tasks:
+      file: roles/gitlab/tasks/uninstall.yml
+      apply:
+        tags:
+        - gitlab_uninstall
+    tags:
+    - never
+    - gitlab_uninstall
+  - name: Uninstall Dynatrace ActiveGate
+    include_tasks:
+      file: roles/dt-activegate/tasks/uninstall.yml
+      apply:
+        tags:
+        - dynatrace_uninstall
+    tags:
+    - never
+    - dynatrace_uninstall
+  - name: Uninstall Dynatrace Operator
+    include_tasks:
+      file: roles/dt-oneagent/tasks/uninstall.yml
+      apply:
+        tags:
+        - dynatrace_uninstall
+    tags:
+    - never
+    - dynatrace_uninstall
