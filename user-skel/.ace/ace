@@ -8,7 +8,7 @@ import click
 
 cli_version = '0.0.2'
 default_ansible_workdir = os.path.expanduser('~/ansible/')
-install_targets = ['default', 'microk8s', 'gitea', 'gitlab', 'dynatrace', 'repositories', 'keptn', 'monaco', 'jenkins', 'dashboard', 'awx']
+install_targets = ['default', 'microk8s', 'helm', 'k8s', 'gitea', 'gitlab', 'dynatrace', 'repositories', 'keptn', 'monaco', 'jenkins', 'dashboard', 'awx']
 uninstall_targets = ['gitlab', 'dynatrace']
 
 def set_log_level(
@@ -195,7 +195,7 @@ def uninstall(
     ansible_workdir = click.prompt('Please enter Ansible work dir', default=default_ansible_workdir)
 
   tag = f'{target}_uninstall'
-  subprocess.run(f'ansible-playbook -vv -i hosts initial.yml --tags "{tag}"', cwd=ansible_workdir, shell=True, check=True)
+  subprocess.run(f'ansible-playbook -vv -i hosts main.yml --tags "{tag}"', cwd=ansible_workdir, shell=True, check=True)
 
   click.echo(f'Uninstalled {target}!')
 
