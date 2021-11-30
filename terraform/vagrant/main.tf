@@ -1,10 +1,10 @@
 resource "local_file" "ace_box_conf" {
-  content = templatefile("ace-box.conf.yml.tpl", {
+  content = templatefile("ace.config.yml.tpl", {
     dt_tenant     = var.dt_tenant
     dt_api_token  = var.dt_api_token
     dt_paas_token = var.dt_paas_token
   })
-  filename = "${path.module}/ace-box.conf.yml"
+  filename = "${path.module}/ace.config.yml"
 }
 
 resource "vagrant_vm" "ace_box" {
