@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+"""
+ACE CLI
+
+Combines ansible-playbooks and tagging logic in a single, simple wrapper
+"""
 
 import os
 import logging
@@ -6,239 +11,310 @@ import subprocess
 
 import click
 
-cli_version = '0.0.2'
+CLI_VERSION = '0.0.2'
 default_ansible_workdir = os.path.expanduser('~/ansible/')
-install_targets = ['default', 'microk8s', 'helm', 'k8s', 'gitea', 'gitlab', 'dynatrace', 'repositories', 'keptn', 'monaco', 'jenkins', 'dashboard', 'awx']
+install_targets = [
+    'default',
+    'microk8s',
+    'helm',
+    'k8s',
+    'gitea',
+    'gitlab',
+    'dynatrace',
+    'repositories',
+    'keptn',
+    'monaco',
+    'jenkins',
+    'dashboard',
+    'awx'
+]
 uninstall_targets = ['gitlab', 'dynatrace', 'awx']
 
 def set_log_level(
   verbosity,
 ):
-  """Helper method to set log level."""
-  if verbosity > 1:
-    logging.basicConfig(level=logging.DEBUG)
-  elif verbosity == 1:
-    logging.basicConfig(level=logging.INFO)
+    """Helper method to set log level."""
+    if verbosity > 1:
+        logging.basicConfig(level=logging.DEBUG)
+    elif verbosity == 1:
+        logging.basicConfig(level=logging.INFO)
 
-  return
+    return
 
 
 @click.group()
 @click.option('-v', '--verbose', count=True, help='Prints additional debug messages.')
-@click.version_option(version=cli_version)
-def ace(verbose):
-  """This tool...
-  
-  ACTION can start with "prepare", "install" or "uninstall" and can be followed by a target, e.g. "all", "microk8s", ...
+@click.version_option(version=CLI_VERSION)
+def ace(
+    verbose
+):
+    """This tool...
 
-  For example:
+    ACTION can start with "prepare", "install", "set" or "uninstall"
+    and can be followed by a target, e.g. "all", "microk8s", ...
 
-  $ ace prepare
-  > ...
+    For example:
 
-  $ ace install all
-  > ...
-  """
-  # If verbose flag is provided, log level will be set to DEBUG
-  set_log_level(verbose)
+    $ ace prepare
+    > ...
 
-  pass
+    $ ace install all
+    > ...
+    """
+    # If verbose flag is provided, log level will be set to DEBUG
+    set_log_level(verbose)
+
 
 @click.command()
 @click.option(
-  '--ansible-workdir',
-  help='Please enter the directory of ACE-Box\'s main.yml. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_ANSIBLE_WORKDIR',
+    '--ansible-workdir',
+    help=(
+        'Please enter the directory of ACE-Box\'s main.yml.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_ANSIBLE_WORKDIR',
 )
 @click.option(
-  '--ingress-domain',
-  help='Please enter your public domain. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_INGRESS_DOMAIN',
+    '--ingress-domain',
+    help='Please enter your public domain. If not set you\'ll be prompted during "prepare".',
+    envvar='ACE_INGRESS_DOMAIN',
 )
 @click.option(
-  '--ingress-protocol',
-  help='Please enter the protocol you\'re using. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_INGRESS_PROTOCOL',
+    '--ingress-protocol',
+    help=(
+        'Please enter the protocol you\'re using.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_INGRESS_PROTOCOL',
 )
 @click.option(
-  '--dt-tenant',
-  help='Please enter your Dynatrace tenant URL in the format of https://[environment-guid].live.dynatrace.com OR https://[managed-domain]/e/[environment-guid]. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_DT_TENANT',
+    '--dt-tenant',
+    help=(
+        'Please enter your Dynatrace tenant URL in the format of'
+        'https://[environment-guid].live.dynatrace.com OR'
+        'https://[managed-domain]/e/[environment-guid].'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_DT_TENANT',
 )
 @click.option(
-  '--dt-api-token',
-  help='Please enter your Dynatrace API token in format of \'dt0c01. ...\'. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_DT_API_TOKEN',
+    '--dt-api-token',
+    help=(
+        'Please enter your Dynatrace API token in format of \'dt0c01. ...\'.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_DT_API_TOKEN',
 )
 @click.option(
-  '--dt-paas-token',
-  help='Please enter your Dynatrace PaaS token in format of \'dt0c01. ...\'. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_DT_PAAS_TOKEN',
+    '--dt-paas-token',
+    help=(
+        'Please enter your Dynatrace PaaS token in format of \'dt0c01. ...\'.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_DT_PAAS_TOKEN',
 )
 @click.option(
-  '-f',
-  '--force',
-  is_flag=True,
-  help='Overwrites any confirmation prompts.'
+    '-f',
+    '--force',
+    is_flag=True,
+    help='Overwrites any confirmation prompts.'
 )
 def prepare(
-  ingress_domain,
-  ingress_protocol,
-  dt_tenant,
-  dt_api_token,
-  dt_paas_token,
-  ansible_workdir,
-  force,
+    ingress_domain,
+    ingress_protocol,
+    dt_tenant,
+    dt_api_token,
+    dt_paas_token,
+    ansible_workdir,
+    force,
 ):
-  logging.info('Preparing ACE-Box...')
+    """Preparing ACE-Box"""
+    logging.info('Preparing ACE-Box...')
 
-  if not ingress_domain:
-    ingress_domain = click.prompt('Please enter your public domain', default='127.0.0.1.nip.io')
+    if not ingress_domain:
+        ingress_domain = click.prompt('Please enter your public domain', default='127.0.0.1.nip.io')
 
-  if not ingress_protocol:
-    ingress_protocol = click.prompt('Please enter the protocol', default='http')
+    if not ingress_protocol:
+        ingress_protocol = click.prompt('Please enter the protocol', default='http')
 
-  if not dt_tenant:
-    dt_tenant = click.prompt('Please enter your Dynatrace environment URL')
+    if not dt_tenant:
+        dt_tenant = click.prompt('Please enter your Dynatrace environment URL')
 
-  if not dt_api_token:
-    dt_api_token = click.prompt('Please enter your Dynatrace API token')
-  
-  if not dt_paas_token:
-    dt_paas_token = click.prompt('Please enter your Dynatrace PaaS token')
+    if not dt_api_token:
+        dt_api_token = click.prompt('Please enter your Dynatrace API token')
 
-  if not ansible_workdir:
-    ansible_workdir = click.prompt('Please enter Ansible work dir', default=default_ansible_workdir)
+    if not dt_paas_token:
+        dt_paas_token = click.prompt('Please enter your Dynatrace PaaS token')
 
-  if not os.path.exists(ansible_workdir):
-    click.echo(f'Path {ansible_workdir} doesn\'t exists!')
-    return
+    if not ansible_workdir:
+        ansible_workdir = click.prompt(
+            'Please enter Ansible work dir',
+            default=default_ansible_workdir,
+        )
 
-  ace_config_file_path = os.path.join(os.path.expanduser(ansible_workdir), 'ace.config.yml')
+    if not os.path.exists(ansible_workdir):
+        click.echo(f'Path {ansible_workdir} doesn\'t exists!')
+        return
 
-  if os.path.exists(ace_config_file_path):
-    if force:
-      overwrite_hosts_file = True
-    else:
-      overwrite_hosts_file = click.confirm(f'{ace_config_file_path} already exists. Are you sure you want to overwrite it?')
+    ace_config_file_path = os.path.join(os.path.expanduser(ansible_workdir), 'ace.config.yml')
 
-    if not overwrite_hosts_file:
-      click.echo(f'Chose not to overwrite hosts file. Exiting...')
-      return
+    if os.path.exists(ace_config_file_path):
+        if force:
+            overwrite_hosts_file = True
+        else:
+            overwrite_hosts_file = click.confirm(
+              f'{ace_config_file_path} already exists. Are you sure you want to overwrite it?'
+            )
 
-  subprocess.run((
-      'ansible-playbook -vv prepare.yml --extra-vars "'
-      f'ingress_domain={ingress_domain} '
-      f'ingress_protocol={ingress_protocol} '
-      f'dynatrace_tenant_url={dt_tenant} '
-      f'dynatrace_api_token={dt_api_token} '
-      f'dynatrace_paas_token={dt_paas_token}'
-      '"'
-    ),
-    cwd=ansible_workdir,
-    shell=True,
-    check=True,
-  )
-  click.echo(f'All set! You can now install components.')
+        if not overwrite_hosts_file:
+            click.echo('Chose not to overwrite hosts file. Exiting...')
+            return
+
+    subprocess.run((
+            'ansible-playbook -vv prepare.yml --extra-vars "'
+            f'ingress_domain={ingress_domain} '
+            f'ingress_protocol={ingress_protocol} '
+            f'dynatrace_tenant_url={dt_tenant} '
+            f'dynatrace_api_token={dt_api_token} '
+            f'dynatrace_paas_token={dt_paas_token}'
+            '"'
+        ),
+        cwd=ansible_workdir,
+        shell=True,
+        check=True,
+    )
+    click.echo('All set! You can now install components.')
 
 
 @click.command()
 @click.option(
-  '--ansible-workdir',
-  help='Please enter the directory of ACE-Box\'s main.yml. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_ANSIBLE_WORKDIR',
+    '--ansible-workdir',
+    help=(
+        'Please enter the directory of ACE-Box\'s main.yml.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_ANSIBLE_WORKDIR',
 )
 @click.argument(
-  'target',
-  type=click.Choice(
-    install_targets,
-    case_sensitive=True
-  ),
-  nargs=1
+    'target',
+    type=click.Choice(
+        install_targets,
+        case_sensitive=True,
+    ),
+    nargs=1,
 )
 def install(
-  target,
-  ansible_workdir,
+    target,
+    ansible_workdir,
 ):
-  logging.info(f'Installing ACE-Box ({target})...')
+    """Installing ACE-Box components"""
+    logging.info('Installing ACE-Box ({%s})...', target)
 
-  if not ansible_workdir:
-    ansible_workdir = click.prompt('Please enter Ansible work dir', default=default_ansible_workdir)
+    if not ansible_workdir:
+        ansible_workdir = click.prompt(
+            'Please enter Ansible work dir',
+            default=default_ansible_workdir
+        )
 
-  subprocess.run(f'ansible-playbook -vv main.yml --tags "{target}"', cwd=ansible_workdir, shell=True, check=True)
+    subprocess.run(
+        f'ansible-playbook -vv main.yml --tags "{target}"',
+        cwd=ansible_workdir,
+        shell=True,
+        check=True,
+    )
 
-  click.echo(f'Successfully installed {target}')
-  click.echo("You're welcome!")
+    click.echo(f'Successfully installed {target}')
+    click.echo("You're welcome!")
 
 
 @click.command()
 @click.option(
-  '--ansible-workdir',
-  help='Please enter the directory of ACE-Box\'s main.yml. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_ANSIBLE_WORKDIR',
+    '--ansible-workdir',
+    help=(
+        'Please enter the directory of ACE-Box\'s main.yml.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_ANSIBLE_WORKDIR',
 )
 @click.argument(
-  'target',
-  type=click.Choice(
-    uninstall_targets,
-    case_sensitive=True
-  ),
-  nargs=1
+    'target',
+    type=click.Choice(
+        uninstall_targets,
+        case_sensitive=True,
+    ),
+    nargs=1,
 )
 def uninstall(
-  target,
-  ansible_workdir,
+    target,
+    ansible_workdir,
 ):
-  logging.info(f'Uninstalling ACE-Box ({target})...')
+    """Uninstalling ACE-Box components"""
+    logging.info('Uninstalling ACE-Box ({%s})...', target)
 
-  if not ansible_workdir:
-    ansible_workdir = click.prompt('Please enter Ansible work dir', default=default_ansible_workdir)
+    if not ansible_workdir:
+        ansible_workdir = click.prompt(
+            'Please enter Ansible work dir',
+            default=default_ansible_workdir,
+        )
 
-  tag = f'{target}_uninstall'
-  subprocess.run(f'ansible-playbook -vv -i hosts main.yml --tags "{tag}"', cwd=ansible_workdir, shell=True, check=True)
+    tag = f'{target}_uninstall'
+    subprocess.run(
+        f'ansible-playbook -vv -i hosts main.yml --tags "{tag}"',
+        cwd=ansible_workdir,
+        shell=True,
+        check=True,
+    )
 
-  click.echo(f'Uninstalled {target}!')
+    click.echo(f'Uninstalled {target}!')
 
 
 @click.command()
 @click.option(
-  '--ansible-workdir',
-  help='Please enter the directory of ACE-Box\'s main.yml. If not set you\'ll be prompted during "prepare".',
-  envvar='ACE_ANSIBLE_WORKDIR',
+    '--ansible-workdir',
+    help=(
+        'Please enter the directory of ACE-Box\'s main.yml.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_ANSIBLE_WORKDIR',
 )
 @click.argument(
-  'update',
-  nargs=1
+    'update',
+    nargs=1,
 )
-def set(
+def update_config(
   ansible_workdir,
   update,
 ):
-  [ace_config_key, ace_config_value] = update.split('=')
+    """Updating ACE-Box config"""
+    [ace_config_key, ace_config_value] = update.split('=')
 
-  logging.info(f'Updating config for ({ace_config_key})...')
+    logging.info('Updating config for ({%s})...', ace_config_key)
 
-  if not ansible_workdir:
-    ansible_workdir = click.prompt('Please enter Ansible work dir', default=default_ansible_workdir)
+    if not ansible_workdir:
+        ansible_workdir = click.prompt(
+            'Please enter Ansible work dir',
+            default=default_ansible_workdir,
+        )
 
-  subprocess.run((
-      'ansible-playbook -vv config-update.yml --extra-vars "'
-      f'ace_config_key={ace_config_key} '
-      f'ace_config_value={ace_config_value} '
-      '"'
-    ),
-    cwd=ansible_workdir,
-    shell=True,
-    check=True,
-  )
+    subprocess.run((
+            'ansible-playbook -vv config-update.yml --extra-vars "'
+            f'ace_config_key={ace_config_key} '
+            f'ace_config_value={ace_config_value} '
+            '"'
+        ),
+        cwd=ansible_workdir,
+        shell=True,
+        check=True,
+    )
 
-  click.echo('All set!')
+    click.echo('All set!')
 
 
 ace.add_command(prepare)
 ace.add_command(install)
 ace.add_command(uninstall)
-ace.add_command(set)
+ace.add_command(update_config)
 
 if __name__ == '__main__':
-  ace(auto_envvar_prefix='ACE')
+    # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
+    ace(auto_envvar_prefix='ACE')
