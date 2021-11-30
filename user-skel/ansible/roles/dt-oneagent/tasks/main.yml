@@ -28,5 +28,8 @@
 - name: "Dynatrace OneAgent 5 - Apply CR"
   shell: 
     cmd: "/snap/bin/microk8s.kubectl apply -n {{ dt_operator_namespace }} -f /tmp/dynakube.yaml"
-  ignore_errors: yes
+  retries: 12
+  delay: 5
+  register: dynakube_result
+  until: dynakube_result is not failed
   when: feature_oneagent
