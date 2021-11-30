@@ -18,11 +18,13 @@
     tags:
     - never
     - microk8s
+    - k8s
     - default
   - role: helm
     tags:
     - never
     - helm
+    - k8s
     - default
   - role: dt-activegate
     tags:
