@@ -20,4 +20,5 @@
   shell: helm upgrade --install --wait awx /tmp/awx-helm-chart --namespace awx --create-namespace --set ingress.hosts[0].host="{{ awx_ingress_domain }}"
   when: feature_awx
 
-
+- include: roles/awx/tasks/configure.yml
+  when: feature_awx
