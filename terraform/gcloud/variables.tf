@@ -64,5 +64,5 @@ variable "dt_paas_token" {
 
 variable "ingress_protocol" {
   description = "Ingress protocol"
-  default = "http"
+  default     = "http"
 }

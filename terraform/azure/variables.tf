@@ -1,6 +1,6 @@
 variable "name_prefix" {
   description = "Prefix to distinguish the instance"
-  default = "ace-box-cloud"
+  default     = "ace-box-cloud"
 }
 
 variable "acebox_user" {
@@ -20,17 +20,17 @@ variable "acebox_os_azure" {
 
 variable "private_ssh_key" {
   description = "Path of where to store private key on current module directory"
-  default = "./key"
+  default     = "./key"
 }
 
 variable "azure_location" {
   description = "Azure Locationwhere resources will be created"
-  default = "westeurope"
+  default     = "westeurope"
 }
 
 variable "azure_instance_size" {
   description = "Azure VM Instance type"
-  default = "Standard_A4m_v2"
+  default     = "Standard_A4m_v2"
 }
 
 variable "custom_domain" {
@@ -62,5 +62,5 @@ variable "dt_paas_token" {
 
 variable "ingress_protocol" {
   description = "Ingress protocol"
-  default = "http"
+  default     = "http"
 }

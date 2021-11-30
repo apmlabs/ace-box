@@ -12,7 +12,7 @@ variable "ubuntu_image" {
 
 variable "name_prefix" {
   description = "Prefix to distinguish the instance"
-  default = "ace-box-cloud"
+  default     = "ace-box-cloud"
 }
 
 variable "acebox_user" {
@@ -37,7 +37,7 @@ variable "route53_private_zone" {
 
 variable "private_ssh_key" {
   description = "Path of where to store private key on current module directory"
-  default = "./key"
+  default     = "./key"
 }
 
 variable "disk_size" {
@@ -59,5 +59,5 @@ variable "dt_paas_token" {
 
 variable "ingress_protocol" {
   description = "Ingress protocol"
-  default = "http"
+  default     = "http"
 }

@@ -39,9 +39,9 @@ resource "tls_private_key" "acebox_key" {
   rsa_bits  = 4096
 }
 
-resource "local_file" "acebox_pem" { 
-  filename = "${path.module}/${var.private_ssh_key}"
-  content = tls_private_key.acebox_key.private_key_pem
+resource "local_file" "acebox_pem" {
+  filename        = "${path.module}/${var.private_ssh_key}"
+  content         = tls_private_key.acebox_key.private_key_pem
   file_permission = 400
 }
 
@@ -66,27 +66,18 @@ resource "aws_instance" "acebox" {
     Terraform = "true"
     Name      = "${var.name_prefix}-${random_id.uuid.hex}"
   }
-
-  connection {
-    host        = self.public_ip
-    type        = "ssh"
-    user        = var.acebox_user
-    private_key = tls_private_key.acebox_key.private_key_pem
-  }
 }
 
 # Provision ACE-Box
 module "provisioner" {
   source = "../../modules/ace-box-provisioner"
 
-  host        = aws_instance.acebox.public_ip
-  user        = var.acebox_user
-  private_key = tls_private_key.acebox_key.private_key_pem
-  config_file_config = templatefile("${path.module}/ace-box.conf.yml.tpl", {
-    dt_tenant     = var.dt_tenant
-    dt_api_token  = var.dt_api_token
-    dt_paas_token = var.dt_paas_token
-  })
+  host             = aws_instance.acebox.public_ip
+  user             = var.acebox_user
+  private_key      = tls_private_key.acebox_key.private_key_pem
   ingress_domain   = "${aws_instance.acebox.public_ip}.${var.custom_domain}"
   ingress_protocol = var.ingress_protocol
+  dt_tenant        = var.dt_tenant
+  dt_api_token     = var.dt_api_token
+  dt_paas_token    = var.dt_paas_token
 }

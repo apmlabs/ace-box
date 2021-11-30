@@ -1,12 +1,14 @@
 locals {
-  host = var.host
-  type = "ssh"
-  user = var.user
-  private_key = var.private_key
-  user_skel_path = "${path.module}/../../../user-skel/"
-  config_file_config = var.config_file_config
-  ingress_domain = var.ingress_domain
+  host             = var.host
+  type             = "ssh"
+  user             = var.user
+  private_key      = var.private_key
+  user_skel_path   = "${path.module}/../../../user-skel/"
+  ingress_domain   = var.ingress_domain
   ingress_protocol = var.ingress_protocol
+  dt_tenant        = var.dt_tenant
+  dt_api_token     = var.dt_api_token
+  dt_paas_token    = var.dt_paas_token
 }
 
 resource "null_resource" "provisioner_home_dir" {
@@ -20,11 +22,6 @@ resource "null_resource" "provisioner_home_dir" {
   provisioner "file" {
     source      = local.user_skel_path
     destination = "~"
-  }
-
-  provisioner "file" {
-    content = local.config_file_config
-    destination = "~/ace-box.conf.yml"
   }
 }
 
@@ -58,9 +55,12 @@ resource "null_resource" "provisioner_ace_prepare" {
 
   provisioner "remote-exec" {
     inline = [
+      "export ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/",
       "export ACE_INGRESS_DOMAIN=${local.ingress_domain}",
       "export ACE_INGRESS_PROTOCOL=${local.ingress_protocol}",
-      "export ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/",
+      "export ACE_DT_TENANT=${local.dt_tenant}",
+      "export ACE_DT_API_TOKEN=${local.dt_api_token}",
+      "export ACE_DT_PAAS_TOKEN=${local.dt_paas_token}",
       "ace prepare --force",
     ]
   }
@@ -79,7 +79,7 @@ resource "null_resource" "provisioner_ace_install" {
   provisioner "remote-exec" {
     inline = [
       "export ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/",
-      "ace install all",
+      "ace install default",
     ]
   }
 }

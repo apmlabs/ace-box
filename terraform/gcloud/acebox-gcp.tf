@@ -69,27 +69,18 @@ resource "google_compute_instance" "acebox" {
   }
 
   tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
-
-  connection {
-    host        = self.network_interface.0.access_config.0.nat_ip
-    type        = "ssh"
-    user        = var.acebox_user
-    private_key = tls_private_key.acebox_key.private_key_pem
-  }
 }
 
 # Provision ACE-Box
 module "provisioner" {
   source = "../modules/ace-box-provisioner"
 
-  host        = google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip
-  user        = var.acebox_user
-  private_key = tls_private_key.acebox_key.private_key_pem
-  config_file_config = templatefile("${path.module}/ace-box.conf.yml.tpl", {
-    dt_tenant     = var.dt_tenant
-    dt_api_token  = var.dt_api_token
-    dt_paas_token = var.dt_paas_token
-  })
+  host             = google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip
+  user             = var.acebox_user
+  private_key      = tls_private_key.acebox_key.private_key_pem
   ingress_domain   = "${google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip}.${var.custom_domain}"
   ingress_protocol = var.ingress_protocol
+  dt_tenant        = var.dt_tenant
+  dt_api_token     = var.dt_api_token
+  dt_paas_token    = var.dt_paas_token
 }

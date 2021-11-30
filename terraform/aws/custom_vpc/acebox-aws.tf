@@ -19,9 +19,9 @@ resource "tls_private_key" "acebox_key" {
   rsa_bits  = 4096
 }
 
-resource "local_file" "acebox_pem" { 
-  filename = "${path.module}/${var.private_ssh_key}"
-  content = tls_private_key.acebox_key.private_key_pem
+resource "local_file" "acebox_pem" {
+  filename        = "${path.module}/${var.private_ssh_key}"
+  content         = tls_private_key.acebox_key.private_key_pem
   file_permission = 400
 }
 
@@ -31,10 +31,10 @@ resource "aws_key_pair" "generated_key" {
 }
 
 resource "aws_instance" "acebox" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = var.aws_instance_type
-  iam_instance_profile        = aws_iam_instance_profile.acebox_profile.name
-  key_name                    = aws_key_pair.generated_key.key_name
+  ami                  = data.aws_ami.ubuntu.id
+  instance_type        = var.aws_instance_type
+  iam_instance_profile = aws_iam_instance_profile.acebox_profile.name
+  key_name             = aws_key_pair.generated_key.key_name
 
   network_interface {
     network_interface_id = aws_network_interface.acebox_nic.id
@@ -46,17 +46,10 @@ resource "aws_instance" "acebox" {
   }
 
   tags = {
-    Terraform = "true"
-    Name      = "${var.name_prefix}-${random_id.uuid.hex}"
+    Terraform  = "true"
+    Name       = "${var.name_prefix}-${random_id.uuid.hex}"
     GithubRepo = "ace-box"
     GithubOrg  = "dynatrace-ace"
-  }
-
-  connection {
-    host        = aws_eip.acebox_eip.public_ip
-    type        = "ssh"
-    user        = var.acebox_user
-    private_key = tls_private_key.acebox_key.private_key_pem
   }
 }
 
@@ -64,14 +57,12 @@ resource "aws_instance" "acebox" {
 module "provisioner" {
   source = "../../modules/ace-box-provisioner"
 
-  host        = aws_instance.acebox.public_ip
-  user        = var.acebox_user
-  private_key = tls_private_key.acebox_key.private_key_pem
-  config_file_config = templatefile("${path.module}/ace-box.conf.yml.tpl", {
-    dt_tenant     = var.dt_tenant
-    dt_api_token  = var.dt_api_token
-    dt_paas_token = var.dt_paas_token
-  })
+  host             = aws_instance.acebox.public_ip
+  user             = var.acebox_user
+  private_key      = tls_private_key.acebox_key.private_key_pem
   ingress_domain   = "${aws_instance.acebox.public_ip}.${var.custom_domain}"
   ingress_protocol = var.ingress_protocol
+  dt_tenant        = var.dt_tenant
+  dt_api_token     = var.dt_api_token
+  dt_paas_token    = var.dt_paas_token
 }
