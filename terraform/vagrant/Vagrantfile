@@ -50,8 +50,7 @@ Vagrant.configure("2") do |config|
           "ACE_ANSIBLE_WORKDIR" => "/home/vagrant/ansible/",
           "ACE_DT_TENANT" => "#{aceconfig["dynatrace_tenant_url"]}",
           "ACE_DT_API_TOKEN" => "#{aceconfig["dynatrace_api_token"]}",
-          "ACE_DT_PAAS_TOKEN" => "#{aceconfig["dynatrace_paas_token"]}",
-
+          "ACE_DT_PAAS_TOKEN" => "#{aceconfig["dynatrace_paas_token"]}"
         },
         privileged: false
 
