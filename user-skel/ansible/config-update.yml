@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  vars:
+    ace_config_file_path: "./ace.config.yml"
+  tasks:
+  - include_tasks:
+      file: roles/config/tasks/update.yml
