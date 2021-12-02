@@ -37,7 +37,7 @@ variable "private_ssh_key" {
 
 variable "custom_domain" {
   description = "Set to overwrite custom domain"
-  default     = "nip.io"
+  default     = ""
 }
 
 variable "managed_zone_name" {

@@ -1,5 +1,5 @@
 output "acebox_dashboard" {
-  value = (var.custom_domain != "" ? "http://dashboard.${var.custom_domain}" : "http://dashboard.${aws_instance.acebox.public_ip}.nip.io")
+  value = "http://dashboard.${local.ingress_domain}"
 }
 
 output "acebox_ip" {
