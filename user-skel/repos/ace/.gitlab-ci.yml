@@ -38,10 +38,10 @@ init_keptn:
     KEPTN_STAGE: staging
     KEPTN_SOURCE: gitlab
     KEPTN_MONITORING: dynatrace
-    SHIPYARD_FILE: keptn-gitlab/shipyard.yaml
-    SLO_FILE: keptn-gitlab/slo.yaml
-    SLI_FILE: keptn-gitlab/sli.yaml
-    DT_CONFIG_FILE: keptn-gitlab/dynatrace.conf.yaml
+    SHIPYARD_FILE: keptn/shipyard.yaml
+    SLO_FILE: keptn/slo.yaml
+    SLI_FILE: keptn/sli.yaml
+    DT_CONFIG_FILE: keptn/dynatrace.conf.yaml
   script:
     - /keptn/keptn_init.sh
   artifacts:
@@ -111,8 +111,8 @@ run-tests:
     - echo $(date --utc +%FT%T.000Z) > keptn.test.endtime
   stage: test
   variables: 
-    LOCUST_LOCUSTFILE: keptn-gitlab/locustfile.py
-    LOCUST_CONFIG: keptn-gitlab/locust.conf
+    LOCUST_LOCUSTFILE: locust/locustfile.py
+    LOCUST_CONFIG: locust/locust.conf
     LOCUST_HOST: '$INGRESS_PROTOCOL://simplenodeservice.$DT_APPLICATION_ENVIRONMENT.$INGRESS_DOMAIN'
     LOCUST_LOAD_TEST_NAME: 'Loadtest - $DT_APPLICATION_BUILD_VERSION'
   image: locustio/locust
