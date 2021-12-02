@@ -53,6 +53,10 @@ resource "aws_instance" "acebox" {
   }
 }
 
+locals {
+  ingress_domain = var.custom_domain == "" ? "${aws_instance.acebox.public_ip}.nip.io" : var.custom_domain
+}
+
 # Provision ACE-Box
 module "provisioner" {
   source = "../../modules/ace-box-provisioner"
@@ -60,7 +64,7 @@ module "provisioner" {
   host             = aws_instance.acebox.public_ip
   user             = var.acebox_user
   private_key      = tls_private_key.acebox_key.private_key_pem
-  ingress_domain   = "${aws_instance.acebox.public_ip}.${var.custom_domain}"
+  ingress_domain   = local.ingress_domain
   ingress_protocol = var.ingress_protocol
   dt_tenant        = var.dt_tenant
   dt_api_token     = var.dt_api_token

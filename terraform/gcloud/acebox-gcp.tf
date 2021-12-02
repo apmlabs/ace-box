@@ -71,6 +71,10 @@ resource "google_compute_instance" "acebox" {
   tags = ["${var.name_prefix}-${random_id.uuid.hex}"]
 }
 
+locals {
+  ingress_domain = var.custom_domain == "" ? "${google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip}.nip.io" : var.custom_domain
+}
+
 # Provision ACE-Box
 module "provisioner" {
   source = "../modules/ace-box-provisioner"
@@ -78,7 +82,7 @@ module "provisioner" {
   host             = google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip
   user             = var.acebox_user
   private_key      = tls_private_key.acebox_key.private_key_pem
-  ingress_domain   = "${google_compute_instance.acebox.network_interface.0.access_config.0.nat_ip}.${var.custom_domain}"
+  ingress_domain   = local.ingress_domain
   ingress_protocol = var.ingress_protocol
   dt_tenant        = var.dt_tenant
   dt_api_token     = var.dt_api_token

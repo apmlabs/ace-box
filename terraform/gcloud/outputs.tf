@@ -1,5 +1,5 @@
 output "acebox_dashboard" {
-  value = "http://dashboard.${google_compute_instance.acebox.network_interface[0].access_config[0].nat_ip}.nip.io"
+  value = "http://dashboard.${local.ingress_domain}"
 }
 
 output "acebox_ip" {
