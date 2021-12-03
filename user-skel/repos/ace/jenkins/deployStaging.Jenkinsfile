@@ -79,7 +79,7 @@ pipeline {
 
         stage('Launch tests') {
             steps {
-                build job: "ace-demo/3. Test",
+                build job: "3. Test",
                 wait: false,
                 parameters: [
                     string(name: 'APP_NAME', value: "${env.APP_NAME}"),
