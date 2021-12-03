@@ -1,6 +1,6 @@
 pipeline {
     parameters {
-        choice(name: 'BUILD', choices: ['1','2','3','4'], description: 'Select the build you want to deploy (affects application behavior, github.com/grabnerandi/simplenodeservice for more details)')
+        choice(name: 'BUILD', choices: ['1','2','3','4','5'], description: 'Select the build you want to deploy (affects application behavior, github.com/grabnerandi/simplenodeservice for more details)')
     }
     environment {
         APP_NAME = "simplenodeservice"
@@ -37,7 +37,7 @@ pipeline {
     
         stage('Deploy and observe') {
             parallel {
-                stage('ace-demo/Deploy to staging'){
+                stage('Deploy to staging'){
                     steps {
                         script { env.V_TAG = sh(returnStdout: true, script: "echo ${env.GIT_COMMIT} | cut -c1-6 | tr -d '\n'") }
                         build job: "2. Deploy",
@@ -50,7 +50,7 @@ pipeline {
                         ]
                     }
                 }
-                stage('ace-demo/Monitoring as Code') {
+                stage('Monitoring as Code') {
                     steps {
                         build job: "Monitoring as Code",
                         wait: false
