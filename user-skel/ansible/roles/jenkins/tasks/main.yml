@@ -40,6 +40,15 @@
     tasks_from: source-node-id
   when: feature_jenkins
 
+- name: Jenkins - Retrieve Kubernetes API URL
+  shell: /snap/bin/microk8s.kubectl get svc | grep kubernetes | awk -F' ' '{print "https://"$3}'
+  register: jenkins_api_endpoint_raw
+  when: feature_jenkins
+
+- set_fact:
+    jenkins_api_endpoint: "{{  jenkins_api_endpoint_raw.stdout }}"
+  when: feature_jenkins
+
 - name: Jenkins - Template Helm values file
   ansible.builtin.template:
     src: jenkins-values.yml.j2

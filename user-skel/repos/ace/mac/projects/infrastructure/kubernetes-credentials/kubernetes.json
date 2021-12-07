@@ -6,6 +6,7 @@
     "eventsIntegrationEnabled": true,
     "workloadIntegrationEnabled": true,
     "prometheusExportersIntegrationEnabled": true,
+    "davisEventsIntegrationEnabled": true,
     "eventsFieldSelectors": [
       {
         "label": "Node events",
