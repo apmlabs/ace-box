@@ -816,6 +816,7 @@ controller:
 {% if acebox_mode == 'demo' %}
           - script: >
               folder('monaco-gitops-demo')
+              description('Check out ${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/monaco for more information')
           - script: >
               pipelineJob('monaco-gitops-demo/Monaco - Application Onboarding') {
                 parameters {
