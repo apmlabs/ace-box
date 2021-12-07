@@ -178,6 +178,8 @@ When the performance evaluation was succesful, the [4. Deploy Production](4_Depl
 ## Demo
 An initial run of the fast version will yield a promotion into production as our quality gate passed. For the best demo experience, prepare this fast run first. Afterwards, trigger the [1. Build](1_Build.md) pipeline with as a parameter `2` so a slow Build will be deployed.
 
+>**Note**: due to a timing issue, sometimes the first build (even from a fast version) will fail as Dynatrace has not yet processed all the tags (see https://github.com/Dynatrace/ace-box/issues/96 for details). If you notice that inside the Keptn bridge you are missing data, run the pipeline again.
+
 At the end of the second run, you will see that the pipeline has failed.
 
 To demonstrate, go into Dynatrace and open the *Releases* screen for the simplenode.staging process.
