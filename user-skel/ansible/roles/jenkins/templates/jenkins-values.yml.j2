@@ -49,6 +49,8 @@ controller:
       value: "{{ dt_node_id | default('') if acebox_mode == 'demo' else '' }}"
     - name: KUBE_BEARER_TOKEN
       value: {{ dt_operator_kube_bearer_token | default('') if acebox_mode == 'demo' else '' }}
+    - name: KUBE_API_ENDPOINT
+      value: {{ jenkins_api_endpoint | default('') if acebox_mode == 'demo' else '' }}
     - name: INGRESS_DOMAIN
       value: {{ ingress_domain }}
     - name: ACE_LIB
@@ -57,25 +59,25 @@ controller:
       value: {{ jenkins_keptn_lib_url if acebox_mode == 'demo' else '' }}
   installPlugins:
     - command-launcher:1.6
-    - kubernetes:1.30.0
-    - kubernetes-credentials-provider:0.18-1
-    - workflow-job:2.41
+    - kubernetes:1.30.11
+    - kubernetes-credentials-provider:0.20
+    - workflow-job:2.42
     - workflow-aggregator:2.6
-    - credentials-binding:1.25
-    - git:4.7.2
-    - google-oauth-plugin:1.0.5
+    - credentials-binding:1.27
+    - git:4.10.0
+    - google-oauth-plugin:1.0.6
     - google-source-plugin:0.4
-    - performance:3.19
-    - github-branch-source:2.10.4
-    - job-dsl:1.77
-    - pipeline-build-step:2.13
-    - docker-plugin:1.2.2
-    - blueocean:1.24.7
-    - configuration-as-code:1.51
-    - http_request:1.9.0
-    - pipeline-utility-steps:2.8.0
+    - performance:3.20
+    - github-branch-source:2.11.3
+    - job-dsl:1.78.1
+    - pipeline-build-step:2.15
+    - docker-plugin:1.2.3
+    - blueocean:1.25.2
+    - configuration-as-code:1.55
+    - http_request:1.12
+    - pipeline-utility-steps:2.11.0
     - ansible:1.1
-    - gitea:1.2.1
+    - gitea:1.4.1
   installLatestPlugins: false
   JCasC:
     enabled: true
@@ -122,6 +124,8 @@ controller:
                 value: ${SYNTH_NODE_ID} #Load from Environment Variable
               - key: "KUBE_BEARER_TOKEN"
                 value: ${KUBE_BEARER_TOKEN} #Load from Environment Variable
+              - key: "KUBE_API_ENDPOINT"
+                value: ${KUBE_API_ENDPOINT} #Load from Environment Variable
               - key: "INGRESS_DOMAIN"
                 value: ${INGRESS_DOMAIN} #Load from Environment Variable
           clouds:
