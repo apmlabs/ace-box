@@ -44,6 +44,10 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 | KEPTN_BRIDGE_USER | Keptn Bridge | Bridge Username  |
 | KEPTN_BRIDGE_PASSWORD | Keptn Bridge | Bridge Password  |
 | DT_TENANT_URL | Dynatrace | Tenant URL  |
+| CLOUD_AUTOMATION_API_URL | Cloud Automation API | API URL  |
+| CLOUD_AUTOMATION_API_TOKEN | Cloud Automation API | API Token  |
+| CLOUD_AUTOMATION_BRIDGE_URL | Cloud Automation Bridge | Bridge URL  |
+| QUALITY_GATES_PROVIDER | Set to KEPTN or CLOUD_AUTOMATION | Define what to use for quality gates  |
 
 ## Build and push
 

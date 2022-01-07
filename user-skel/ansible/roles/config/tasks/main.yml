@@ -9,7 +9,7 @@
   vars:
     ace_config_key: "{{ item }}"
     ace_config_value: true
-  loop: "{{ features_enabled_default }}"
+  loop: "{{ (cloud_automation_tenant_url == None) or (cloud_automation_api_token == None) | ternary(features_enabled_default, features_enabled_ca) }}"
   tags:
   - never
   - default
@@ -41,6 +41,40 @@
   tags:
   - never
   - awx
+
+# - name: Config - Disable Keptn
+#   include_role:
+#     name: config
+#     tasks_from: update
+#     apply:
+#       tags:
+#       - default
+#       - cloud_automation
+#   when: (cloud_automation_tenant_url != "None") and (cloud_automation_api_token != "None")
+#   vars:
+#     ace_config_key: "feature_keptn"
+#     ace_config_value: false
+#   tags:
+#   - never
+#   - cloud_automation
+#   - default
+
+# - name: Config - Enable Cloud Automation
+#   include_role:
+#     name: config
+#     tasks_from: update
+#     apply:
+#       tags:
+#       - default
+#       - cloud_automation
+#   when: (cloud_automation_tenant_url != "None") and (cloud_automation_api_token != "None")
+#   vars:
+#     ace_config_key: "feature_cloud_automation"
+#     ace_config_value: true
+#   tags:
+#   - never
+#   - cloud_automation
+#   - default
 
 - include: roles/config/tasks/source.yml
   tags:

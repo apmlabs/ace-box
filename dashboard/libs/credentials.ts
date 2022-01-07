@@ -80,7 +80,7 @@ const getAwxCredentials: () => CredentialProps = () => {
 const getKeptnBridgeCredentials: () => CredentialProps = () => {
 	const href = process.env.KEPTN_BRIDGE_URL || ''
 	const label = 'Keptn Bridge'
-	const isEnabled = true
+	const isEnabled = !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "keptn"
 	const username = process.env.KEPTN_BRIDGE_USER || ''
 	const password = process.env.KEPTN_BRIDGE_PASSWORD || ''
 
@@ -96,7 +96,7 @@ const getKeptnBridgeCredentials: () => CredentialProps = () => {
 const getKeptnApiCredentials: () => CredentialProps = () => {
 	const href = process.env.KEPTN_API_URL || ''
 	const label = 'Keptn API'
-	const isEnabled = true
+	const isEnabled = !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "keptn"
 	const token = process.env.KEPTN_API_TOKEN || ''
 
 	return {
@@ -119,6 +119,21 @@ const getDynatraceCredentials: () => CredentialProps = () => {
 	}
 }
 
+const getCloudAutomationCredentials: ()=> CredentialProps = () => {
+	const href = process.env.CLOUD_AUTOMATION_BRIDGE_URL || ''
+	const label = 'Dynatrace Cloud Automation Tenant'
+	const isEnabled = !!process.env.CLOUD_AUTOMATION_API_URL && process.env.CLOUD_AUTOMATION_API_URL.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_API_URL !== ""
+		&& !!process.env.CLOUD_AUTOMATION_API_TOKEN && process.env.CLOUD_AUTOMATION_API_TOKEN.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_API_TOKEN !== ""
+		&& !!process.env.CLOUD_AUTOMATION_BRIDGE_URL && process.env.CLOUD_AUTOMATION_BRIDGE_URL.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_BRIDGE_URL !== ""
+		&& !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "cloud_automation"
+	
+	return {
+		isEnabled,
+		href,
+		label
+	}
+}
+
 export {
 	getJenkinsCredentials,
 	getGiteaCredentials,
@@ -126,5 +141,6 @@ export {
 	getAwxCredentials,
 	getKeptnBridgeCredentials,
 	getKeptnApiCredentials,
-	getDynatraceCredentials
+	getDynatraceCredentials,
+	getCloudAutomationCredentials
 }

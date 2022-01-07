@@ -6,6 +6,7 @@ import AwxDetailedLink from '../../components/credentials/awx'
 import KeptnBridgeDetailedLink from '../../components/credentials/keptn-bridge'
 import KeptnApiDetailedLink from '../../components/credentials/keptn-api'
 import DynatraceDetailedLink from '../../components/credentials/dynatrace'
+import CloudAutomationDetailedLink from '../../components/credentials/cloudautomation'
 
 const AceBoxLinks: FunctionComponent<any> = () =>
     <div>
@@ -26,6 +27,7 @@ const AceBoxLinks: FunctionComponent<any> = () =>
           <KeptnBridgeDetailedLink />
           <KeptnApiDetailedLink />
           <DynatraceDetailedLink />
+          <CloudAutomationDetailedLink />
         </table>
       </div>
     </div>
