@@ -59,19 +59,34 @@ The recommended way of installing any ACE box version, local or cloud, is via Te
      - Dynatrace tenant (prod or sprint, dev not recommended)
 2. Go to folder `./terraform/<aws, azure, gcloud or vagrant>/`
 3. Set required Terraform variables:
-   1. By adding `dt_tenant, dt_api_token, dt_paas_token` to a `terraform.tfvars` file:
-      ```
-      dt_tenant = "https://....dynatrace.com"
-      dt_api_token = "dt0c01...."
-      dt_paas_token = "dt0c01...."
-      ```
-   2. By setting environment variables:
-      ```
-      export TF_VAR_dt_tenant=https://....dynatrace.com
-      export TF_VAR_dt_api_token=dt0c01....
-      export TF_VAR_dt_paas_token=dt0c01....
-      ```
-    For details and alternatives see https://www.terraform.io/docs/language/values/variables.html
+   1. Check out the `Readme.md` for your specific cloud provider to verify the provider-specific configuration that needs to be set
+   2. Add ace-box specific information (see below for more details)
+   3. Set them by either
+      1. adding `dt_tenant, dt_api_token, dt_paas_token` to a `terraform.tfvars` file:
+          ```
+          dt_tenant = "https://....dynatrace.com"
+          dt_api_token = "dt0c01...."
+          dt_paas_token = "dt0c01...."
+          ca_tenant = "https://abc12345.cloudautomation...com"
+          ca_api_token = "xyz123"
+          ```
+      2. Or by setting environment variables:
+          ```
+          export TF_VAR_dt_tenant=https://....dynatrace.com
+          export TF_VAR_dt_api_token=dt0c01....
+          export TF_VAR_dt_paas_token=dt0c01....
+          export TF_VAR_ca_tenant=...
+          export TF_VAR_ca_api_token=...
+          ```
+          For details and alternatives see https://www.terraform.io/docs/language/values/variables.html
+    4. The following variables need to be set:
+        | var | required | details |
+        | --- | -------- | ------- |
+        | dt_tenant | **yes** | Dynatrace environment URL |
+        | dt_api_token | **yes** | Dynatrace API token |
+        | dt_paas_token | **yes** | Dynatrace PaaS token |
+        | ca_tenant | no | Dynatrace Cloud Automation environment URL. **Note**: if not set, Keptn will be installed and used instead |
+        | ca_api_token | no | Dynatrace Cloud Automation api token. **Note**: if not set, Keptn will be installed and used instead |
 
 4. Run `terraform init`
 5. Run `terraform apply`
