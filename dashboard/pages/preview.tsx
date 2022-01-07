@@ -24,13 +24,13 @@ const getServerSideProps = async () => {
     props: {
       awx,
       staging: {
-        href: process.env.SIMPLENODEAPP_URL_STAGING
+        href: process.env.SIMPLENODEAPP_URL_STAGING || ''
       },
       production: {
-        href: process.env.SIMPLENODEAPP_URL_PRODUCTION
+        href: process.env.SIMPLENODEAPP_URL_PRODUCTION || ''
       },
       canary: {
-        href: process.env.SIMPLENODEAPP_URL_CANARY
+        href: process.env.SIMPLENODEAPP_URL_CANARY || ''
       }
     }
   }
