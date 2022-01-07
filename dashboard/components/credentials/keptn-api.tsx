@@ -29,15 +29,15 @@ const KeptnApiToken = Token
 
 const DetailedLink = () => {
   const { keptnApi } = useContext(CredentialProvider)
-  const { href, label } = keptnApi
+  const { href, label, isEnabled } = keptnApi
 
-  return (
-    <DetailTemplate
-      title={label || 'Keptn API'}
-      href={href || '#'}
-      credentials={[KeptnApiToken]}
-    />
-  )
+  return isEnabled
+    ? <DetailTemplate
+        title={label || 'Keptn API'}
+        href={href || '#'}
+        credentials={[KeptnApiToken]}
+      />
+    : null
 }
 
 export { DetailedLink as default, Link, KeptnApiLink, Token, KeptnApiToken }
