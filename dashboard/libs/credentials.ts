@@ -122,9 +122,7 @@ const getDynatraceCredentials: () => CredentialProps = () => {
 const getCloudAutomationCredentials: ()=> CredentialProps = () => {
 	const href = process.env.CLOUD_AUTOMATION_BRIDGE_URL || ''
 	const label = 'Dynatrace Cloud Automation Tenant'
-	const isEnabled = !!process.env.CLOUD_AUTOMATION_API_URL && process.env.CLOUD_AUTOMATION_API_URL.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_API_URL !== ""
-		&& !!process.env.CLOUD_AUTOMATION_API_TOKEN && process.env.CLOUD_AUTOMATION_API_TOKEN.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_API_TOKEN !== ""
-		&& !!process.env.CLOUD_AUTOMATION_BRIDGE_URL && process.env.CLOUD_AUTOMATION_BRIDGE_URL.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_BRIDGE_URL !== ""
+	const isEnabled = !!process.env.CLOUD_AUTOMATION_BRIDGE_URL && process.env.CLOUD_AUTOMATION_BRIDGE_URL.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_BRIDGE_URL !== ""
 		&& !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "cloud_automation"
 	
 	return {
