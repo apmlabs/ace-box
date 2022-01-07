@@ -89,3 +89,13 @@ variable "ingress_protocol" {
   description = "Ingress protocol"
   default     = "http"
 }
+
+variable "ca_tenant" {
+  description = "Dynatrace Cloud Automation Endpoint"
+  default     = ""
+}
+
+variable "ca_api_token" {
+  description = "Dynatrace Cloud Automation API token"
+  default     = ""
+}
