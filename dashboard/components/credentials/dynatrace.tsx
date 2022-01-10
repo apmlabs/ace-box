@@ -17,14 +17,14 @@ const DynatraceLink = Link
 
 const DetailedLink = () => {
   const { dynatrace } = useContext(CredentialProvider)
-  const { label, href } = dynatrace
+  const { label, href, isEnabled } = dynatrace
 
-  return (
-    <DetailTemplate
-      title={label || 'Dynatrace'}
-      href={href || '#'}
-    />
-  )
+  return isEnabled
+    ? <DetailTemplate
+        title={label || 'Dynatrace'}
+        href={href || '#'}
+      />
+    : null
 }
 
 export { DetailedLink as default, Link, DynatraceLink }

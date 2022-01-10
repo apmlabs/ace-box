@@ -53,15 +53,15 @@ const GiteaToken = Token
 
 const DetailedLink = () => {
   const { gitea } = useContext(CredentialProvider)
-  const { label, href } = gitea
+  const { label, href, isEnabled } = gitea
 
-  return (
-    <DetailTemplate
-      title={label || 'Gitea'}
-      href={href || '#'}
-      credentials={[GiteaUsername, GiteaPassword, GiteaToken]}
-    />
-  )
+  return isEnabled
+    ? <DetailTemplate
+        title={label || 'Gitea'}
+        href={href || '#'}
+        credentials={[GiteaUsername, GiteaPassword, GiteaToken]}
+      />
+    : null
 }
 
 export { DetailedLink as default, Link, GiteaLink, Username, GiteaUsername, Password, GiteaPassword, Token, GiteaToken }

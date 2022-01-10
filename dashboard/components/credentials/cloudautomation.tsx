@@ -17,14 +17,14 @@ const CloudAutomationLink = Link
 
 const DetailedLink = () => {
   const { cloudAutomation } = useContext(CredentialProvider)
-  const { label, href } = cloudAutomation
+  const { label, href, isEnabled } = cloudAutomation
 
-  return (
-    <DetailTemplate
-      title={label || 'Cloud Automation'}
-      href={href || '#'}
-    />
-  )
+  return isEnabled
+    ? <DetailTemplate
+        title={label || 'Cloud Automation'}
+        href={href || '#'}
+      />
+    : null
 }
 
 export { DetailedLink as default, Link, CloudAutomationLink }

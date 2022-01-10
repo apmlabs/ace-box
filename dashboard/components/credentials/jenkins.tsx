@@ -41,15 +41,15 @@ const JenkinsPassword = Password
 
 const DetailedLink = () => {
   const { jenkins } = useContext(CredentialProvider)
-  const { label, href } = jenkins
+  const { label, href, isEnabled } = jenkins
 
-  return (
-    <DetailTemplate
-      title={label || 'Jenkins'}
-      href={href || '#'}
-      credentials={[JenkinsUsername, JenkinsPassword]}
-    />
-  )
+  return isEnabled
+    ? <DetailTemplate
+        title={label || 'Jenkins'}
+        href={href || '#'}
+        credentials={[JenkinsUsername, JenkinsPassword]}
+      />
+    : null
 }
 
 export { DetailedLink as default, JenkinsLink, Link, JenkinsUsername, Username, JenkinsPassword, Password }
