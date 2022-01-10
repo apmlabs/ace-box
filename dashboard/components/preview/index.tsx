@@ -1,14 +1,11 @@
 import { useState, useEffect, useContext, FunctionComponent } from 'react'
-import CredentialProvider from '../credentials/provider'
 import PreviewProvider from './provider'
 
-type PreviewProps = {}
+type PreviewProps = {
+  isAwxEnabled?: boolean
+}
 
-const Preview: FunctionComponent<PreviewProps> = () => {
-  const { awx } = useContext(CredentialProvider)
-
-  const { isEnabled: isAwxEnabled } = awx
-
+const Preview: FunctionComponent<PreviewProps> = ({ isAwxEnabled }) => {
   const { staging, production, canary } = useContext(PreviewProvider)
 
   const stagingHref = staging.href
