@@ -10,7 +10,7 @@ type CredentialProps = {
 const getKubernetesCredentials: () => CredentialProps = () => {
 	const href = ''
 	const label = 'Kubernetes'
-	const isEnabled = true
+	const isEnabled = !!process.env.K8S_PROVIDER
 	const username = ''
 	const password = '' 
 
@@ -26,7 +26,7 @@ const getKubernetesCredentials: () => CredentialProps = () => {
 const getJenkinsCredentials: () => CredentialProps = () => {
 	const href = process.env.JENKINS_URL || ''
 	const label = 'Jenkins'
-	const isEnabled = true
+	const isEnabled = !!process.env.JENKINS_URL
 	const username = process.env.JENKINS_USER || ''
 	const password = process.env.JENKINS_PASSWORD || '' 
 
@@ -42,7 +42,7 @@ const getJenkinsCredentials: () => CredentialProps = () => {
 const getGiteaCredentials: () => CredentialProps = () => {
 	const href = process.env.GITEA_URL || ''
 	const label = 'Gitea'
-	const isEnabled = true
+	const isEnabled = !!process.env.GITEA_URL
 	const username = process.env.GITEA_USER || ''
 	const password = process.env.GITEA_PASSWORD || ''
 	const token = process.env.GITEA_PAT || ''
@@ -126,7 +126,7 @@ const getKeptnApiCredentials: () => CredentialProps = () => {
 const getDynatraceCredentials: () => CredentialProps = () => {
 	const href = process.env.DT_TENANT_URL || ''
 	const label = 'Dynatrace Tenant'
-	const isEnabled = true
+	const isEnabled = !!process.env.DT_TENANT_URL
 	
 	return {
 		isEnabled,
