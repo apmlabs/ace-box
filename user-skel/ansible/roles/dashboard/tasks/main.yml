@@ -100,6 +100,7 @@
     --set env.CLOUD_AUTOMATION_API_TOKEN={{ keptn_api_token | default('N/A') }}
     --set env.CLOUD_AUTOMATION_BRIDGE_URL={{ keptn_bridge }}
     --set env.QUALITY_GATES_PROVIDER={{ qgprovider }}
+    --set env.K8S_PROVIDER=MICROK8S
   when: feature_dashboard
 
 # TBD: Source from secret

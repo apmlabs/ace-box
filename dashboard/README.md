@@ -48,6 +48,7 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 | CLOUD_AUTOMATION_API_TOKEN | Cloud Automation API | API Token  |
 | CLOUD_AUTOMATION_BRIDGE_URL | Cloud Automation Bridge | Bridge URL  |
 | QUALITY_GATES_PROVIDER | Set to KEPTN or CLOUD_AUTOMATION | Define what to use for quality gates  |
+| K8S_PROVIDER | Set to MICROK8S | Define what Kubernetes povider is used  |
 
 ## Build and push
 
