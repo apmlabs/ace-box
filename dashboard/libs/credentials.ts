@@ -7,6 +7,22 @@ type CredentialProps = {
 	token?: string | undefined
 }
 
+const getKubernetesCredentials: () => CredentialProps = () => {
+	const href = ''
+	const label = 'Kubernetes'
+	const isEnabled = true
+	const username = ''
+	const password = '' 
+
+	return {
+		isEnabled,
+		href,
+		label,
+		username,
+		password
+	}
+}
+
 const getJenkinsCredentials: () => CredentialProps = () => {
 	const href = process.env.JENKINS_URL || ''
 	const label = 'Jenkins'
@@ -133,6 +149,7 @@ const getCloudAutomationCredentials: ()=> CredentialProps = () => {
 }
 
 export {
+	getKubernetesCredentials,
 	getJenkinsCredentials,
 	getGiteaCredentials,
 	getGitlabCredentials,
