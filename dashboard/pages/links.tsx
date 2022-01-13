@@ -10,11 +10,13 @@ import {
 	getAwxCredentials,
 	getKeptnBridgeCredentials,
 	getKeptnApiCredentials,
-	getDynatraceCredentials
+	getDynatraceCredentials,
+  getCloudAutomationCredentials,
+  getKubernetesCredentials
 } from '../libs/credentials'
 
-const Links: FunctionComponent<any> = ({ jenkins, gitea, gitlab, awx, keptnBridge, keptnApi, dynatrace }) =>
-  <CredentialProvider.Provider value={{ jenkins, gitea, gitlab, awx, keptnBridge, keptnApi, dynatrace }}>
+const Links: FunctionComponent<any> = ({ kubernetes, jenkins, gitea, gitlab, awx, keptnBridge, keptnApi, dynatrace, cloudAutomation }) =>
+  <CredentialProvider.Provider value={{ kubernetes, jenkins, gitea, gitlab, awx, keptnBridge, keptnApi, dynatrace, cloudAutomation }}>
     <Head>
       <title>ACE Dashboard - Links</title>
       <meta name="description" content="ACE Dashboard" />
@@ -24,6 +26,7 @@ const Links: FunctionComponent<any> = ({ jenkins, gitea, gitlab, awx, keptnBridg
   </CredentialProvider.Provider>
 
 const getServerSideProps = async () => {
+  const kubernetes = getKubernetesCredentials()
   const jenkins = getJenkinsCredentials()
   const gitea = getGiteaCredentials()
 	const gitlab = getGitlabCredentials()
@@ -31,16 +34,19 @@ const getServerSideProps = async () => {
 	const keptnBridge = getKeptnBridgeCredentials()
 	const keptnApi = getKeptnApiCredentials()
 	const dynatrace = getDynatraceCredentials()
+  const cloudAutomation = getCloudAutomationCredentials()
 
   return {
     props: {
+      kubernetes,
       jenkins,
       gitea,
       gitlab,
       awx,
       keptnBridge,
       keptnApi,
-      dynatrace
+      dynatrace,
+      cloudAutomation
     }
   }
 }

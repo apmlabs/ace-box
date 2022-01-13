@@ -9,6 +9,8 @@ locals {
   dt_tenant        = var.dt_tenant
   dt_api_token     = var.dt_api_token
   dt_paas_token    = var.dt_paas_token
+  ca_tenant        = var.ca_tenant
+  ca_api_token     = var.ca_api_token
 }
 
 resource "null_resource" "provisioner_home_dir" {
@@ -61,6 +63,8 @@ resource "null_resource" "provisioner_ace_prepare" {
       "export ACE_DT_TENANT=${local.dt_tenant}",
       "export ACE_DT_API_TOKEN=${local.dt_api_token}",
       "export ACE_DT_PAAS_TOKEN=${local.dt_paas_token}",
+      "export ACE_CA_TENANT=${local.ca_tenant}",
+      "export ACE_CA_API_TOKEN=${local.ca_api_token}",
       "ace prepare --force",
     ]
   }

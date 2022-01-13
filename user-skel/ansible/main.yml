@@ -60,6 +60,11 @@
     - never
     - keptn
     - default
+  - role: cloudautomation
+    tags:
+    - never
+    - cloud_automation
+    - default
   - role: jenkins
     tags:
     - never

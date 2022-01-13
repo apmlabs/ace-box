@@ -8,13 +8,19 @@
   include_role:
     name: keptn
     tasks_from: source-secret
-  when: feature_jenkins
+  when: feature_jenkins and feature_keptn
 
 - name: Jenkins - Source Keptn host
   include_role:
     name: keptn
     tasks_from: source-endpoints
-  when: feature_jenkins
+  when: feature_jenkins and feature_keptn
+
+- name: Jenkins - Source Cloud Automation credentials
+  include_role:
+    name: cloudautomation
+    tasks_from: source-credentials
+  when: feature_jenkins and feature_cloud_automation
 
 - name: Jenkins - Retrieve Dynatrace Operator bearer token
   shell: "/snap/bin/microk8s.kubectl get secret $(kubectl get sa dynatrace-kubernetes-monitoring -o jsonpath='{.secrets[0].name}' -n dynatrace) -o jsonpath='{.data.token}' -n dynatrace | base64 --decode"

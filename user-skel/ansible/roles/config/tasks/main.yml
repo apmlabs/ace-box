@@ -1,4 +1,17 @@
 ---
+- include: roles/config/tasks/source.yml
+  tags:
+  - never
+  - default
+
+- name: Config - Replace Keptn with Cloud Automation if needed
+  set_fact:
+    features_enabled_default: ["feature_oneagent", "feature_activegate", "feature_gitea", "feature_jenkins", "feature_dashboard", "feature_cloud_automation"]
+  when: (cloud_automation_tenant_url != "None") and (cloud_automation_api_token != "None")
+  tags:
+  - never
+  - default
+
 - name: Config - Enable default features
   include_role:
     name: config

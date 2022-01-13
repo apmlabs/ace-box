@@ -26,7 +26,8 @@ install_targets = [
     'monaco',
     'jenkins',
     'dashboard',
-    'awx'
+    'awx',
+    'cloud_automation'
 ]
 uninstall_targets = ['gitlab', 'dynatrace', 'awx']
 
@@ -114,6 +115,20 @@ def ace(
     envvar='ACE_DT_PAAS_TOKEN',
 )
 @click.option(
+    '--ca-tenant',
+    help=(
+        'Please enter your Cloud Automation tenant URL'
+    ),
+    envvar='ACE_CA_TENANT',
+)
+@click.option(
+    '--ca-api-token',
+    help=(
+        'Please enter your Cloud Automation API token'
+    ),
+    envvar='ACE_CA_API_TOKEN',
+)
+@click.option(
     '-f',
     '--force',
     is_flag=True,
@@ -125,6 +140,8 @@ def prepare(
     dt_tenant,
     dt_api_token,
     dt_paas_token,
+    ca_tenant,
+    ca_api_token,
     ansible_workdir,
     force,
 ):
@@ -176,7 +193,9 @@ def prepare(
             f'ingress_protocol={ingress_protocol} '
             f'dynatrace_tenant_url={dt_tenant} '
             f'dynatrace_api_token={dt_api_token} '
-            f'dynatrace_paas_token={dt_paas_token}'
+            f'dynatrace_paas_token={dt_paas_token} '
+            f'ca_tenant_url={ca_tenant} '
+            f'ca_api_token={ca_api_token}'
             '"'
         ),
         cwd=ansible_workdir,

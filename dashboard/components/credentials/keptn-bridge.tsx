@@ -41,15 +41,15 @@ const KeptnBridgePassword = Password
 
 const DetailedLink = () => {
   const { keptnBridge } = useContext(CredentialProvider)
-  const { href, label } = keptnBridge
+  const { href, label, isEnabled } = keptnBridge
 
-  return (
-    <DetailTemplate
+  return isEnabled
+  ? <DetailTemplate
       title={label || 'Keptn Bridge'}
       href={href || '#'}
       credentials={[KeptnBridgeUsername, KeptnBridgePassword]}
     />
-  )
+  : null
 }
 
 export { DetailedLink as default, Link, KeptnBridgeLink, Username, KeptnBridgeUsername, Password, KeptnBridgePassword }

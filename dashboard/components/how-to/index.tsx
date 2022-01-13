@@ -1,5 +1,6 @@
 import React, { useState, useContext, FunctionComponent } from 'react'
 import CredentialProvider from '../credentials/provider'
+import type { CredentialProps } from '../credentials/provider'
 import Jenkins from './jenkins'
 import Gitea from './gitea'
 import Gitlab from './gitlab'
@@ -7,37 +8,71 @@ import Keptn from './keptn'
 import Dynatrace from './dynatrace'
 import Kubernetes from './kubernetes'
 import Awx from './awx'
+import CloudAutomation from './cloudautomation'
 
-type tabsProps = {
+type TabsProps = {
   [tab: string]: FunctionComponent
 }
 
-const tabs: tabsProps = {
-  'Jenkins': Jenkins,
-  'Gitea': Gitea,
-  'Keptn': Keptn,
-  'Dynatrace': Dynatrace,
-  'Kubernetes': Kubernetes
+type CredentialsProps = {
+  jenkins: CredentialProps
+	gitea: CredentialProps
+	gitlab: CredentialProps
+	awx: CredentialProps
+	keptnBridge: CredentialProps
+	keptnApi: CredentialProps
+	dynatrace: CredentialProps
+	cloudAutomation: CredentialProps
+  kubernetes: CredentialProps
 }
 
+const generateTabOptions = ({ dynatrace, jenkins, gitea, keptnBridge, kubernetes, awx, gitlab, cloudAutomation }: CredentialsProps) => {
+  const tabs: TabsProps = {}
+
+  if (dynatrace.isEnabled) {
+    tabs['Dynatrace'] = Dynatrace
+  }
+
+  if (jenkins.isEnabled) {
+    tabs['Jenkins'] = Jenkins
+  }
+
+  if (gitea.isEnabled) {
+    tabs['Gitea'] = Gitea
+  }
+
+  if (keptnBridge.isEnabled) {
+    tabs['Keptn'] = Keptn
+  }
+
+  if (kubernetes.isEnabled) {
+    tabs['Kubernetes'] = Kubernetes
+  }
+
+  if (awx.isEnabled) {
+    tabs['Awx'] = Awx
+  }
+
+  if (gitlab.isEnabled) {
+    tabs['Gitlab'] = Gitlab
+  }
+
+  if (cloudAutomation.isEnabled) {
+    tabs['CloudAutomation'] = CloudAutomation
+  }
+
+  return tabs
+}
 
 type ToolTabsProps = {}
 
 const ToolTabs: FunctionComponent<ToolTabsProps> = () => {
-  const { awx, gitlab } = useContext(CredentialProvider)
-  const { isEnabled: isGitlabEnabled } = gitlab
-  const { isEnabled: isAwxEnabled } = awx
+  const credentials = useContext(CredentialProvider)
+  const tabs = generateTabOptions(credentials)
+  const defaultTab = Object.keys(tabs).length > 0 ? Object.keys(tabs)[0] : null
 
-  if (isGitlabEnabled) {
-    tabs['Gitlab'] = Gitlab
-  }
-
-  if (isAwxEnabled) {
-    tabs['Awx'] = Awx
-  }
-
-  const [activeTab, setActiveTab] = useState(Object.keys(tabs)[0])
-  const ActiveTabContent = tabs[activeTab]
+  const [activeTab, setActiveTab] = useState(defaultTab)
+  const ActiveTabContent = tabs[activeTab || '']
 
   return (
     <>
@@ -59,7 +94,11 @@ const ToolTabs: FunctionComponent<ToolTabsProps> = () => {
         }
       </div>
       <div>
-        <ActiveTabContent />
+        {
+          activeTab
+            ? <ActiveTabContent />
+            : <>No tools set up yet...</>
+        }
       </div>
     </>
   )

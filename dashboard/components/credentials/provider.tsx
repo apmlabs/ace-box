@@ -7,7 +7,7 @@ type CredentialProps = {
 	username: string
 	password: string
 	token: string
-} | {}
+}
 
 const credential: CredentialProps = {
 	isEnabled: false,
@@ -25,7 +25,10 @@ const CredentialProvider = createContext({
 	awx: { ...credential },
 	keptnBridge: { ...credential },
 	keptnApi: { ...credential },
-	dynatrace: { ...credential }
+	dynatrace: { ...credential },
+	cloudAutomation: { ...credential },
+	kubernetes: { ...credential },
 })
 
 export { CredentialProvider as default }
+export type { CredentialProps }

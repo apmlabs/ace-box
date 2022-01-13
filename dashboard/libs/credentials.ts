@@ -7,10 +7,26 @@ type CredentialProps = {
 	token?: string | undefined
 }
 
+const getKubernetesCredentials: () => CredentialProps = () => {
+	const href = ''
+	const label = 'Kubernetes'
+	const isEnabled = !!process.env.K8S_PROVIDER
+	const username = ''
+	const password = '' 
+
+	return {
+		isEnabled,
+		href,
+		label,
+		username,
+		password
+	}
+}
+
 const getJenkinsCredentials: () => CredentialProps = () => {
 	const href = process.env.JENKINS_URL || ''
 	const label = 'Jenkins'
-	const isEnabled = true
+	const isEnabled = !!process.env.JENKINS_URL
 	const username = process.env.JENKINS_USER || ''
 	const password = process.env.JENKINS_PASSWORD || '' 
 
@@ -26,7 +42,7 @@ const getJenkinsCredentials: () => CredentialProps = () => {
 const getGiteaCredentials: () => CredentialProps = () => {
 	const href = process.env.GITEA_URL || ''
 	const label = 'Gitea'
-	const isEnabled = true
+	const isEnabled = !!process.env.GITEA_URL
 	const username = process.env.GITEA_USER || ''
 	const password = process.env.GITEA_PASSWORD || ''
 	const token = process.env.GITEA_PAT || ''
@@ -80,7 +96,7 @@ const getAwxCredentials: () => CredentialProps = () => {
 const getKeptnBridgeCredentials: () => CredentialProps = () => {
 	const href = process.env.KEPTN_BRIDGE_URL || ''
 	const label = 'Keptn Bridge'
-	const isEnabled = true
+	const isEnabled = !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "keptn"
 	const username = process.env.KEPTN_BRIDGE_USER || ''
 	const password = process.env.KEPTN_BRIDGE_PASSWORD || ''
 
@@ -96,7 +112,7 @@ const getKeptnBridgeCredentials: () => CredentialProps = () => {
 const getKeptnApiCredentials: () => CredentialProps = () => {
 	const href = process.env.KEPTN_API_URL || ''
 	const label = 'Keptn API'
-	const isEnabled = true
+	const isEnabled = !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "keptn"
 	const token = process.env.KEPTN_API_TOKEN || ''
 
 	return {
@@ -110,7 +126,20 @@ const getKeptnApiCredentials: () => CredentialProps = () => {
 const getDynatraceCredentials: () => CredentialProps = () => {
 	const href = process.env.DT_TENANT_URL || ''
 	const label = 'Dynatrace Tenant'
-	const isEnabled = true
+	const isEnabled = !!process.env.DT_TENANT_URL
+	
+	return {
+		isEnabled,
+		href,
+		label
+	}
+}
+
+const getCloudAutomationCredentials: ()=> CredentialProps = () => {
+	const href = process.env.CLOUD_AUTOMATION_BRIDGE_URL || ''
+	const label = 'Dynatrace Cloud Automation Tenant'
+	const isEnabled = !!process.env.CLOUD_AUTOMATION_BRIDGE_URL && process.env.CLOUD_AUTOMATION_BRIDGE_URL.toLowerCase() !== "n/a" && process.env.CLOUD_AUTOMATION_BRIDGE_URL !== ""
+		&& !!process.env.QUALITY_GATES_PROVIDER && process.env.QUALITY_GATES_PROVIDER.toLowerCase() == "cloud_automation"
 	
 	return {
 		isEnabled,
@@ -120,11 +149,13 @@ const getDynatraceCredentials: () => CredentialProps = () => {
 }
 
 export {
+	getKubernetesCredentials,
 	getJenkinsCredentials,
 	getGiteaCredentials,
 	getGitlabCredentials,
 	getAwxCredentials,
 	getKeptnBridgeCredentials,
 	getKeptnApiCredentials,
-	getDynatraceCredentials
+	getDynatraceCredentials,
+	getCloudAutomationCredentials
 }
