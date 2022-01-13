@@ -38,10 +38,10 @@ init_keptn:
     KEPTN_STAGE: staging
     KEPTN_SOURCE: gitlab
     KEPTN_MONITORING: dynatrace
-    SHIPYARD_FILE: keptn/shipyard.yaml
-    SLO_FILE: keptn/slo.yaml
-    SLI_FILE: keptn/sli.yaml
-    DT_CONFIG_FILE: keptn/dynatrace.conf.yaml
+    SHIPYARD_FILE: cloudautomation/shipyard.yaml
+    SLO_FILE: cloudautomation/slo.yaml
+    SLI_FILE: cloudautomation/sli.yaml
+    DT_CONFIG_FILE: cloudautomation/dynatrace.conf.yaml
   script:
     - /keptn/keptn_init.sh
   artifacts:
