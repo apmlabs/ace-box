@@ -23,7 +23,7 @@ resource "null_resource" "provisioner_home_dir" {
 
   provisioner "file" {
     source      = local.user_skel_path
-    destination = "~"
+    destination = "/home/${local.user}"
   }
 }
 
