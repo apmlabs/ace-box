@@ -24,6 +24,14 @@
     tasks_from: source-node-id
   when: feature_gitlab and feature_activegate
 
+- name: Gitlab - Retrieve Kubernetes API URL
+  block:
+  - shell: /snap/bin/microk8s.kubectl get svc kubernetes -o jsonpath='{.spec.clusterIP}'
+    register: kube_api_endpoint_raw
+  - set_fact:
+      kube_api_endpoint: "https://{{  kube_api_endpoint_raw.stdout }}"
+  when: feature_gitlab
+
 - name: Gitlab - Create variables
   include_role:
     name: gitlab
@@ -39,5 +47,6 @@
     - { key: 'DT_TENANT_URL', value: '{{ dynatrace_tenant_url }}' }
     - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
     - { key: 'KUBE_BEARER_TOKEN', value: '{{ dt_operator_kube_bearer_token | default("N/A") }}' }
+    - { key: 'KUBE_API_ENDPOINT', value: '{{ kube_api_endpoint | default("N/A") }}' }
     - { key: 'SYNTH_NODE_ID', value: '{{ dt_node_id | default("N/A") }}' }
   when: feature_gitlab
