@@ -33,4 +33,7 @@ python3.8 -m pip install -r ./.ace/requirements.txt
 sudo cp ./.ace/ace /usr/local/bin/ace
 sudo chmod 0755 /usr/local/bin/ace
 
+# Remove Windows-style newline characters
+sudo sed -i 's/\r$//' /usr/local/bin/ace
+
 ace --version
