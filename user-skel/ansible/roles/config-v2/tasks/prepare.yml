@@ -1,0 +1,8 @@
+---
+- name: ACE Config - Prepare {{ ace_config_file_path }}
+  template:
+    src: ../templates/ace.config.yml.j2
+    dest: "{{ ace_config_file_path }}"
+    owner: "{{ lookup('env','USER') }}"
+    group: "{{ lookup('env','USER') }}"
+    mode: '0644'

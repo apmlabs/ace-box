@@ -1,0 +1,7 @@
+---
+- name: Install snapd
+  become: True
+  apt:
+    name: snapd
+    state: present
+    update_cache: yes

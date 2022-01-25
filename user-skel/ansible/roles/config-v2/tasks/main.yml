@@ -1,0 +1,50 @@
+---
+- include_vars:
+    file: "{{ ace_config_file_path }}"
+  tags:
+  - always
+
+- set_fact:
+    is_unconfig: True
+  tags:
+  - unconfig
+  - never
+
+- name: Enable "monaco_gitops"
+  include_tasks: set-var.yml
+  vars:
+  - var_key_to_set: "monaco_gitops"
+  - var_value_to_set: "{{ not is_unconfig }}"
+  args:
+    apply:
+      tags:
+        - monaco_gitops
+  tags:
+  - monaco_gitops
+  - never
+
+- name: Enable "quality_gates"
+  include_tasks: set-var.yml
+  vars:
+  - var_key_to_set: "quality_gates"
+  - var_value_to_set: "{{ not is_unconfig }}"
+  args:
+    apply:
+      tags:
+        - quality_gates
+  tags:
+  - quality_gates
+  - never
+
+# - name: Enable "auto_remediation"
+#   include_tasks: set-var.yml
+#   vars:
+#   - var_key_to_set: "auto_remediation"
+#   - var_value_to_set: "{{ not is_unconfig }}"
+#   args:
+#     apply:
+#       tags:
+#         - auto_remediation
+#   tags:
+#   - auto_remediation
+#   - never

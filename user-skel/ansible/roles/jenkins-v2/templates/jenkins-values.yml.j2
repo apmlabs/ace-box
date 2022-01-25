@@ -1,0 +1,130 @@
+controller:
+  tag: {{ jenkins_version }}
+  adminPassword: "dynatrace"
+  numExecutors: 2
+  ingress:
+    enabled: true
+    hostName: jenkins.{{ ingress_domain }}
+    annotations:
+      kubernetes.io/ingress.class: public
+  jenkinsUrlProtocol: {{ ingress_protocol }}
+  installPlugins:
+    - command-launcher:1.6
+    - kubernetes:1.30.11
+    - kubernetes-credentials-provider:0.20
+    - workflow-job:2.42
+    - workflow-aggregator:2.6
+    - credentials-binding:1.27
+    - git:4.10.0
+    - google-oauth-plugin:1.0.6
+    - google-source-plugin:0.4
+    - performance:3.20
+    - github-branch-source:2.11.3
+    - job-dsl:1.78.1
+    - pipeline-build-step:2.15
+    - docker-plugin:1.2.3
+    - blueocean:1.25.2
+    - configuration-as-code:1.55
+    - http_request:1.12
+    - pipeline-utility-steps:2.11.0
+    - ansible:1.1
+    - gitea:1.4.1
+  installLatestPlugins: false
+  JCasC:
+    enabled: true
+    defaultConfig: false
+    configScripts:
+      jenkins-node-config: |
+        jenkins:
+          agentProtocols:
+          - "JNLP4-connect"
+          - "Ping"
+          systemMessage: Welcome to the ACE BOX CI\CD server.  This Jenkins is configured and managed 'as code'.
+          globalNodeProperties:
+          - envVars:
+              env:
+              - key: "INGRESS_DOMAIN"
+                value: "{{ ingress_domain }}"
+      credentials-config: |
+        credentials:
+          system:
+            domainCredentials:
+{% if monaco_gitops is defined or quality_gates is defined %}
+              - credentials:
+                - usernamePassword:
+                    id: "git-creds-ace"
+                    scope: GLOBAL
+                    description: "Git credentials"
+                    username: "n/a"
+                    password: "n/a"
+                - personalAccessTokenImpl:
+                    id: "git-access-token"
+                    scope: GLOBAL
+                    token: "n/a"
+{% endif %}
+      clouds-config: |
+        jenkins:
+          clouds:
+          - kubernetes:
+              containerCapStr: "10"
+              jenkinsTunnel: "jenkins-agent:50000"
+              jenkinsUrl: "http://jenkins:8080"
+              maxRequestsPerHostStr: "32"
+              serverUrl: "https://kubernetes.default"
+              templates:
+{% if monaco_gitops is defined %}
+              - label: "monaco_gitops"
+                name: "monaco_gitops"
+                containers:
+                - name: "monaco-runner"
+                  args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceace/monaco-runner:release-v1.6.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - name: "git"
+                  args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/git"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+{% endif %}
+{% if quality_gates is defined %}
+              - label: "quality_gates"
+                name: "quality_gates"
+                containers:
+                - name: "helm"
+                  args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/helm:3.5.2"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+{% endif %}
+      jobs-config: |
+        jobs:
+{% if monaco_gitops is defined %}
+        - script: >
+            folder('monaco-gitops')
+{% endif %}
+{% if quality_gates is defined %}
+        - script: >
+            folder('quality-gates')
+{% endif %}
