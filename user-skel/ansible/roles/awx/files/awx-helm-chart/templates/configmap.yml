@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: awx-meta
-data:
-  remediation_template_url: ""

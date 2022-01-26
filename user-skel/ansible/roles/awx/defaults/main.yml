@@ -1,5 +1,9 @@
 ---
+awx_namespace: "awx"
+awx_helm_chart_version: "3.4.2"
 awx_ingress_domain: "awx.{{ ingress_domain }}"
-awx_operator_version: "0.12.0"
-awx_admin_username: "admin"
-# awx_admin_password: "" # A secret will be created automatically. Password can be retrieved by running $ kubectl -n awx get secret awx-admin-password -o jsonpath='{.data.password}' | base64 -d
+awx_secret_key_secret_name: "awx-secret-key"
+awx_admin_creds_secret_name: "awx-admin-creds"
+awx_postgres_password: "dynatrace"
+awx_default_org_name: "Default"
+ace_box_user: "{{ non_root_user | default('ace') }}"

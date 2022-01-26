@@ -3,6 +3,11 @@
   command: snap install microk8s --classic --channel="{{ microk8s_release_channel }}" 
   args:
     creates: /snap/bin/microk8s.kubectl
+
+# Required for Ansible k8s tasks
+- name: Install kubernetes package
+  pip:
+    name: kubernetes
   
 - name: "Microk8s - Add {{ non_root_user }} to microk8s group"
   become: true
