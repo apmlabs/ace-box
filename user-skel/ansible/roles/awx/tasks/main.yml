@@ -1,24 +1,44 @@
-- name: AWX - Copy Operator Helm chart
-  copy:
-    src: awx-operator-helm-chart/
-    dest: /tmp/awx-operator-helm-chart/
-  when: feature_awx
+---
+- set_fact:
+    kube_config_path: "/home/{{ ace_box_user }}/.kube/config"
 
-- name: AWX - Install Operator
-  become_user: "{{ non_root_user }}"
-  shell: helm upgrade --install --wait awx-operator /tmp/awx-operator-helm-chart
-  when: feature_awx
+- name: Create namespace for AWX
+  kubernetes.core.k8s:
+    name: "{{ awx_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+    kubeconfig: "{{ kube_config_path }}"
+    
+- name: Add AWX chart repo
+  kubernetes.core.helm_repository:
+    name: adwerx
+    repo_url: "https://adwerx.github.io/charts/"
 
-- name: AWX - Copy Operator Helm chart
-  copy:
-    src: awx-helm-chart/
-    dest: /tmp/awx-helm-chart/
-  when: feature_awx
+- include_tasks:
+    file: create-secrets.yml
 
-- name: AWX - Install AWX
-  become_user: "{{ non_root_user }}"
-  shell: helm upgrade --install --wait awx /tmp/awx-helm-chart --namespace awx --create-namespace --set ingress.hosts[0].host="{{ awx_ingress_domain }}"
-  when: feature_awx
+- name: Template Helm values file
+  ansible.builtin.template:
+    src: awx-values.yml.j2
+    dest: "roles/{{ role_name }}/files/awx-values.yml"
+    owner: "{{ ace_box_user }}"
+    group: "{{ ace_box_user }}"
+    mode: '0644'
 
-- include: roles/awx/tasks/configure.yml
-  when: feature_awx
+- name: Install AWX
+  kubernetes.core.helm:
+    name: awx
+    chart_ref: adwerx/awx
+    chart_version: "{{ awx_helm_chart_version }}"
+    update_repo_cache: true
+    release_namespace: "{{ awx_namespace }}"
+    create_namespace: true
+    wait: true
+    wait_timeout: 15m
+    values_files:
+      - "roles/{{ role_name }}/files/awx-values.yml"
+    kubeconfig: "{{ kube_config_path }}"
+
+- include_tasks:
+    file: configure.yml
