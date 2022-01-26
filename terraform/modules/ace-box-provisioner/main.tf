@@ -39,6 +39,7 @@ resource "null_resource" "provisioner_init" {
 
   provisioner "remote-exec" {
     inline = [
+      "sed -i 's/\r$//' /home/${local.user}/init.sh",
       "chmod +x /home/${local.user}/init.sh",
       "/home/${local.user}/init.sh"
     ]
