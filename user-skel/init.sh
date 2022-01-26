@@ -27,6 +27,9 @@ echo "INIT - Installing Ansible..."
 sudo python3.8 -m pip install ansible -q
 ansible --version
 
+echo "INIT - Installing Ansible requirements..."
+ansible-galaxy install -r ./ansible/requirements.yml
+
 # Setup ace-cli
 echo "INIT - Setting up ACE-CLI..."
 python3.8 -m pip install -r ./.ace/requirements.txt
