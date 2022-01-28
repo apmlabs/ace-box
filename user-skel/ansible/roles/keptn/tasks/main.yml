@@ -1,51 +1,60 @@
-- name: Keptn - Download Keptn CLI
-  unarchive:
-    src: "https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/keptn-{{ keptn_version }}-linux-amd64.tar.gz"
-    dest: /tmp
-    remote_src: yes
+---
+- name: Update ca flavor
+  include_role:
+    name: config-v2
+    tasks_from: set-var
+  vars:
+  - var_key_to_set: "ca_flavor"
+  - var_value_to_set: "KEPTN"
+  when: ca_flavor is not defined or ca_flavor != "KEPTN"
+
+- name: Download Keptn CLI
+  get_url:
+    url: "https://get.keptn.sh"
+    dest: "{{ keptn_cli_download_location }}"
     mode: +x
-  when: feature_keptn
+    timeout: 300
+  when: not keptn_cli_download_location is exists
 
-- name: Keptn - Rename CLI
-  become: true
-  shell: "cp /tmp/keptn-{{ keptn_version }}-linux-amd64 /usr/local/bin/keptn"
-  when: feature_keptn
+- name: Install Keptn CLI
+  shell: KEPTN_VERSION="{{ keptn_version }}" /bin/bash "{{ keptn_cli_download_location }}"
+  args:
+    creates: "/usr/local/bin/keptn"
 
-- name: Keptn - Install via Helm
-  become_user: "{{ non_root_user }}"
-  shell: >
-    /snap/bin/helm upgrade --install keptn keptn --version={{ keptn_version }} 
-    --namespace {{ keptn_namespace }} --create-namespace 
-    --repo="https://storage.googleapis.com/keptn-installer" 
-    --wait --timeout 10m
-  when: feature_keptn
+- name: Deploy Keptn on Kubernetes cluster
+  kubernetes.core.helm:
+    name: keptn
+    chart_ref: "https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/keptn-{{ keptn_version }}.tgz"
+    release_namespace: "{{ keptn_namespace }}"
+    create_namespace: true
+    wait: true
+    wait_timeout: 15m
+  register: keptn_helm_chart
 
-- name: Keptn - Template ingress file
+- name: Template ingress file
   ansible.builtin.template:
     src: keptn-ingress.yml.j2
     dest: /tmp/keptn-ingress.yml
-    owner: root
-    group: root
+    owner: "{{ ace_box_user }}"
+    group: "{{ ace_box_user }}"
     mode: '0644'
-  when: feature_keptn
 
-- name: Keptn - Apply ingress
-  shell: "/snap/bin/microk8s.kubectl -n {{ keptn_namespace }} apply -f /tmp/keptn-ingress.yml"
-  when: feature_keptn
+- name: Create ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /tmp/keptn-ingress.yml
+    namespace: "{{ keptn_namespace }}"
+  register: keptn_ingress
 
 - name: Keptn - Source Keptn secrets
   include: roles/keptn/tasks/source-secret.yml
-  when: feature_keptn
-
+      
 - name: Keptn - Authenticate CLI
-  become_user: "{{ non_root_user }}"
   shell: "/usr/local/bin/keptn auth --api-token {{ keptn_api_token }} --endpoint {{ ingress_protocol }}://{{ keptn_ingress_domain }}/api"
-  when: feature_keptn
+  when: keptn_helm_chart.changed or keptn_ingress.changed
 
 - name: Keptn - Install JMeter service
   include: roles/keptn/tasks/jmeter-service.yml
-  when: feature_keptn
 
 - name: Keptn - Install Dynatrace service
   include: roles/keptn/tasks/dynatrace-service.yml
-  when: feature_keptn
