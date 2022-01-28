@@ -1,3 +1,4 @@
+---
 - name: ActiveGate - Get all Synthetic nodes
   uri:
     url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/nodes"
@@ -8,11 +9,10 @@
     return_content: no
     status_code: 200, 201, 204
   register: nodes_response_raw
-  when: feature_activegate
   until: "{{ nodes_response_raw.json | json_query(synthetic_nodes_query) }}"
   retries: 15
   delay: 10
 
 - set_fact:
-    dt_node_id: "{{ nodes_response_raw.json | json_query(synthetic_nodes_query) | first }}"
-  when: feature_activegate and nodes_response_raw is defined
+    dt_synthetic_node_id: "{{ nodes_response_raw.json | json_query(synthetic_nodes_query) | first }}"
+  when: nodes_response_raw is defined
