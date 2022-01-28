@@ -1,35 +1,52 @@
-- name: "Dynatrace OneAgent 1 - Create Dynatrace namespace"
-  shell: 
-    cmd: "/snap/bin/microk8s.kubectl create namespace {{ dt_operator_namespace }}"
-  ignore_errors: yes
-  when: feature_oneagent
+---
+- name: Create Dynatrace namespace
+  kubernetes.core.k8s:
+    name: "{{ dt_operator_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
 
-- name: "Dynatrace OneAgent 2 - Create CRD"
-  shell: 
-    cmd: "/snap/bin/microk8s.kubectl apply -f https://github.com/Dynatrace/dynatrace-operator/releases/download/{{ dt_operator_release }}/kubernetes.yaml"
-  ignore_errors: yes
-  when: feature_oneagent
+- block:
+  - name: Download dynatrace-operator manifest
+    ansible.builtin.get_url:
+      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/{{ dt_operator_release }}/kubernetes.yaml"
+      dest: /tmp/dt_operator.yaml
+      mode: '0664'
+  - name: Apply dynatrace-operator manifest
+    kubernetes.core.k8s:
+      state: present
+      src: /tmp/dt_operator.yaml
+    register: dt_operator
+    retries: 10
+    delay: 5
+    until: dt_operator is not failed
 
-- name: "Dynatrace OneAgent 3 - Create Secret"
-  shell: 
-    cmd: "/snap/bin/microk8s.kubectl -n {{ dt_operator_namespace }} create secret generic dynakube --from-literal=\"apiToken={{ dynatrace_api_token }}\" --from-literal=\"paasToken={{ dynatrace_paas_token }}\""
-  ignore_errors: yes
-  when: feature_oneagent
+- name: Create OneAgent secret
+  kubernetes.core.k8s:
+    name: dynakube
+    api_version: v1
+    kind: Secret
+    state: present
+    namespace: "{{ dt_operator_namespace }}"
+    resource_definition:
+      type: Opaque
+      data:
+        apiToken: "{{ dynatrace_api_token | b64encode }}"
+        paasToken: "{{ dynatrace_paas_token | b64encode }}"
 
-- name: Dynatrace OneAgent 4 - Set Environment
-  ansible.builtin.template:
-    src: dynakube.yaml.j2
-    dest: /tmp/dynakube.yaml
-    owner: root
-    group: root
-    mode: '0644'
-  when: feature_oneagent
-
-- name: "Dynatrace OneAgent 5 - Apply CR"
-  shell: 
-    cmd: "/snap/bin/microk8s.kubectl apply -n {{ dt_operator_namespace }} -f /tmp/dynakube.yaml"
-  retries: 12
-  delay: 5
-  register: dynakube_result
-  until: dynakube_result is not failed
-  when: feature_oneagent
+- block:
+  - name: Template Dynakube manifest
+    ansible.builtin.template:
+      src: dynakube.yaml.j2
+      dest: /tmp/dynakube.yaml
+      owner: "{{ ace_box_user }}"
+      group: "{{ ace_box_user }}"
+      mode: "0644"
+  - name: Apply Dynakube manifest
+    kubernetes.core.k8s:
+      state: present
+      src: /tmp/dynakube.yaml
+    register: dynakube
+    retries: 10
+    delay: 10
+    until: dynakube is not failed
