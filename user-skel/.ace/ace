@@ -30,6 +30,9 @@ install_targets = [
     'cloud_automation'
 ]
 uninstall_targets = ['gitlab', 'dynatrace', 'awx']
+enable_targets = [
+    'demo_default'
+]
 
 def set_log_level(
   verbosity,
@@ -329,10 +332,55 @@ def update_config(
     click.echo('All set!')
 
 
+@click.command()
+@click.option(
+    '--ansible-workdir',
+    help=(
+        'Please enter the directory of ACE-Box\'s main.yml.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_ANSIBLE_WORKDIR',
+)
+@click.argument(
+    'target',
+    type=click.Choice(
+        enable_targets,
+        case_sensitive=True,
+    ),
+    nargs=1,
+)
+def enable(
+    target,
+    ansible_workdir,
+):
+    """Enabling ACE-Box use case"""
+    logging.info('Preparing ACE-Box for use case {%s}...', target)
+
+    if not ansible_workdir:
+        ansible_workdir = click.prompt(
+            'Please enter Ansible work dir',
+            default=default_ansible_workdir
+        )
+
+    subprocess.run(
+        f'ansible-playbook main-v2.yml --tags "{target}"',
+        cwd=ansible_workdir,
+        shell=True,
+        check=True,
+    )
+
+    click.echo(f'Successfully installed {target}')
+    click.echo("You're welcome!")
+
+
+# Legacy
 ace.add_command(prepare)
-ace.add_command(install)
-ace.add_command(uninstall)
-ace.add_command(update_config)
+# ace.add_command(install)
+# ace.add_command(uninstall)
+# ace.add_command(update_config)
+
+# Use case based features
+ace.add_command(enable)
 
 if __name__ == '__main__':
     # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
