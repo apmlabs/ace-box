@@ -84,7 +84,8 @@ resource "null_resource" "provisioner_ace_install" {
   provisioner "remote-exec" {
     inline = [
       "export ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/",
-      "ace install default",
+      # "ace install default",
+      "ace enable demo_default",
     ]
   }
 }
