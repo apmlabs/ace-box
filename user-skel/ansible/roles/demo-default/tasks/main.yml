@@ -54,7 +54,7 @@
   when: new_repo_created is defined and new_repo_created == true
 
 - include_role:
-    name: jenkins-v2
+    name: jenkins
 
 - include_role:
     name: dashboard

@@ -1,7 +1,7 @@
         jobs:
           - script: >
               folder('demo-appsec')
-              description('Check out ${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}/src/branch/master/demo/appsec for more information')
+              description('Check out {{ ingress_protocol }}://{{ git_domain }}/{{ git_org_demo }}/{{ git_repo_demo }}/src/branch/main/demo/appsec for more information')
           - script: >
               pipelineJob('demo-appsec/1. Build') {
                 parameters {
@@ -13,10 +13,10 @@
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
+                            url('{{ ingress_protocol }}://{{ git_domain }}/{{ git_org_demo }}/{{ git_repo_demo }}')
                             credentials('git-creds-ace')
                           }
-                          branch('*/master')
+                          branch('*/main')
                       }
                     }
                     lightweight()
@@ -37,10 +37,10 @@
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
+                            url('{{ ingress_protocol }}://{{ git_domain }}/{{ git_org_demo }}/{{ git_repo_demo }}')
                             credentials('git-creds-ace')
                           }
-                          branch('*/master')
+                          branch('*/main')
                       }
                     }
                     lightweight()
@@ -60,10 +60,10 @@
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
+                            url('{{ ingress_protocol }}://{{ git_domain }}/{{ git_org_demo }}/{{ git_repo_demo }}')
                             credentials('git-creds-ace')
                           }
-                          branch('*/master')
+                          branch('*/main')
                       }
                     }
                     lightweight()
@@ -84,10 +84,10 @@
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
+                            url('{{ ingress_protocol }}://{{ git_domain }}/{{ git_org_demo }}/{{ git_repo_demo }}')
                             credentials('git-creds-ace')
                           }
-                          branch('*/master')
+                          branch('*/main')
                       }
                     }
                     lightweight()
@@ -102,10 +102,10 @@
                     scm {
                       git {
                           remote { 
-                            url('${GIT_PROTOCOL}://${GIT_DOMAIN}/${GITHUB_ORGANIZATION}/${GIT_REPO}')
+                            url('{{ ingress_protocol }}://{{ git_domain }}/{{ git_org_demo }}/{{ git_repo_demo }}')
                             credentials('git-creds-ace')
                           }
-                          branch('*/master')
+                          branch('*/main')
                       }
                     }
                     lightweight()

@@ -6,4 +6,4 @@
     name: gitea
 
 - include_role:
-    name: jenkins-v2
+    name: jenkins

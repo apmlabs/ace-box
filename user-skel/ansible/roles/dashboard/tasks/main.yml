@@ -21,7 +21,7 @@
 
 - name: Source Jenkins secrets
   include_role:
-    name: jenkins-v2
+    name: jenkins
     tasks_from: source-secret
 
 - block:
@@ -61,7 +61,7 @@
     --set env.SIMPLENODEAPP_URL_PRODUCTION={{ ingress_protocol }}://simplenodeservice.production.{{ ingress_domain }}
     --set env.SIMPLENODEAPP_URL_CANARY={{ ingress_protocol }}://simplenodeservice.canary.{{ ingress_domain }}
     --set env.JENKINS_URL={{ ingress_protocol }}://jenkins.{{ ingress_domain }}
-    --set env.JENKINS_USER={{ jenkins_user | default(None) }}
+    --set env.JENKINS_USER={{ jenkins_username | default(None) }}
     --set env.JENKINS_PASSWORD={{ jenkins_password | default(None) }}
     --set env.GITEA_URL={{ ingress_protocol }}://gitea.{{ ingress_domain }}
     --set env.GITEA_USER={{ gitea_username | default(None) }}
