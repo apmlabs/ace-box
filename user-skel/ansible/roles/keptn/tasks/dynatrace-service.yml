@@ -18,7 +18,7 @@
 
 - name: Deploy Keptn Dynatrace service
   kubernetes.core.helm:
-    name: jdynatrace-service 
+    name: dynatrace-service 
     chart_ref: "https://github.com/keptn-contrib/dynatrace-service/releases/download/{{ keptn_dynatrace_service_version }}/dynatrace-service-{{ keptn_dynatrace_service_version }}.tgz"
     release_namespace: "{{ keptn_namespace }}"
     create_namespace: true
