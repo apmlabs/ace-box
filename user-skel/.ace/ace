@@ -31,7 +31,9 @@ install_targets = [
 ]
 uninstall_targets = ['gitlab', 'dynatrace', 'awx']
 enable_targets = [
-    'demo_default'
+    'demo_default',
+    'demo_appsec',
+    'demo_autorem'
 ]
 
 def set_log_level(
