@@ -15,11 +15,17 @@
     - demo_default
     - never
 
+    # Use case - AppSec demo
+  - role: demo-appsec
+    tags:
+    - demo_appsec
+    - never
+
   # Use case - Auto remediation demo
-  # - role: demo-auto-remediation
-  #   tags:
-  #   - demo_auto_remediation
-  #   - never
+  - role: demo-autorem
+    tags:
+    - demo_autorem
+    - never
 
   # Use case - Monaco GitOps hands-on training
   # - role: hot-monaco-gitops
