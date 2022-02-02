@@ -34,6 +34,9 @@ pipeline {
         LOOPCOUNT = 100
         COMPONENT = 'api'
         PARTOF = 'simplenode-app'
+        KEPTN_API_TOKEN = credentials('CA_API_TOKEN')
+        DT_API_TOKEN = credentials('DT_API_TOKEN')
+        DT_TENANT_URL = credentials('DT_TENANT_URL')
     }
     agent {
         label 'kubegit'
@@ -45,11 +48,11 @@ pipeline {
                     // TEMP - Generate sli files manually to cirumvent https://github.com/keptn-contrib/dynatrace-service/issues/601
                     withCredentials([usernamePassword(credentialsId: 'git-creds-ace', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         sh "git config --global user.email ${env.GITHUB_USER_EMAIL}"
-                        sh "git clone ${env.GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_DOMAIN}/${env.GITHUB_ORGANIZATION}/${env.GIT_REPO}"
-                        sh "cd ${env.GIT_REPO}/ && sed -e 's|APP_BUILD_VERSION_PLACEHOLDER|${env.ART_VERSION}|' cloudautomation/sli_appsec.yaml > cloudautomation/sli_appsec_gen.yaml"
-                        sh "cd ${env.GIT_REPO}/ && git add cloudautomation/sli_appsec_gen.yaml && git commit -m 'Update sli for appsec'"
-                        sh "cd ${env.GIT_REPO}/ && git push ${env.GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_DOMAIN}/${env.GITHUB_ORGANIZATION}/${env.GIT_REPO}"
-                        //sh "rm -rf ${env.GIT_REPO}"
+                        sh "git clone ${env.GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_DOMAIN}/${env.GIT_ORG_DEMO}/${env.GIT_REPO_DEMO}"
+                        sh "cd ${env.GIT_REPO_DEMO}/ && sed -e 's|APP_BUILD_VERSION_PLACEHOLDER|${env.ART_VERSION}|' cloudautomation/sli_appsec.yaml > cloudautomation/sli_appsec_gen.yaml"
+                        sh "cd ${env.GIT_REPO_DEMO}/ && git add cloudautomation/sli_appsec_gen.yaml && git commit -m 'Update sli for appsec'"
+                        sh "cd ${env.GIT_REPO_DEMO}/ && git push ${env.GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_DOMAIN}/${env.GIT_ORG_DEMO}/${env.GIT_REPO_DEMO}"
+                        //sh "rm -rf ${env.GIT_REPO_DEMO}"
                     }
                 }
             }

@@ -21,6 +21,10 @@ pipeline {
         string(name: 'BUILD', defaultValue: '', description: 'The build of the service to deploy.', trim: true)
         string(name: 'ART_VERSION', defaultValue: '', description: 'The artefact version to be deployed.', trim: true)
     }
+    environment {
+        DT_API_TOKEN = credentials('DT_API_TOKEN')
+        DT_TENANT_URL = credentials('DT_TENANT_URL')
+    }
     agent {
         label 'kubegit'
     }
@@ -44,7 +48,7 @@ pipeline {
                 }
                 container('helm') {
                     sh "cat helm/simplenodeservice/values-gen.yaml"
-                    sh "helm upgrade -i simplenodeservice-production helm/simplenodeservice -f helm/simplenodeservice/values-gen.yaml --namespace production --wait"
+                    sh "helm upgrade -i simplenodeservice-production helm/simplenodeservice -f helm/simplenodeservice/values-gen.yaml --namespace production --create-namespace --wait"
                 }
             }
         }

@@ -4,6 +4,12 @@ pipeline {
     agent {
         label 'ace'
     }
+    environment {
+        KUBE_BEARER_TOKEN = credentials('KUBE_BEARER_TOKEN')
+        KEPTN_API_TOKEN = credentials('CA_API_TOKEN')
+        DT_API_TOKEN = credentials('DT_API_TOKEN')
+        DT_TENANT_URL = credentials('DT_TENANT_URL')
+    }
     stages {
         stage('Dynatrace base config - Validate') {
 			steps {

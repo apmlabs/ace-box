@@ -34,6 +34,9 @@ pipeline {
         LOOPCOUNT = 100
         COMPONENT = 'api'
         PARTOF = 'simplenode-app'
+        KEPTN_API_TOKEN = credentials('CA_API_TOKEN')
+        DT_API_TOKEN = credentials('DT_API_TOKEN')
+        DT_TENANT_URL = credentials('DT_TENANT_URL')
     }
     agent {
         label 'kubegit'
