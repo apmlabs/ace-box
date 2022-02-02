@@ -107,7 +107,7 @@ controller:
         credentials:
           system:
             domainCredentials:
-{% if demo_default is defined or demo_appsec is defined %}
+{% if demo_default is defined or demo_appsec is defined or demo_autorem is defined %}
               - credentials:
                 - usernamePassword:
                     id: "git-creds-ace"
@@ -153,13 +153,11 @@ controller:
               serverUrl: "https://kubernetes.default"
               templates:
 
-{% if demo_default is defined or demo_appsec is defined %}
 {% include 'container-nodejs.yml.j2' %}
 
 {% include 'container-ace.yml.j2' %}
 
 {% include 'container-kubegit.yml.j2' %}
-{% endif %}
 
 {% if demo_default is defined %}
       demo-default-jobs-config: |
@@ -169,4 +167,9 @@ controller:
 {% if demo_appsec is defined %}
       demo-appsec-jobs-config: |
 {% include 'demo-appsec-jobs.yml.j2' %}
+{% endif %}
+
+{% if demo_autorem is defined %}
+      demo-autorem-jobs-config: |
+{% include 'demo-autorem-jobs.yml.j2' %}
 {% endif %}
