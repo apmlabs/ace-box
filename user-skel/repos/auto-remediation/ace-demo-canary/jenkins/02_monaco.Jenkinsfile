@@ -1,14 +1,18 @@
 ENVS_FILE = "monaco/environments.yaml"
 
 pipeline {
-	agent none
+	agent {
+		label 'ace'
+	}
+	environment {
+    KUBE_BEARER_TOKEN = credentials('KUBE_BEARER_TOKEN')
+		DT_API_TOKEN = credentials('DT_API_TOKEN')
+		DT_TENANT_URL = credentials('DT_TENANT_URL')
+	}
 	stages {
 		stage('Retrieve AWX meta') {
-			agent {
-				label "kubegit"
-			}
 			steps {
-				container('kubectl') {
+				container('ace') {
 					script {
 						env.AWX_ADMIN_USER = sh(returnStdout: true, script: "kubectl -n awx get secret awx-admin-creds -o jsonpath='{ .data.AWX_ADMIN_USER }'|base64 -d")
 						env.AWX_ADMIN_PASSWORD = sh(returnStdout: true, script: "kubectl -n awx get secret awx-admin-creds -o jsonpath='{ .data.AWX_ADMIN_PASSWORD }'|base64 -d")
@@ -19,11 +23,8 @@ pipeline {
 			}
 		}
 		stage('Dynatrace base config - Validate') {
-			agent {
-				label "monaco-runner"
-			}
 			steps {
-				container('monaco') {
+				container('ace') {
 					script {
 						sh "monaco -v -dry-run -e=$ENVS_FILE -p=infrastructure monaco/projects"
 					}
@@ -31,11 +32,8 @@ pipeline {
 			}
 		}
 		stage('Dynatrace base config - Deploy') {
-			agent {
-				label "monaco-runner"
-			}
 			steps {
-				container('monaco') {
+				container('ace') {
 					script {
 						sh "monaco -v -e=$ENVS_FILE -p=infrastructure monaco/projects"
 						sh "sleep 60"
@@ -44,11 +42,8 @@ pipeline {
 			}
 		}
 		stage('Dynatrace ACE project - Validate') {
-			agent {
-				label "monaco-runner"
-			}
 			steps {
-				container('monaco') {
+				container('ace') {
 					script {
 						sh "monaco -v -dry-run -e=$ENVS_FILE -p=ace monaco/projects"
 					}
@@ -56,11 +51,8 @@ pipeline {
 			}
 		}
 		stage('Dynatrace ACE project - Deploy') {
-			agent {
-				label "monaco-runner"
-			}
 			steps {
-				container('monaco') {
+				container('ace') {
 					script {
 						sh "monaco -v -e=$ENVS_FILE -p=ace monaco/projects"
 					}
