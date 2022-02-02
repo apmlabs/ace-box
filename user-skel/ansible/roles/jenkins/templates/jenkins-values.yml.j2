@@ -52,14 +52,12 @@ controller:
                 value: "{{ ingress_domain | default(None) }}"
               - key: "DOCKER_REGISTRY_URL"
                 value: "{{ docker_registry_url | default(None) }}"
-              - key: "CA_ENDPOINT"
-                value: "{{ ca_endpoint | default(None) }}"
-              - key: "CA_BRIDGE"
-                value: "{{ ca_bridge | default(None) }}"
               - key: "GIT_PROTOCOL"
                 value: "{{ ingress_protocol | default(None) }}"
               - key: "GIT_DOMAIN"
                 value: "{{ git_domain | default(None) }}"
+              - key: "SYNTH_NODE_ID"
+                value: "{{ dt_synthetic_node_id | default(None) }}"
 {% if demo_default is defined or demo_appsec is defined %}
               - key: "GIT_ORG_DEMO"
                 value: "{{ git_org_demo | default(None) }}"
@@ -69,10 +67,12 @@ controller:
                 value: "{{ ca_endpoint | default(None) }}"
               - key: "KEPTN_BRIDGE"
                 value: "{{ ca_bridge | default(None) }}"
+              - key: "CA_ENDPOINT"
+                value: "{{ ca_endpoint | default(None) }}"
+              - key: "CA_BRIDGE"
+                value: "{{ ca_bridge | default(None) }}"
               - key: "KUBE_API_ENDPOINT"
                 value: "{{ kubernetes_api_endpoint | default(None) }}"
-              - key: "SYNTH_NODE_ID"
-                value: "{{ dt_synthetic_node_id | default(None) }}"
 {% endif %}
       library-config: |
         unclassified:
@@ -152,24 +152,23 @@ controller:
               maxRequestsPerHostStr: "32"
               serverUrl: "https://kubernetes.default"
               templates:
-
 {% include 'container-nodejs.yml.j2' %}
 
 {% include 'container-ace.yml.j2' %}
 
 {% include 'container-kubegit.yml.j2' %}
-
 {% if demo_default is defined %}
+
       demo-default-jobs-config: |
 {% include 'demo-default-jobs.yml.j2' %}
 {% endif %}
-
 {% if demo_appsec is defined %}
+
       demo-appsec-jobs-config: |
 {% include 'demo-appsec-jobs.yml.j2' %}
 {% endif %}
-
 {% if demo_autorem is defined %}
+
       demo-autorem-jobs-config: |
 {% include 'demo-autorem-jobs.yml.j2' %}
 {% endif %}
