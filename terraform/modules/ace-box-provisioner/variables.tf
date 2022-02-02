@@ -37,3 +37,7 @@ variable "ca_tenant" {
 variable "ca_api_token" {
 
 }
+
+variable "use_case" {
+
+}
