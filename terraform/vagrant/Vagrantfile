@@ -58,7 +58,7 @@ Vagrant.configure("2") do |config|
 
       # Install ACE Box
       config.vm.provision "shell", 
-        inline: "ace install default",
+        inline: "ace enable demo_default",
         env: {
           "ACE_ANSIBLE_WORKDIR" => "/home/vagrant/ansible/"
         },
