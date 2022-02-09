@@ -14,20 +14,18 @@ import click
 CLI_VERSION = '0.0.2'
 default_ansible_workdir = os.path.expanduser('~/ansible/')
 install_targets = [
-    'default',
     'microk8s',
-    'helm',
     'k8s',
     'gitea',
     'gitlab',
-    'dynatrace',
-    'repositories',
+    'dt_oneagent',
+    'dt_activegate',
     'keptn',
     'monaco',
     'jenkins',
     'dashboard',
     'awx',
-    'cloud_automation'
+    'cloudautomation'
 ]
 uninstall_targets = ['gitlab', 'dynatrace', 'awx']
 enable_targets = [
@@ -377,7 +375,7 @@ def enable(
 
 # Legacy
 ace.add_command(prepare)
-# ace.add_command(install)
+ace.add_command(install)
 # ace.add_command(uninstall)
 # ace.add_command(update_config)
 
