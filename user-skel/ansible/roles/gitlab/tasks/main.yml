@@ -1,25 +1,29 @@
-- name: Gitlab - Add helm repo
-  become_user: "{{ non_root_user }}"
-  shell: /snap/bin/helm repo add gitlab https://charts.gitlab.io/ && helm repo update
-  when: feature_gitlab
+---
+- name: Add chart repo
+  kubernetes.core.helm_repository:
+    name: gitlab
+    repo_url: "https://charts.gitlab.io/"
 
 - name: Gitlab - Template values file
   ansible.builtin.template:
     src: gitlab-values.yml.j2
-    dest: /tmp/gitlab-values.yml
-    owner: root
-    group: root
+    dest: ""./roles/{{ role_name }}/files/gitlab-values.yml"
+    owner: "{{ ace_box_user }}"
+    group: "{{ ace_box_user }}"
     mode: '0644'
-  when: feature_gitlab
 
-- name: Gitlab - Install using helm
-  become_user: "{{ non_root_user }}"
-  shell: >
-    /snap/bin/helm upgrade --install gitlab gitlab/gitlab -f /tmp/gitlab-values.yml
-    --create-namespace --namespace {{ gitlab_namespace }}
-    --version {{ gitlab_helm_chart_version }}
-    --wait --timeout 10m
-  when: feature_gitlab
+- name: Install
+  kubernetes.core.helm:
+    name: gitlab
+    chart_ref: gitlab/gitlab
+    chart_version: "{{ gitlab_helm_chart_version }}"
+    release_namespace: "{{ gitlab_namespace }}"
+    create_namespace: true
+    wait: true
+    wait_timeout: 15m
+    values_files:
+      - "./roles/{{ role_name }}/files/gitlab-values.yml"
+  register: gitlab_helm
 
 - name: Gitlab - Wait for API to be up
   uri:
@@ -30,7 +34,6 @@
   until: result.status == 200
   retries: 300
   delay: 1
-  when: feature_gitlab
+  when: gitlab_helm.changed
 
 - include: roles/gitlab/tasks/configure.yml
-  when: feature_gitlab

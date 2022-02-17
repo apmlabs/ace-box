@@ -1,36 +1,63 @@
-- include: roles/gitlab/tasks/source-secret.yml
-  when: feature_gitlab
+---
+- include_tasks: roles/gitlab/tasks/source-secret.yml
 
-- include: roles/gitlab/tasks/ensure-group.yml
-  when: feature_gitlab
+- include_tasks: roles/gitlab/tasks/ensure-group.yml
 
-- include_role:
-    name: keptn
-    tasks_from: source-secret
-  when: feature_gitlab and feature_keptn
+- block:
+  - name: Source Keptn secrets
+    include_role:
+      name: keptn
+      tasks_from: source-secret
+  - include_role:
+      name: keptn
+      tasks_from: source-endpoints
+  - set_fact:
+      ca_endpoint: "{{ keptn_endpoint }}"
+      ca_bridge: "{{ keptn_bridge }}"
+      ca_api_token: "{{ keptn_api_token }}"
+  when: cloud_automation_flavor is defined and cloud_automation_flavor == "KEPTN"
 
-- include_role:
-    name: keptn
-    tasks_from: source-endpoints
-  when: feature_gitlab and feature_keptn
+- block:
+  - name: Source Cloud Automation secrets
+    include_role:
+      name: cloudautomation
+      tasks_from: source-secret
+  - set_fact:
+      ca_endpoint: "{{ cloud_automation_endpoint }}"
+      ca_bridge: "{{ cloud_automation_bridge }}"
+      ca_api_token: "{{ cloud_automation_api_token }}"
+  when: cloud_automation_flavor is defined and cloud_automation_flavor == "CLOUD_AUTOMATION"
 
-- include_role:
-    name: dt-oneagent
-    tasks_from: source-secrets
-  when: feature_gitlab and feature_oneagent
+- block:
+  - name: Source Kubernetes endpoint
+    kubernetes.core.k8s_info:
+      kind: Service
+      name: "kubernetes"
+      namespace: "default"
+    register: kubernetes_svc_data
+  - set_fact:
+      kubernetes_api_endpoint: "https://{{ kubernetes_svc_data.resources[0].spec.clusterIP }}"
 
-- include_role:
+- block:
+  - name: Source Dynatrace Operator ServiceAccount
+    kubernetes.core.k8s_info:
+      kind: ServiceAccount
+      name: "dynatrace-kubernetes-monitoring"
+      namespace: "dynatrace"
+    register: dt_operator_sa_data
+  - name: Source Dynatrace Operator Secret
+    kubernetes.core.k8s_info:
+      kind: Secret
+      name: "{{ dt_operator_sa_data.resources[0].secrets[0].name }}"
+      namespace: "dynatrace"
+    register: dt_operator_secret_data
+  - set_fact:
+      dt_operator_kube_bearer_token: "{{ dt_operator_secret_data.resources[0].data.token | b64decode }}"
+
+- name: Source DT Synthetic node id
+  include_role:
     name: dt-activegate
     tasks_from: source-node-id
-  when: feature_gitlab and feature_activegate
-
-- name: Gitlab - Retrieve Kubernetes API URL
-  block:
-  - shell: /snap/bin/microk8s.kubectl get svc kubernetes -o jsonpath='{.spec.clusterIP}'
-    register: kube_api_endpoint_raw
-  - set_fact:
-      kube_api_endpoint: "https://{{  kube_api_endpoint_raw.stdout }}"
-  when: feature_gitlab
 
 - name: Gitlab - Create variables
   include_role:
@@ -42,11 +69,10 @@
   loop:
     - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
     - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
-    - { key: 'KEPTN_API_TOKEN', value: '{{ keptn_api_token | default("N/A") }}' }
-    - { key: 'KEPTN_ENDPOINT', value: '{{ keptn_endpoint | default("N/A") | replace("/api","") }}' }
+    - { key: 'KEPTN_API_TOKEN', value: '{{ ca_api_token | default(None) }}' }
+    - { key: 'KEPTN_ENDPOINT', value: '{{ ca_endpoint | default(None) | replace("/api","") }}' }
     - { key: 'DT_TENANT_URL', value: '{{ dynatrace_tenant_url }}' }
     - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
-    - { key: 'KUBE_BEARER_TOKEN', value: '{{ dt_operator_kube_bearer_token | default("N/A") }}' }
-    - { key: 'KUBE_API_ENDPOINT', value: '{{ kube_api_endpoint | default("N/A") }}' }
-    - { key: 'SYNTH_NODE_ID', value: '{{ dt_node_id | default("N/A") }}' }
-  when: feature_gitlab
+    - { key: 'KUBE_BEARER_TOKEN', value: '{{ dt_operator_kube_bearer_token | default(None) }}' }
+    - { key: 'KUBE_API_ENDPOINT', value: '{{ kubernetes_api_endpoint | default(None) }}' }
+    - { key: 'SYNTH_NODE_ID', value: '{{ dt_synthetic_node_id | default(None) }}' }
