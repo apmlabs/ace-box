@@ -35,10 +35,10 @@
       tasks_from: source-endpoints
   when: cloud_automation_flavor is defined and cloud_automation_flavor == "KEPTN"
 
-- name: Source CA secrets
+- name: Source Cloud Automation secrets
   include_role:
     name: cloudautomation
-    tasks_from: source-credentials
+    tasks_from: source-secret
   when: cloud_automation_flavor is defined and cloud_automation_flavor == "CLOUD_AUTOMATION"
 
 - name: Source AWX credentials

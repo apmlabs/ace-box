@@ -58,7 +58,7 @@ controller:
                 value: "{{ git_domain | default(None) }}"
               - key: "SYNTH_NODE_ID"
                 value: "{{ dt_synthetic_node_id | default(None) }}"
-{% if demo_default is defined or demo_appsec is defined %}
+{% if demo_default|default(False) == True or demo_appsec|default(False) == True %}
               - key: "GIT_ORG_DEMO"
                 value: "{{ git_org_demo | default(None) }}"
               - key: "GIT_REPO_DEMO"
@@ -107,7 +107,7 @@ controller:
         credentials:
           system:
             domainCredentials:
-{% if demo_default is defined or demo_appsec is defined or demo_autorem is defined %}
+{% if demo_default|default(False) == True or demo_appsec|default(False) == True or demo_autorem|default(False) == True %}
               - credentials:
                 - usernamePassword:
                     id: "git-creds-ace"
@@ -157,17 +157,17 @@ controller:
 {% include 'container-ace.yml.j2' %}
 
 {% include 'container-kubegit.yml.j2' %}
-{% if demo_default is defined %}
+{% if demo_default|default(False) == True %}
 
       demo-default-jobs-config: |
 {% include 'demo-default-jobs.yml.j2' %}
 {% endif %}
-{% if demo_appsec is defined %}
+{% if demo_appsec|default(False) == True %}
 
       demo-appsec-jobs-config: |
 {% include 'demo-appsec-jobs.yml.j2' %}
 {% endif %}
-{% if demo_autorem is defined %}
+{% if demo_autorem|default(False) == True %}
 
       demo-autorem-jobs-config: |
 {% include 'demo-autorem-jobs.yml.j2' %}

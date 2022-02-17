@@ -11,7 +11,7 @@ dynatrace_tenant_url: "{{ dynatrace_tenant_url | default(None) }}"
 dynatrace_paas_token: "{{ dynatrace_paas_token | default(None) }}"
 dynatrace_api_token: "{{ dynatrace_api_token | default(None) }}"
 # Cloud Automation
-cloud_automation_flavor: "{{ ca_automation | default('KEPTN') }}"
+cloud_automation_flavor: "{{ cloud_automation_flavor | default('KEPTN') }}"
 cloud_automation_tenant_url: "{{ ca_tenant_url | default(None) }}"
 cloud_automation_api_token: "{{ ca_api_token | default(None) }}"
 # Features

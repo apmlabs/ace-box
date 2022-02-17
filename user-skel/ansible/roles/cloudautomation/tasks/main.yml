@@ -1,37 +1,44 @@
-- name: Cloud Automation - Download CLI
-  unarchive:
-    src: "https://github.com/keptn/keptn/releases/download/{{ cloud_automation_version }}/keptn-{{ cloud_automation_version }}-linux-amd64.tar.gz"
-    dest: /tmp
-    remote_src: yes
-    mode: +x
-  when: feature_cloud_automation
+---
+- set_fact:
+    is_ca_flavor_change: false
 
-- name: Cloud Automation - Rename CLI
-  become: true
-  shell: "cp /tmp/keptn-{{ cloud_automation_version }}-linux-amd64 /usr/local/bin/keptn"
-  when: feature_cloud_automation
+- block:
+  - set_fact:
+      is_ca_flavor_change: true
+  - name: Update cloud automation flavor
+    include_role:
+      name: config-v2
+      tasks_from: set-var
+    vars:
+    - var_key_to_set: "cloud_automation_flavor"
+    - var_value_to_set: "CLOUD_AUTOMATION"
+  when: cloud_automation_flavor is not defined or cloud_automation_flavor != "CLOUD_AUTOMATION"
 
-- name: Cloud Automation - Create Cloud Automation namespace
-  shell: >
-    /snap/bin/microk8s.kubectl create ns {{ cloud_automation_namespace }} 
-  when: feature_cloud_automation
+- name: Install Keptn CLI
+  include_role:
+    name: keptn-cli
+  vars:
+  - keptn_version: "{{ cloud_automation_version }}"
+  - force_install: "{{ is_ca_flavor_change | bool }}"
 
-- name: Cloud Automation - Create Cloud Automation secrets
-  include: roles/cloudautomation/tasks/create-secret.yml
-  when: feature_cloud_automation
+- name: Create namespace
+  kubernetes.core.k8s:
+    name: "{{ cloud_automation_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
 
-- name: Cloud Automation - Authenticate CLI
-  become_user: "{{ non_root_user }}"
+- name: Create Cloud Automation secrets
+  include_tasks: roles/{{ role_name }}/tasks/create-secret.yml
+
+- name: Source Cloud Automation secrets
+  include_tasks: roles/{{ role_name }}/tasks/source-secret.yml
+
+- name: Authenticate CLI
   shell: "/usr/local/bin/keptn auth --api-token {{ cloud_automation_api_token }} --endpoint {{ cloud_automation_tenant_url }}/api"
-  when: feature_cloud_automation
 
-- name: Cloud Automation - Delete secret dynatrace
-  become_user: "{{ non_root_user }}"
-  shell: "/usr/local/bin/keptn delete secret dynatrace"
-  ignore_errors: yes
-  when: feature_cloud_automation
-
-- name: Cloud Automation - Create secret dynatrace
-  become_user: "{{ non_root_user }}"
-  shell: "/usr/local/bin/keptn create secret dynatrace --from-literal=DT_TENANT={{ dynatrace_tenant_url }} --from-literal=DT_API_TOKEN={{ dynatrace_api_token }} --scope=dynatrace-service"
-  when: feature_cloud_automation
+- block:
+  - name: Delete existing Cloud Automation secret dynatrace
+    shell: "/usr/local/bin/keptn delete secret dynatrace --scope=dynatrace-service"
+  - name: Create Cloud Automation secret dynatrace
+    shell: "/usr/local/bin/keptn create secret dynatrace --from-literal=DT_TENANT={{ dynatrace_tenant_url }} --from-literal=DT_API_TOKEN={{ dynatrace_api_token }} --scope=dynatrace-service"

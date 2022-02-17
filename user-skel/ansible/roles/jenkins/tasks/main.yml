@@ -37,7 +37,18 @@
       ca_endpoint: "{{ keptn_endpoint }}"
       ca_bridge: "{{ keptn_bridge }}"
       ca_api_token: "{{ keptn_api_token }}"
-  when: ca_flavor is defined and ca_flavor == "KEPTN"
+  when: cloud_automation_flavor is defined and cloud_automation_flavor == "KEPTN"
+
+- block:
+  - name: Source Cloud Automation secrets
+    include_role:
+      name: cloudautomation
+      tasks_from: source-secret
+  - set_fact:
+      ca_endpoint: "{{ cloud_automation_endpoint }}"
+      ca_bridge: "{{ cloud_automation_bridge }}"
+      ca_api_token: "{{ cloud_automation_api_token }}"
+  when: cloud_automation_flavor is defined and cloud_automation_flavor == "CLOUD_AUTOMATION"
 
 - block:
   - name: Source registry url

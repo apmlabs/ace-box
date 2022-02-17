@@ -1,25 +1,24 @@
 ---
-- name: Update ca flavor
-  include_role:
-    name: config-v2
-    tasks_from: set-var
-  vars:
-  - var_key_to_set: "ca_flavor"
-  - var_value_to_set: "KEPTN"
-  when: ca_flavor is not defined or ca_flavor != "KEPTN"
+- set_fact:
+    is_ca_flavor_change: false
 
-- name: Download Keptn CLI
-  get_url:
-    url: "https://get.keptn.sh"
-    dest: "{{ keptn_cli_download_location }}"
-    mode: +x
-    timeout: 300
-  when: not keptn_cli_download_location is exists
+- block:
+  - set_fact:
+      is_ca_flavor_change: true
+  - name: Update Cloud Automation flavor
+    include_role:
+      name: config-v2
+      tasks_from: set-var
+    vars:
+    - var_key_to_set: "cloud_automation_flavor"
+    - var_value_to_set: "KEPTN"
+  when: cloud_automation_flavor != "KEPTN"
 
 - name: Install Keptn CLI
-  shell: KEPTN_VERSION="{{ keptn_version }}" /bin/bash "{{ keptn_cli_download_location }}"
-  args:
-    creates: "/usr/local/bin/keptn"
+  include_role:
+    name: keptn-cli
+  vars:
+  - force_install: "{{ is_ca_flavor_change | bool }}"
 
 - name: Deploy Keptn on Kubernetes cluster
   kubernetes.core.helm:

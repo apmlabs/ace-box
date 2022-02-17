@@ -1,0 +1,20 @@
+---
+- name: Download Keptn CLI
+  get_url:
+    url: "https://get.keptn.sh"
+    dest: "{{ keptn_cli_download_location }}"
+    mode: +x
+    timeout: 300
+  when: not keptn_cli_download_location is exists
+
+- name: Delete current Keptn CLI bin
+  become: true
+  ansible.builtin.file:
+    path: "{{ keptn_bin_location }}"
+    state: absent
+  when: force_install is defined and force_install == true
+
+- name: Install Keptn CLI
+  shell: KEPTN_VERSION="{{ keptn_version }}" /bin/bash "{{ keptn_cli_download_location }}"
+  args:
+    creates: "{{ keptn_bin_location }}"

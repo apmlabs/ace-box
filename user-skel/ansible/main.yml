@@ -1,123 +1,134 @@
 ---
 - hosts: localhost
   connection: local
-  become: true
   vars:
     ace_config_file_path: "./ace.config.yml"
   roles:
-  - role: common
+  # Role "config-v2" is always executed 
+  # and makes sure that all previous settings 
+  # are sourced alongside newly enabled/disabled
+  - role: config-v2
     tags:
     - always
-  - role: config
-  - role: init
-    tags:
-    - never
-    - init
-    - default
-  - role: microk8s
-    tags:
-    - never
-    - microk8s
-    - k8s
-    - default
-  - role: helm
-    tags:
-    - never
-    - helm
-    - k8s
-    - default
-  - role: dt-activegate
-    tags:
-    - never
-    - dynatrace
-    - default
-  - role: dt-oneagent
-    tags:
-    - never
-    - dynatrace
-    - default
-  - role: gitea
-    tags:
-    - never
-    - gitea
-    - default
-  - role: gitlab
-    tags:
-    - never
-    - gitlab
-  - role: repositories
-    tags:
-    - never
-    - repositories
-    - default
-  - role: monaco
-    tags:
-    - never
-    - monaco
-    - default
-  - role: keptn
-    tags:
-    - never
-    - keptn
-    - default
-  - role: cloudautomation
-    tags:
-    - never
-    - cloud_automation
-    - default
-  - role: jenkins
-    tags:
-    - never
-    - jenkins
-    - default
-  - role: awx
-    tags:
-    - never
-    - awx
-  - role: dashboard
-    tags:
-    - never
-    - dashboard
-    - default
-  - role: post-install
-    tags:
-    - never
-    - dashboard
-    - default
+  # Tool specific roles can be targeted by tags
   tasks:
-  - name: Uninstall Gitlab
-    include_tasks:
-      file: roles/gitlab/tasks/uninstall.yml
+  - include_role:
+      name: init
       apply:
         tags:
-        - gitlab_uninstall
+        - init
     tags:
-    - never
-    - gitlab_uninstall
-  - name: Uninstall Dynatrace ActiveGate
-    include_tasks:
-      file: roles/dt-activegate/tasks/uninstall.yml
+    - init
+  - include_role:
+      name: microk8s
       apply:
         tags:
-        - dynatrace_uninstall
+        - microk8s
     tags:
-    - never
-    - dynatrace_uninstall
-  - name: Uninstall Dynatrace Operator
-    include_tasks:
-      file: roles/dt-oneagent/tasks/uninstall.yml
+    - microk8s
+  - include_role:
+      name: dt-activegate
       apply:
         tags:
-        - dynatrace_uninstall
+        - dt_activegate
     tags:
-    - never
-    - dynatrace_uninstall
-  - name: Uninstall AWX
-    include_tasks:
-      file: roles/awx/tasks/uninstall.yml
+    - dt_activegate
+  - include_role:
+      name: dt-oneagent
       apply:
         tags:
-        - awx_uninstall
+        - dt_oneagent
     tags:
-    - never
-    - awx_uninstall
+    - dt_oneagent
+  - include_role:
+      name: keptn
+      apply:
+        tags:
+        - keptn
+    tags:
+    - keptn
+  - include_role:
+      name: cloudautomation
+      apply:
+        tags:
+        - cloudautomation
+    tags:
+    - cloudautomation
+  - include_role:
+      name: monaco
+      apply:
+        tags:
+        - monaco
+    tags:
+    - monaco
+  - include_role:
+      name: jenkins
+      apply:
+        tags:
+        - jenkins
+    tags:
+    - jenkins
+  - include_role:
+      name: gitea
+      apply:
+        tags:
+        - gitea
+    tags:
+    - gitea
+  - include_role:
+      name: gitlab
+      apply:
+        tags:
+        - gitlab
+    tags:
+    - gitlab
+  - include_role:
+      name: awx
+      apply:
+        tags:
+        - awx
+    tags:
+    - awx
+  - include_role:
+      name: dashboard
+      apply:
+        tags:
+        - dashboard
+    tags:
+    - dashboard
+  # - name: Uninstall Gitlab
+  #   include_tasks:
+  #     file: roles/gitlab/tasks/uninstall.yml
+  #     apply:
+  #       tags:
+  #       - gitlab_uninstall
+  #   tags:
+  #   - never
+  #   - gitlab_uninstall
+  # - name: Uninstall Dynatrace ActiveGate
+  #   include_tasks:
+  #     file: roles/dt-activegate/tasks/uninstall.yml
+  #     apply:
+  #       tags:
+  #       - dynatrace_uninstall
+  #   tags:
+  #   - never
+  #   - dynatrace_uninstall
+  # - name: Uninstall Dynatrace Operator
+  #   include_tasks:
+  #     file: roles/dt-oneagent/tasks/uninstall.yml
+  #     apply:
+  #       tags:
+  #       - dynatrace_uninstall
+  #   tags:
+  #   - never
+  #   - dynatrace_uninstall
+  # - name: Uninstall AWX
+  #   include_tasks:
+  #     file: roles/awx/tasks/uninstall.yml
+  #     apply:
+  #       tags:
+  #       - awx_uninstall
+  #   tags:
+  #   - never
+  #   - awx_uninstall
