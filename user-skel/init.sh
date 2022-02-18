@@ -3,8 +3,8 @@
 # This script will be triggered by Terraform as part of the provisioning process.
 # It can also be triggered manually on a VM.
 
-# set -euo pipefail
-export DEBIAN_FRONTEND=noninteractive
+# Prevent input prompts by specifying frontend is not interactive
+echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 echo "INIT - Update apt-get and upgrade already install packages..."
 sudo apt-get update && sudo apt-get dist-upgrade -y
