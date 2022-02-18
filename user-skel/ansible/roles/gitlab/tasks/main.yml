@@ -1,4 +1,13 @@
 ---
+- name: Update git flavor
+  include_role:
+    name: config-v2
+    tasks_from: set-var
+  vars:
+  - var_key_to_set: "git_flavor"
+  - var_value_to_set: "GITLAB"
+  when: git_flavor is not defined or git_flavor != "GITLAB"
+
 - name: Add chart repo
   kubernetes.core.helm_repository:
     name: gitlab
@@ -7,7 +16,7 @@
 - name: Gitlab - Template values file
   ansible.builtin.template:
     src: gitlab-values.yml.j2
-    dest: ""./roles/{{ role_name }}/files/gitlab-values.yml"
+    dest: "./roles/{{ role_name }}/files/gitlab-values.yml"
     owner: "{{ ace_box_user }}"
     group: "{{ ace_box_user }}"
     mode: '0644'
