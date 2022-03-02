@@ -27,7 +27,7 @@ install_targets = [
     'awx',
     'cloudautomation'
 ]
-uninstall_targets = ['gitlab', 'dynatrace', 'awx']
+uninstall_targets = []
 enable_targets = [
     'demo_default',
     'demo_appsec',
@@ -54,15 +54,19 @@ def ace(
 ):
     """This tool...
 
-    ACTION can start with "prepare", "install", "set" or "uninstall"
-    and can be followed by a target, e.g. "all", "microk8s", ...
+    ACTION can start with "prepare", "enable", "set", "install" or "uninstall".
+    "enable" can be followed by an enable target, e.g. "demo_default", "demo_appsec", 
+    ..., whereas "install" can be followed by an install target, e.g. "gitlab", ...
 
     For example:
 
     $ ace prepare
     > ...
 
-    $ ace install all
+    $ ace enable demo_default
+    > ...
+
+    $ ace install gitlab
     > ...
     """
     # If verbose flag is provided, log level will be set to DEBUG
@@ -303,7 +307,7 @@ def uninstall(
     'update',
     nargs=1,
 )
-def update_config(
+def set(
   ansible_workdir,
   update,
 ):
@@ -372,14 +376,10 @@ def enable(
     click.echo(f'Successfully installed {target}')
     click.echo("You're welcome!")
 
-
-# Legacy
 ace.add_command(prepare)
 ace.add_command(install)
-# ace.add_command(uninstall)
-# ace.add_command(update_config)
-
-# Use case based features
+ace.add_command(uninstall)
+ace.add_command(set)
 ace.add_command(enable)
 
 if __name__ == '__main__':
