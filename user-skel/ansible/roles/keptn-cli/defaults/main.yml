@@ -1,0 +1,3 @@
+---
+keptn_cli_download_location: "/tmp/keptn"
+keptn_bin_location: "/usr/local/bin/keptn"

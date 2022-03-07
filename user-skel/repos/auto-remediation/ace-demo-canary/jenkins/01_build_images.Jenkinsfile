@@ -39,7 +39,7 @@ pipeline {
 						}
 						stage('Deploy good build'){
 							steps {
-								build job: "ace-demo-canary/3. Deploy",
+								build job: "demo-auto-remediation/3. Deploy",
 								wait: false,
 								parameters: [
 									string(name: 'IMAGE_NAME', value: "${env.IMAGE_NAME}"),
@@ -72,7 +72,7 @@ pipeline {
 						}
 						stage('Deploy faulty build'){
 							steps {
-								build job: "ace-demo-canary/3. Deploy",
+								build job: "demo-auto-remediation/3. Deploy",
 								wait: false,
 								parameters: [
 									string(name: 'IMAGE_NAME', value: "${env.IMAGE_NAME}"),
@@ -88,7 +88,7 @@ pipeline {
 		}
 		stage('Monaco') {
 			steps {
-				build job: "ace-demo-canary/2. Monaco",
+				build job: "demo-auto-remediation/2. Monaco",
 				wait: false
 			}
 		}

@@ -1,0 +1,68 @@
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "lachlanevenson/k8s-kubectl:v1.18.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "kubectl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/git"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "git"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceace/jmeter-runner:release-v5.4.1"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jmeter"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "alpine/helm:3.5.2"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "helm"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceacm/apline-curl"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "curl"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                id: "9fe3bc5f-5537-4d6b-8652-4960ea920539"
+                label: "kubegit"
+                name: "kubegit"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                yamlMergeStrategy: "override"

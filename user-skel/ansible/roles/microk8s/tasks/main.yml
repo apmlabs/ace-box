@@ -1,36 +1,60 @@
-- name: Microk8s - Install microk8s
+---
+- name: Install microk8s
   become: true
-  command: snap install microk8s --classic --channel="{{ microk8s_release_channel }}" 
-  args:
-    creates: /snap/bin/microk8s.kubectl
+  community.general.snap:
+    name: microk8s
+    classic: yes
+    channel: "{{ microk8s_release_channel }}"
+  register: microk8s
+
+# Install kubectl and helm via snap to not be dependent on microk8s' kube config
+- name: Install Kubectl and Helm
+  become: true
+  community.general.snap:
+    name:
+    - kubectl
+    - helm
+    classic: yes
+
+- name: Install Docker
+  become: true
+  community.general.snap:
+    name:
+    - docker
 
 # Required for Ansible k8s tasks
 - name: Install kubernetes package
   pip:
     name: kubernetes
-  
-- name: "Microk8s - Add {{ non_root_user }} to microk8s group"
-  become: true
-  command: "usermod -a -G microk8s {{ non_root_user }}"
 
-- name: Microk8s - Alias to kubectl
-  shell: snap alias microk8s.kubectl kubectl
-
-- name: Microk8s - Wait for microk8s to be ready
-  shell: /snap/bin/microk8s.status --wait-ready
-
-- name: "Microk8s - Enable addons {{ microk8s_addons }}"
-  shell: "/snap/bin/microk8s.enable {{ microk8s_addons }}"
-
-- name: Microk8s - Start microk8s
-  shell: /snap/bin/microk8s.start
-
-- name: Microk8s - Wait for microk8s to be ready
-  shell: /snap/bin/microk8s.status --wait-ready
-
-- name: Microk8s - Add namespaces
+- name: Persist kube config
   block:
-    - copy:
-        src: namespaces.yml
-        dest: /tmp/namespaces.yml
-    - shell: /snap/bin/microk8s.kubectl apply -f /tmp/namespaces.yml
+  - ansible.builtin.file:
+      path: /home/{{ ace_box_user }}/.kube
+      state: directory
+      mode: '0700'
+  - become: true
+    shell: /snap/bin/microk8s.config > /home/{{ ace_box_user }}/.kube/config
+  - ansible.builtin.file:
+      path: /home/{{ ace_box_user }}/.kube/config
+      owner: "{{ ace_box_user }}"
+      group: "{{ ace_box_user }}"
+      mode: '0600'
+    become: true
+  when: microk8s.changed
+
+- name: Enable Microk8s addons
+  block:
+  - name: Microk8s - Wait for microk8s to be ready
+    become: true
+    shell: /snap/bin/microk8s.status --wait-ready
+  - name: "Microk8s - Enable addons {{ microk8s_addons }}"
+    become: true
+    shell: "/snap/bin/microk8s.enable {{ microk8s_addons }}"
+  - name: Microk8s - Start microk8s
+    become: true
+    shell: /snap/bin/microk8s.start
+  - name: Microk8s - Wait for microk8s to be ready
+    become: true
+    shell: /snap/bin/microk8s.status --wait-ready
+  when: microk8s.changed

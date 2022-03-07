@@ -1,0 +1,19 @@
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "dynatraceace/ace-cicd-tools:2.2.0"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "ace"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                id: "576eed6b-a0bb-463e-b08f-fcbc676cb004"
+                label: "ace"
+                name: "ace-cicd-tools"
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                yamlMergeStrategy: "override"

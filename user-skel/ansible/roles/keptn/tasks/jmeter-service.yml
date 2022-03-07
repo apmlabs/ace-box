@@ -1,3 +1,9 @@
-- name: Keptn - Install JMeter service
-  become_user: "{{ non_root_user }}"
-  shell: helm upgrade --install jmeter-service -n {{ keptn_namespace }} https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/jmeter-service-{{ keptn_version }}.tgz
+---
+- name: Deploy Keptn JMeter service
+  kubernetes.core.helm:
+    name: jmeter-service 
+    chart_ref: "https://github.com/keptn/keptn/releases/download/{{ keptn_version }}/jmeter-service-{{ keptn_version }}.tgz"
+    release_namespace: "{{ keptn_namespace }}"
+    create_namespace: true
+    wait: true
+    wait_timeout: 15m

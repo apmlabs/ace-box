@@ -1,8 +1,14 @@
-- name: Keptn - Source host
-  block:
-    - shell: /snap/bin/microk8s.kubectl -n {{ keptn_namespace }} get ingress keptn-ingress -o jsonpath='{.spec.rules[0].host}'
-      register: keptn_ingress_domain_raw
-    - set_fact:
-        keptn_ingress_domain: "{{ keptn_ingress_domain_raw.stdout }}"
-        keptn_endpoint: "{{ ingress_protocol }}://{{ keptn_ingress_domain_raw.stdout }}/api"
-        keptn_bridge: "{{ ingress_protocol }}://{{ keptn_ingress_domain_raw.stdout }}/bridge"
+---
+- name: Source endpoints
+  kubernetes.core.k8s_info:
+    kind: Ingress
+    name: "keptn-ingress"
+    namespace: "{{ keptn_namespace }}"
+  register: keptn_ingress_data
+
+- name: Set facts
+  set_fact:
+    keptn_ingress_domain: "{{ keptn_ingress_data.resources[0].spec.rules[0].host }}"
+    keptn_endpoint: "{{ ingress_protocol }}://{{ keptn_ingress_data.resources[0].spec.rules[0].host }}/api"
+    keptn_bridge: "{{ ingress_protocol }}://{{ keptn_ingress_data.resources[0].spec.rules[0].host }}/bridge"
+  when: keptn_ingress_data is defined and keptn_ingress_data.resources[0] is defined

@@ -1,41 +1,34 @@
-- name: Repository - Init local repo {{ repo_src }}
-  become_user: "{{ non_root_user }}"
-  shell: "cd {{ repo_src }} && git init"
-  ignore_errors: yes
+---
+- ansible.builtin.command: git init
+  args:
+    chdir: "{{ repo_src }}"
 
-- name: Repository - Commit local changes {{ repo_src }}
-  become_user: "{{ non_root_user }}"
-  shell: "cd {{ repo_src }} && git add . && git commit -m \"Init repo. Have fun!\""
-  ignore_errors: yes
+- ansible.builtin.command: git checkout -b main
+  args:
+    chdir: "{{ repo_src }}"
+  ignore_errors: true
 
-- name: Repository - Add remote Gitea {{ gitea_org }}/{{ gitea_repo }}
-  become_user: "{{ non_root_user }}"
-  block:
-    - name: "'add' gitea"
-      shell: "cd {{ repo_src }} && git remote add gitea {{ ingress_protocol }}://{{ gitea_username }}:{{ gitea_password }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}"
+- ansible.builtin.command: git add .
+  args:
+    chdir: "{{ repo_src }}"
+
+- ansible.builtin.command: git commit -m "Init repo. Have fun!"
+  args:
+    chdir: "{{ repo_src }}"
+  ignore_errors: true
+
+- block:
+    - name: "Add remote {{ git_remote }}"
+      ansible.builtin.command: "git remote add {{ git_remote }} {{ ingress_protocol }}://{{ git_username }}:{{ git_password }}@{{ git_domain }}/{{ git_org }}/{{ git_repo }}"
+      args:
+        chdir: "{{ repo_src }}"
   rescue:
-    - name: "'set-url' gitea"
-      shell: "cd {{ repo_src }} && git remote set-url gitea {{ ingress_protocol }}://{{ gitea_username }}:{{ gitea_password }}@{{ gitea_domain }}/{{ gitea_org }}/{{ gitea_repo }}"
-  when: feature_gitea and push_to_gitea
+    - name: "Set remote {{ git_remote }}"
+      ansible.builtin.command: "git remote set-url {{ git_remote }} {{ ingress_protocol }}://{{ git_username }}:{{ git_password }}@{{ git_domain }}/{{ git_org }}/{{ git_repo }}"
+      args:
+        chdir: "{{ repo_src }}"
 
-- name: Repository - Add remote Gitlab {{ gitlab_group }}/{{ gitlab_repo }}
-  become_user: "{{ non_root_user }}"
-  block:
-    - name: "'add' gitlab"
-      shell: "cd {{ repo_src }} && git remote add gitlab {{ ingress_protocol }}://{{ gitlab_username }}:{{ gitlab_password }}@{{ gitlab_domain }}/{{ gitlab_group }}/{{ gitlab_repo }}.git"
-  rescue:
-    - name: "'set-url' gitlab"
-      shell: "cd {{ repo_src }} && git remote set-url gitlab {{ ingress_protocol }}://{{ gitlab_username }}:{{ gitlab_password }}@{{ gitlab_domain }}/{{ gitlab_group }}/{{ gitlab_repo }}.git"
-  when: feature_gitlab and push_to_gitlab
-
-- name: Repository - Publish {{ gitea_org }}/{{ gitea_repo }} to Gitea
-  become_user: "{{ non_root_user }}"
-  shell: "cd {{ repo_src }} && git push gitea master"
-  when: feature_gitea and push_to_gitea
-  ignore_errors: yes
-
-- name: Repository - Publish {{ gitlab_group }}/{{ gitlab_repo }}.git to Gitlab
-  become_user: "{{ non_root_user }}"
-  shell: "cd {{ repo_src }} && git push gitlab master"
-  when: feature_gitlab and push_to_gitlab
-  ignore_errors: yes
+- name: "Publish repo"
+  ansible.builtin.command: "git push {{ git_remote }} main"
+  args:
+    chdir: "{{ repo_src }}"

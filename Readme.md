@@ -24,6 +24,7 @@ Vagrant (Local) or Terraform (Cloud) are used for spinning up the VM, Ansible is
   - [Behind the scenes](#behind-the-scenes)
   - [ACE-CLI](#ace-cli)
     - [Available commands (ace-cli version 0.0.1, can also be retrieved by running `ace --help`):](#available-commands-ace-cli-version-001-can-also-be-retrieved-by-running-ace---help)
+    - [Available use cases:](#available-use-cases)
     - [Available install components:](#available-install-components)
     - [Available uninstall components:](#available-uninstall-components)
 
@@ -79,7 +80,7 @@ The recommended way of installing any ACE box version, local or cloud, is via Te
           export TF_VAR_ca_api_token=...
           ```
           For details and alternatives see https://www.terraform.io/docs/language/values/variables.html
-    4. The following variables need to be set:
+    4. The following variables are available:
         | var | required | details |
         | --- | -------- | ------- |
         | dt_tenant | **yes** | Dynatrace environment URL |
@@ -87,6 +88,8 @@ The recommended way of installing any ACE box version, local or cloud, is via Te
         | dt_paas_token | **yes** | Dynatrace PaaS token |
         | ca_tenant | no | Dynatrace Cloud Automation environment URL. **Note**: if not set, Keptn will be installed and used instead |
         | ca_api_token | no | Dynatrace Cloud Automation api token. **Note**: if not set, Keptn will be installed and used instead |
+        | acebox_user | no | User, for which home directory will be provisioned (Default: "ace") |
+        | use_case | no | Use case, the ACE Box will be prepared for. Options are "demo_default" (Default), "demo_appsec" and "demo_autorem"  |
 
 4. Run `terraform init`
 5. Run `terraform apply`
@@ -168,23 +171,24 @@ Bringing your own Ubuntu Virtual Machine has not been tested, but should be poss
       $ ace prepare
       ```
 
-4. Install ACE-Box components:
+4. Enable ACE-Box use case:
       ```
-      $ ace install default
+      $ ace enable demo_default
       ```
 5. Grab a coffee, this process will take some time...
 
 
 ## Default mode
 
-Below config example will spin up an ace-box with all features in a demo mode (everything pre-configured). In demo mode, the following gets installed and configured:
+By default, an ACE Box is prepared for a demo use case (i.e. "demo_default"). The following resources will be deployed, configured and ready for you to use:
+
 - Microk8s 
 - Helm 
 - Dynatrace Acitve Gate for Private Synthetic gets installed and automatically configured in the Dynatrace tenant as a Private Location
 - Dynatrace OneAgent operator gets installed via Helm
 - Gitea gets installed, a user gets created and a repository created
-- Keptn Quality Gates gets installed
-- Jenkins gets installed with all the plugins that are needed, pipeline libraries get added for interaction with keptn and Dynatrace, pipelines get created and linked to the gitea repository
+- Cloud Automation instance linked (opt. Keptn installed)
+- Jenkins gets installed with all the plugins that are needed, pipeline libraries get added for interaction with Cloud Automation (Keptn) and Dynatrace, pipelines get created and linked to the gitea repository
 - A dashboard gets built and deployed with links to all the components as well as credentials
 - A kubernetes ingress gets configured for all applications so it is easy to navigate
 - Dynatrace tag rules and request attributes get set up via the API
@@ -245,15 +249,24 @@ $ ace --version
   Command | Result |
   -- | -- |
   `prepare` | Prepares ACE-Box for further use (e.g. persists domain, protocol settings) |
+  `enable <use case>` | Prepares ACE-Box for a use case by installing set of components (see table below) |
   `install <component>` | Installs ACE-Box or components thereof (see table below) |
   `uninstall <component>` | Uninstalls ACE-Box or components thereof (see table below) |
-  `set <config>` | Updates ACE-Box config. <config> can be any of key=value, e.g. `$ace set feature_gitlab=true` |
+  `set <config>` | Updates ACE-Box config. <config> can be any of key=value, e.g. `$ace set foo=bar` |
 
+### Available use cases:
+
+  Component | Result |
+  -- | -- |
+  `demo_default` | Prepares ACE Box for a default demo, i.e. Quality Gates on Jenkins |
+  `demo_appsec` | Prepares ACE Box for an AppSec demo, i.e. AppSec Quality Gates on Jenkins |
+  `demo_autorem` | Prepares ACE Box for an auto remediation demo, i.e. Jenkins canary traffic shift with AWX |
+
+  
 ### Available install components:
 
   Component | Result |
   -- | -- |
-  `default` | Installs and configures everything needed for a quality gates demo (formerly known as "demo" mode) |
   `microk8s` | Installs and configures MicroK8S |
   `gitea` | Installs and configures Gitea |
   `gitlab` | Installs and configures Gitlab |

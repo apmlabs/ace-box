@@ -1,19 +1,26 @@
-- name: Keptn - Delete Gitea dynatrace
-  shell: /snap/bin/microk8s.kubectl -n {{ keptn_namespace }} delete secret dynatrace
-  ignore_errors: yes
+---
+- name: Create Keptn Dynatrace secret
+  kubernetes.core.k8s:
+    name: dynatrace
+    api_version: v1
+    kind: Secret
+    state: present
+    namespace: "{{ keptn_namespace }}"
+    resource_definition:
+      type: Opaque
+      data:
+        DT_TENANT: "{{ dynatrace_tenant_url | regex_replace('https://', '') | b64encode }}"
+        DT_API_TOKEN: "{{ dynatrace_api_token | b64encode }}" 
+        DT_PAAS_TOKEN: "{{ dynatrace_api_token | b64encode }}" 
+        KEPTN_API_URL: "{{ \"{{ ingress_protocol }}://{{ keptn_ingress_domain }}/api\" | b64encode }}"
+        KEPTN_API_TOKEN: "{{ keptn_api_token | b64encode }}" 
+        KEPTN_BRIDGE_URL: "{{ \"{{ ingress_protocol }}://{{ keptn_ingress_domain }}/bridge\" | b64encode }}"
 
-- name: Keptn - Create secret dynatrace
-  shell: >
-    /snap/bin/microk8s.kubectl -n {{ keptn_namespace }} create secret generic dynatrace 
-    --from-literal="DT_TENANT={{ dynatrace_tenant_url | regex_replace('https://', '') }}" 
-    --from-literal="DT_API_TOKEN={{ dynatrace_api_token }}" 
-    --from-literal="DT_PAAS_TOKEN={{ dynatrace_api_token }}" 
-    --from-literal="KEPTN_API_URL={{ ingress_protocol }}://{{ keptn_ingress_domain }}/api" 
-    --from-literal="KEPTN_API_TOKEN={{ keptn_api_token }}" 
-    --from-literal="KEPTN_BRIDGE_URL={{ ingress_protocol }}://{{ keptn_ingress_domain }}/bridge"
-
-- name: Keptn - Install Dynatrace service
-  become_user: "{{ non_root_user }}"
-  shell: >
-    helm upgrade --install dynatrace-service -n {{ keptn_namespace }} 
-    https://github.com/keptn-contrib/dynatrace-service/releases/download/{{ keptn_dynatrace_service_version }}/dynatrace-service-{{ keptn_dynatrace_service_version }}.tgz
+- name: Deploy Keptn Dynatrace service
+  kubernetes.core.helm:
+    name: dynatrace-service 
+    chart_ref: "https://github.com/keptn-contrib/dynatrace-service/releases/download/{{ keptn_dynatrace_service_version }}/dynatrace-service-{{ keptn_dynatrace_service_version }}.tgz"
+    release_namespace: "{{ keptn_namespace }}"
+    create_namespace: true
+    wait: true
+    wait_timeout: 15m

@@ -1,0 +1,37 @@
+              - containers:
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "node:8"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "nodejs"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                - args: "cat"
+                  command: "/bin/sh -c"
+                  image: "docker:rc"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "docker"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
+                idleMinutes: 10
+                idleMinutesStr: "10"
+                label: "nodejs"
+                name: "nodejs"
+                nodeUsageMode: NORMAL
+                slaveConnectTimeout: 300
+                slaveConnectTimeoutStr: "300"
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"

@@ -4,10 +4,10 @@ include:
 
 variables:
   BUILD_ID: '1'  # 1, 2, 3 or 4
-  DT_APPLICATION_RELEASE_VERSION: 'v$BUILD_ID.0.0'
-  DT_APPLICATION_BUILD_VERSION: '$BUILD_ID.0.0'
-  DT_APPLICATION_NAME: 'simplenode-app'
-  DT_APPLICATION_ENVIRONMENT: 'simplenode-gitlab-staging'
+  DT_RELEASE_VERSION: 'v$BUILD_ID.0.0'
+  DT_RELEASE_BUILD_VERSION: '$BUILD_ID.0.0'
+  DT_RELEASE_PRODUCT: 'simplenode-app'
+  DT_RELEASE_STAGE: 'simplenode-gitlab-staging'
 
 stages:
   - init
@@ -18,7 +18,7 @@ stages:
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"
 
 monaco:
   image: dynatraceace/monaco-runner:release-v1.6.0
@@ -54,12 +54,12 @@ deployment:
   script:
     - >
       helm upgrade --install simplenode-gitlab-staging helm/simplenodeservice 
-      --set image="dynatraceace/simplenodeservice:$DT_APPLICATION_BUILD_VERSION"
+      --set image="dynatraceace/simplenodeservice:$DT_RELEASE_BUILD_VERSION"
       --set domain="$INGRESS_DOMAIN" 
-      --set version="$DT_APPLICATION_RELEASE_VERSION"
-      --set build_version="$DT_APPLICATION_BUILD_VERSION" 
-      --set environment="$DT_APPLICATION_ENVIRONMENT" 
-      --namespace "$DT_APPLICATION_ENVIRONMENT" --create-namespace 
+      --set version="$DT_RELEASE_VERSION"
+      --set build_version="$DT_RELEASE_BUILD_VERSION" 
+      --set environment="$DT_RELEASE_STAGE" 
+      --namespace "$DT_RELEASE_STAGE" --create-namespace 
       --wait
 
 
@@ -113,8 +113,8 @@ run-tests:
   variables: 
     LOCUST_LOCUSTFILE: locust/locustfile.py
     LOCUST_CONFIG: locust/locust.conf
-    LOCUST_HOST: '$INGRESS_PROTOCOL://simplenodeservice.$DT_APPLICATION_ENVIRONMENT.$INGRESS_DOMAIN'
-    LOCUST_LOAD_TEST_NAME: 'Loadtest - $DT_APPLICATION_BUILD_VERSION'
+    LOCUST_HOST: '$INGRESS_PROTOCOL://simplenodeservice.$DT_RELEASE_STAGE.$INGRESS_DOMAIN'
+    LOCUST_LOAD_TEST_NAME: 'Loadtest - $DT_RELEASE_BUILD_VERSION'
   image: locustio/locust
   script:
     - locust --config $LOCUST_CONFIG --locustfile $LOCUST_LOCUSTFILE --host $LOCUST_HOST
@@ -126,8 +126,6 @@ run-tests:
 quality_gate:
   image: dynatraceace/keptn-gitlab-runner:2.1
   stage: eval
-  # variables: 
-  #   KEPTN_LABELS: [{"DT_APPLICATION_RELEASE_VERSION":""},{"DT_APPLICATION_BUILD_VERSION":""},{"DT_APPLICATION_ENVIRONMENT":""},{"DT_APPLICATION_NAME":""}]
   script:
-    - export KEPTN_LABELS='[{"DT_APPLICATION_RELEASE_VERSION":"'${DT_APPLICATION_RELEASE_VERSION}'"},{"DT_APPLICATION_BUILD_VERSION":"'${DT_APPLICATION_BUILD_VERSION}'"},{"DT_APPLICATION_ENVIRONMENT":"'${DT_APPLICATION_ENVIRONMENT}'"},{"DT_APPLICATION_NAME":"'${DT_APPLICATION_NAME}'"}]'
+    - export KEPTN_LABELS='[{"DT_RELEASE_VERSION":"'${DT_RELEASE_VERSION}'"},{"DT_RELEASE_BUILD_VERSION":"'${DT_RELEASE_BUILD_VERSION}'"},{"DT_RELEASE_STAGE":"'${DT_RELEASE_STAGE}'"},{"DT_RELEASE_PRODUCT":"'${DT_RELEASE_PRODUCT}'"}]'
     - /keptn/keptn_eval.sh

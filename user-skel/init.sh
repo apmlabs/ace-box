@@ -40,3 +40,7 @@ sudo chmod 0755 /usr/local/bin/ace
 sudo sed -i 's/\r$//' /usr/local/bin/ace
 
 ace --version
+
+# Set up user groups
+sudo addgroup --system docker
+sudo adduser $USER docker

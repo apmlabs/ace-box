@@ -1,10 +1,12 @@
 ---
 - hosts: localhost
   connection: local
-  become: true
   vars:
     ace_config_file_path: "./ace.config.yml"
   tasks:
   - name: Prepare config
     include_tasks:
-      file: roles/config/tasks/init.yml
+      file: roles/config-v2/tasks/prepare.yml
+  - name: Install common
+    include_tasks:
+      file: roles/init/tasks/main.yml

@@ -1,4 +1,5 @@
-- name: ActiveGate - Download ActiveGate installer
+---
+- name: Download ActiveGate installer
   get_url:
     url: "{{ dynatrace_tenant_url }}/api/v1/deployment/installer/gateway/unix/latest?arch=x86&flavor=default"
     dest: "{{ activegate_download_location }}"
@@ -6,35 +7,30 @@
     timeout: 300
     headers:
       Authorization: "Api-token {{ dynatrace_paas_token }}"
-  when: feature_activegate and not "{{ activegate_download_location }}" is exists
+  when: not activegate_download_location is exists
 
-- name: ActiveGate - Install synthetic-enabled ActiveGate
-  shell:
-    cmd: DYNATRACE_SYNTHETIC_AUTO_INSTALL=true /bin/sh "{{ activegate_download_location }}" --enable-synthetic
-    creates: "{{ activegate_uninstall_script_location }}"
-  when: feature_activegate
+- service_facts:
 
-- name: ActiveGate - Update dnsEntryPoint on custom.properties
-  blockinfile:
-    path: /var/lib/dynatrace/gateway/config/custom.properties
-    insertafter: "proxy-off = true"
-    block: |
-      [connectivity]
-      dnsEntryPoint = http://{{ ansible_facts.fqdn }}:9999
-  when: feature_activegate
-
-- name: ActiveGate - Restart ActiveGate service
-  service:
-    name: dynatracegateway
-    state: restarted
-  ignore_errors: yes
-  when: feature_activegate
-
-- name: ActiveGate - Get node id
-  include: roles/dt-activegate/tasks/source-node-id.yml
-
-- name: ActiveGate - Restart Docker service
-  service:
-    name: docker
-    state: restarted
-  when: feature_activegate
+- become: true
+  block:
+  - name: Install synthetic-enabled ActiveGate
+    shell:
+      cmd: DYNATRACE_SYNTHETIC_AUTO_INSTALL=true /bin/sh "{{ activegate_download_location }}" --enable-synthetic
+      creates: "{{ activegate_uninstall_script_location }}"
+  - name: ActiveGate - Update dnsEntryPoint on custom.properties
+    blockinfile:
+      path: /var/lib/dynatrace/gateway/config/custom.properties
+      insertafter: "proxy-off = true"
+      block: |
+        [connectivity]
+        dnsEntryPoint = http://{{ ansible_facts.fqdn }}:9999
+  - name: Restart ActiveGate service
+    service:
+      name: dynatracegateway
+      state: restarted
+    ignore_errors: yes
+  - name: Restart Docker service
+    become: true
+    shell:
+      cmd: snap restart docker
+  when: ansible_facts.services["dynatracegateway.service"] is not defined

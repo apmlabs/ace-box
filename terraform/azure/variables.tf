@@ -74,3 +74,9 @@ variable "ca_api_token" {
   description = "Dynatrace Cloud Automation API token"
   default     = ""
 }
+
+variable "use_case" {
+  type        = string
+  description = "Use cases the ACE-Box will be enabled for."
+  default     = "demo_default"
+}

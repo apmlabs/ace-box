@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    ace_config_file_path: "./ace.config.yml"
+  roles:
+  # Role "config-v2" is always executed 
+  # and makes sure that all previous settings 
+  # are sourced alongside newly enabled/disabled
+  - role: config-v2
+
+  # Use case - Quality Gates demo
+  - role: demo-default
+    tags:
+    - demo_default
+    - never
+
+    # Use case - AppSec demo
+  - role: demo-appsec
+    tags:
+    - demo_appsec
+    - never
+
+  # Use case - Auto remediation demo
+  - role: demo-autorem
+    tags:
+    - demo_autorem
+    - never
+
+  # Use case - Monaco GitOps hands-on training
+  # - role: hot-monaco-gitops
+  #   tags:
+  #   - monaco_gitops
+  #   - never
+  
+  # Use case - Quality Gates hands-on training
+  # - role: hot-quality-gates
+  #   tags:
+  #   - quality_gates
+  #   - never

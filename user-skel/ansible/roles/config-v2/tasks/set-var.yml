@@ -1,0 +1,10 @@
+---
+- name: Set "{{ var_key_to_set }}" to "{{ var_value_to_set }}"
+  lineinfile:
+    path: "{{ ace_config_file_path }}"
+    regexp: "^{{ var_key_to_set }}:"
+    line: "{{ var_key_to_set }}: {{ var_value_to_set }}"
+    create: yes
+
+- set_fact:
+    "{{ var_key_to_set }}": "{{ var_value_to_set }}"

@@ -1,12 +1,11 @@
 ---
-- set_fact:
-    kube_config_path: "/home/{{ ace_box_user }}/.kube/config"
-
 - include_tasks:
     file: source-secrets.yml
 
-- include_tasks:
-    file: source-secrets.yml
+- name: AWX - Source Jenkins secrets
+  include_role:
+    name: jenkins
+    tasks_from: source-secret.yml
 
 - name: AWX - Source Gitea secrets
   include_role:
@@ -102,8 +101,8 @@
     organization: "{{ organization.id }}"
     state: present
     scm_type: git
-    scm_url: "{{ git_url }}/auto-remediation/ace-demo-canary-awx"
-    scm_branch: master
+    scm_url: "{{ git_url }}/{{ git_org_demo_autorem }}/{{ git_repo_demo_autorem }}-awx"
+    scm_branch: main
     scm_clean: true
     scm_delete_on_update: false
     credential: "{{ credential_git.id }}"
@@ -117,7 +116,7 @@
   - name: AWX - Retrieve Jenkins Crumb
     uri:
       url: "{{ jenkins_url }}/crumbIssuer/api/json"
-      user: "{{ jenkins_user }}"
+      user: "{{ jenkins_username }}"
       password: "{{ jenkins_password }}"
       force_basic_auth: yes
       validate_certs: false
@@ -129,8 +128,8 @@
     register: jenkins_crumb_raw
   - name: AWX - Generate Jenkins API token
     uri:
-      url: "{{ jenkins_url }}/user/admin/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken"
-      user: "{{ jenkins_user }}"
+      url: "{{ jenkins_url }}/user/{{ jenkins_username }}/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken"
+      user: "{{ jenkins_username }}"
       password: "{{ jenkins_password }}"
       force_basic_auth: yes
       validate_certs: false
@@ -157,7 +156,7 @@
       commentuser: Ansible Playbook
       tower_user: "{{ awx_admin_username }}"
       tower_password: "{{ awx_admin_password }}"
-      jenkins_user: "{{ jenkins_user }}"
+      jenkins_user: "{{ jenkins_username }}"
       jenkins_token: "{{ jenkins_api_token }}"
       dtcommentapiurl: "{% raw %}{{ tenant }}/api/v1/problem/details/{{ pid }}/comments?Api-Token={{ DYNATRACE_API_TOKEN }}{% endraw %}"
       dteventapiurl: "{% raw %}{{ tenant }}/api/v1/events/?Api-Token={{ DYNATRACE_API_TOKEN }}{% endraw %}"
@@ -186,7 +185,7 @@
 
 - set_fact:
     remediation_template_url: "{{ ingress_protocol }}://{{ awx_ingress_domain }}/#/templates/job_template/{{ remediation_template.id }}"
-    jenkins_pipeline_url_shift_traffic: "{{ jenkins_url }}/job/{{ 'ace-demo-canary' | urlencode() }}/job/{{ '5. Shift traffic' | urlencode() }}/build?delay=0sec"
+    jenkins_pipeline_url_shift_traffic: "{{ jenkins_url }}/job/{{ 'demo-auto-remediation' | urlencode() }}/job/{{ '5. Shift traffic' | urlencode() }}/build?delay=0sec"
 
 - name: Create Canary Reset template
   awx.awx.job_template:
@@ -239,7 +238,6 @@
     resource_definition:
       data:
         remediation_template_url: "{{ remediation_template_url }}"
-    kubeconfig: "{{ kube_config_path }}"
 
 - debug:
     msg: "Ansible has been configured successfully! Copy the following URL to set it as an Ansible Job URL in the Dynatrace notification settings: {{ remediation_template_url }}"

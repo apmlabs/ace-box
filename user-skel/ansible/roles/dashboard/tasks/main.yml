@@ -1,69 +1,59 @@
-- name: Dashboard - Encrpyt http basic auth password
+---
+- name: Encrpyt http basic auth password
   set_fact:
     password_encrypted: "{{ dashboard_password | password_hash('md5') }}"
-  when: feature_dashboard
 
-- name: Dashboard - Encode http basic auth credentials
+- name: Encode http basic auth credentials
   set_fact:
     authb64encoded: "{{ [dashboard_user, password_encrypted] | join(':') | b64encode }}"
-  when: feature_dashboard
 
-- name: Dashboard - Source Gitea secrets
+- name: Source Gitea secrets
   include_role:
     name: gitea
     tasks_from: source-secret
-  when: feature_dashboard and feature_gitea
+  when: git_flavor is defined and git_flavor == "GITEA"
 
-- name: Dashboard - Source Gitlab secrets
+- name: Source Gitlab secrets
   include_role:
     name: gitlab
     tasks_from: source-secret
-  when: feature_dashboard and feature_gitlab
+  when: git_flavor is defined and git_flavor == "GITLAB"
 
-- name: Dashboard - Source Keptn secrets
+- name: Source Jenkins secrets
   include_role:
-    name: keptn
+    name: jenkins
     tasks_from: source-secret
-  when: feature_dashboard and feature_keptn
 
-- name: Dashboard - Source Keptn host
-  include_role:
-    name: keptn
-    tasks_from: source-endpoints
-  when: feature_dashboard and feature_keptn
+- block:
+  - name: Source Keptn secrets
+    include_role:
+      name: keptn
+      tasks_from: source-secret
+  - name: Source Keptn host
+    include_role:
+      name: keptn
+      tasks_from: source-endpoints
+  when: cloud_automation_flavor is defined and cloud_automation_flavor == "KEPTN"
 
-- name: Dashboard - Source Cloud Automation credentials
+- name: Source Cloud Automation secrets
   include_role:
     name: cloudautomation
-    tasks_from: source-credentials
-  when: feature_dashboard and feature_cloud_automation  
+    tasks_from: source-secret
+  when: cloud_automation_flavor is defined and cloud_automation_flavor == "CLOUD_AUTOMATION"
 
-- name: Dashboard - Set Quality Gates Provider to keptn
-  set_fact:
-    qgprovider: "keptn"
-  when: feature_keptn
-
-- name: Dashboard - Set Quality Gates Provider to cloud_automation
-  set_fact:
-    qgprovider: "cloud_automation"
-  when: feature_cloud_automation
-
-- name: Dashboard - Source AWX credentials
+- name: Source AWX credentials
   include_role:
     name: awx
     tasks_from: source-secrets
-  when: feature_dashboard and feature_awx  
 
 - name: Copy Helm chart
   copy:
     src: helm-chart/
     dest: /tmp/dashboard-helm-chart/
-  when: feature_dashboard
 
 - name: Run ace dashboard
-  become_user: "{{ non_root_user }}"
   shell: >
-    /snap/bin/helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace {{ dashboard_namespace }}
+    /snap/bin/helm upgrade -i ace-dashboard /tmp/dashboard-helm-chart --namespace {{ dashboard_namespace }} --create-namespace
     --set domain={{ ingress_domain }}
     --set authb64encoded={{ authb64encoded }}
     --set image=dynatraceace/ace-box-dashboard:1.1.0
@@ -71,30 +61,36 @@
     --set env.SIMPLENODEAPP_URL_PRODUCTION={{ ingress_protocol }}://simplenodeservice.production.{{ ingress_domain }}
     --set env.SIMPLENODEAPP_URL_CANARY={{ ingress_protocol }}://simplenodeservice.canary.{{ ingress_domain }}
     --set env.JENKINS_URL={{ ingress_protocol }}://jenkins.{{ ingress_domain }}
-    --set env.JENKINS_USER={{ jenkins_user | default('N/A') }}
-    --set env.JENKINS_PASSWORD={{ jenkins_password | default('N/A') }}
+    --set env.JENKINS_USER={{ jenkins_username | default(None) }}
+    --set env.JENKINS_PASSWORD={{ jenkins_password | default(None) }}
     --set env.GITEA_URL={{ ingress_protocol }}://gitea.{{ ingress_domain }}
-    --set env.GITEA_USER={{ gitea_username | default('N/A') }}
-    --set env.GITEA_PASSWORD={{ gitea_password | default('N/A') }}
-    --set env.GITEA_PAT={{ gitea_access_token | default('N/A') }}
+    --set env.GITEA_USER={{ gitea_username | default(None) }}
+    --set env.GITEA_PASSWORD={{ gitea_password | default(None) }}
+    --set env.GITEA_PAT={{ gitea_access_token | default(None) }}
     --set env.GITLAB_URL={{ ingress_protocol }}://gitlab.{{ ingress_domain }}
-    --set env.GITLAB_USER={{ gitlab_username | default('N/A') }}
-    --set env.GITLAB_PASSWORD={{ gitlab_password | default('N/A') }}
+    --set env.GITLAB_USER={{ gitlab_username | default(None) }}
+    --set env.GITLAB_PASSWORD={{ gitlab_password | default(None) }}
     --set env.AWX_URL={{ ingress_protocol }}://awx.{{ ingress_domain }}
-    --set env.AWX_USER={{ awx_admin_username | default('N/A') }}
-    --set env.AWX_PASSWORD={{ awx_admin_password | default('N/A') }}
-    --set env.KEPTN_API_URL={{ keptn_endpoint }}
-    --set env.KEPTN_API_TOKEN={{ keptn_api_token | default('N/A') }}
-    --set env.KEPTN_BRIDGE_URL={{ keptn_bridge }}
-    --set env.KEPTN_BRIDGE_USER={{ keptn_bridge_user | default('N/A') }}
-    --set env.KEPTN_BRIDGE_PASSWORD={{ keptn_bridge_password | default('N/A') }}
-    --set env.DT_TENANT_URL={{ dynatrace_tenant_url | default('N/A') }}
-    --set env.CLOUD_AUTOMATION_API_URL={{ keptn_endpoint }}
-    --set env.CLOUD_AUTOMATION_API_TOKEN={{ keptn_api_token | default('N/A') }}
-    --set env.CLOUD_AUTOMATION_BRIDGE_URL={{ keptn_bridge }}
-    --set env.QUALITY_GATES_PROVIDER={{ qgprovider }}
+    --set env.AWX_USER={{ awx_admin_username | default(None) }}
+    --set env.AWX_PASSWORD={{ awx_admin_password | default(None) }}
+    --set env.KEPTN_API_URL={{ keptn_endpoint | default(None) }}
+    --set env.KEPTN_API_TOKEN={{ keptn_api_token | default(None) }}
+    --set env.KEPTN_BRIDGE_URL={{ keptn_bridge | default(None) }}
+    --set env.KEPTN_BRIDGE_USER={{ keptn_bridge_user | default(None) }}
+    --set env.KEPTN_BRIDGE_PASSWORD={{ keptn_bridge_password | default(None) }}
+    --set env.DT_TENANT_URL={{ dynatrace_tenant_url | default(None) }}
+    --set env.CLOUD_AUTOMATION_API_URL={{ cloud_automation_endpoint | default(None) }}
+    --set env.CLOUD_AUTOMATION_API_TOKEN={{ cloud_automation_api_token | default(None) }}
+    --set env.CLOUD_AUTOMATION_BRIDGE_URL={{ cloud_automation_bridge | default(None) }}
+    --set env.QUALITY_GATES_PROVIDER={{ cloud_automation_flavor | default(None) }}
     --set env.K8S_PROVIDER=MICROK8S
-  when: feature_dashboard
+
+- name: Print some dashboard config
+  debug:
+    msg:
+      - "Dashboard URL: {{ ingress_protocol }}://dashboard.{{ ingress_domain }}"
+      - "Dashboard username: {{ dashboard_user }}"
+      - "Dashboard password: {{ dashboard_password }}"
 
 # TBD: Source from secret
     # --set envSecrets.GITEA_USER.name=gitea-admin

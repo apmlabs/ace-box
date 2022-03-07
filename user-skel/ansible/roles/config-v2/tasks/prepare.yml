@@ -1,0 +1,13 @@
+---
+- name: Determine Cloud Automation flavor
+  set_fact:
+    cloud_automation_flavor: "CLOUD_AUTOMATION"
+  when: ca_tenant_url is defined and ca_tenant_url != "None" and ca_tenant_url != "" and ca_api_token is defined and ca_api_token != "None" and ca_api_token != ""
+
+- name: ACE Config - Prepare {{ ace_config_file_path }}
+  template:
+    src: ../templates/ace.config.yml.j2
+    dest: "{{ ace_config_file_path }}"
+    owner: "{{ lookup('env','USER') }}"
+    group: "{{ lookup('env','USER') }}"
+    mode: '0644'

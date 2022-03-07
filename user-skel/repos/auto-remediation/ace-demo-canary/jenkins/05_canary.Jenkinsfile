@@ -10,6 +10,8 @@ pipeline {
 		IMAGE_FULL = "${env.DOCKER_REGISTRY_URL}/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
 		RELEASE_NAME = "simplenodeservice-canary-v2"
 		NAMESPACE = "canary"
+		DT_API_TOKEN = credentials('DT_API_TOKEN')
+		DT_TENANT_URL = credentials('DT_TENANT_URL')
 	}
 	agent {
 		label 'kubegit'
