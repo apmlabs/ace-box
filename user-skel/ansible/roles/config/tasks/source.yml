@@ -1,4 +1,0 @@
----
-- name: ACE Config - Source config
-  include_vars:
-    file: "{{ ace_config_file_path }}"

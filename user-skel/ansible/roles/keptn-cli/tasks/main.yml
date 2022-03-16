@@ -9,6 +9,7 @@
 
 - name: Delete current Keptn CLI bin
   become: true
+  become_user: root
   ansible.builtin.file:
     path: "{{ keptn_bin_location }}"
     state: absent

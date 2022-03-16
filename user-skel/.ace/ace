@@ -8,11 +8,13 @@ Combines ansible-playbooks and tagging logic in a single, simple wrapper
 import os
 import logging
 import subprocess
+import pwd
 
 import click
 
-CLI_VERSION = '0.0.2'
+CLI_VERSION = '0.0.3'
 default_ansible_workdir = os.path.expanduser('~/ansible/')
+default_user = pwd.getpwuid(os.getuid())[0]
 install_targets = [
     'microk8s',
     'k8s',
@@ -83,6 +85,15 @@ def ace(
     envvar='ACE_ANSIBLE_WORKDIR',
 )
 @click.option(
+    '--user',
+    help=(
+        'Please enter the user ACE-Box conponents will be installed for.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_BOX_USER',
+    default=default_user,
+)
+@click.option(
     '--ingress-domain',
     help='Please enter your public domain. If not set you\'ll be prompted during "prepare".',
     envvar='ACE_INGRESS_DOMAIN',
@@ -150,6 +161,7 @@ def prepare(
     ca_tenant,
     ca_api_token,
     ansible_workdir,
+    user,
     force,
 ):
     """Preparing ACE-Box"""
@@ -202,7 +214,8 @@ def prepare(
             f'dynatrace_api_token={dt_api_token} '
             f'dynatrace_paas_token={dt_paas_token} '
             f'ca_tenant_url={ca_tenant} '
-            f'ca_api_token={ca_api_token}'
+            f'ca_api_token={ca_api_token} '
+            f'ace_box_user={user}'
             '"'
         ),
         cwd=ansible_workdir,
@@ -221,6 +234,15 @@ def prepare(
     ),
     envvar='ACE_ANSIBLE_WORKDIR',
 )
+@click.option(
+    '--user',
+    help=(
+        'Please enter the user ACE-Box conponents will be installed for.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_BOX_USER',
+    default=default_user,
+)
 @click.argument(
     'target',
     type=click.Choice(
@@ -232,6 +254,7 @@ def prepare(
 def install(
     target,
     ansible_workdir,
+    user,
 ):
     """Installing ACE-Box components"""
     logging.info('Installing ACE-Box ({%s})...', target)
@@ -242,8 +265,12 @@ def install(
             default=default_ansible_workdir
         )
 
-    subprocess.run(
-        f'ansible-playbook -vv main.yml --tags "{target}"',
+    subprocess.run((
+            f'ansible-playbook -vv main.yml --extra-vars "'
+            f'ace_box_user={user}'
+            '"'
+            f'--tags "{target}"'
+        ),
         cwd=ansible_workdir,
         shell=True,
         check=True,
@@ -262,6 +289,15 @@ def install(
     ),
     envvar='ACE_ANSIBLE_WORKDIR',
 )
+@click.option(
+    '--user',
+    help=(
+        'Please enter the user ACE-Box conponents will be installed for.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_BOX_USER',
+    default=default_user,
+)
 @click.argument(
     'target',
     type=click.Choice(
@@ -273,6 +309,7 @@ def install(
 def uninstall(
     target,
     ansible_workdir,
+    user,
 ):
     """Uninstalling ACE-Box components"""
     logging.info('Uninstalling ACE-Box ({%s})...', target)
@@ -284,8 +321,12 @@ def uninstall(
         )
 
     tag = f'{target}_uninstall'
-    subprocess.run(
-        f'ansible-playbook -vv -i hosts main.yml --tags "{tag}"',
+    subprocess.run((
+            f'ansible-playbook -vv main.yml --extra-vars "'
+            f'ace_box_user={user}'
+            '" '
+            f'--tags "{tag}"'
+        ),
         cwd=ansible_workdir,
         shell=True,
         check=True,
@@ -303,13 +344,23 @@ def uninstall(
     ),
     envvar='ACE_ANSIBLE_WORKDIR',
 )
+@click.option(
+    '--user',
+    help=(
+        'Please enter the user ACE-Box conponents will be installed for.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_BOX_USER',
+    default=default_user,
+)
 @click.argument(
     'update',
     nargs=1,
 )
 def set(
-  ansible_workdir,
-  update,
+    ansible_workdir,
+    update,
+    user,
 ):
     """Updating ACE-Box config"""
     [ace_config_key, ace_config_value] = update.split('=')
@@ -326,6 +377,7 @@ def set(
             'ansible-playbook -vv config-update.yml --extra-vars "'
             f'ace_config_key={ace_config_key} '
             f'ace_config_value={ace_config_value} '
+            f'ace_box_user={user}'
             '"'
         ),
         cwd=ansible_workdir,
@@ -345,6 +397,15 @@ def set(
     ),
     envvar='ACE_ANSIBLE_WORKDIR',
 )
+@click.option(
+    '--user',
+    help=(
+        'Please enter the user ACE-Box conponents will be installed for.'
+        'If not set you\'ll be prompted during "prepare".'
+    ),
+    envvar='ACE_BOX_USER',
+    default=default_user,
+)
 @click.argument(
     'target',
     type=click.Choice(
@@ -356,6 +417,7 @@ def set(
 def enable(
     target,
     ansible_workdir,
+    user,
 ):
     """Enabling ACE-Box use case"""
     logging.info('Preparing ACE-Box for use case {%s}...', target)
@@ -366,8 +428,12 @@ def enable(
             default=default_ansible_workdir
         )
 
-    subprocess.run(
-        f'ansible-playbook main-v2.yml --tags "{target}"',
+    subprocess.run((
+            f'ansible-playbook main-v2.yml --extra-vars "'
+            f'ace_box_user={user}'
+            '" '
+            f'--tags "{target}"'
+        ),
         cwd=ansible_workdir,
         shell=True,
         check=True,
