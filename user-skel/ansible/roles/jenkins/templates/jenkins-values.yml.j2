@@ -58,7 +58,7 @@ controller:
                 value: "{{ git_domain | default(None) }}"
               - key: "SYNTH_NODE_ID"
                 value: "{{ dt_synthetic_node_id | default(None) }}"
-{% if demo_default|default(False) == True or demo_appsec|default(False) == True %}
+{% if demo_default|default(False) == True or demo_appsec|default(False) == True or hot_appsec|default(False) == True %}
               - key: "GIT_ORG_DEMO"
                 value: "{{ git_org_demo | default(None) }}"
               - key: "GIT_REPO_DEMO"
@@ -107,7 +107,7 @@ controller:
         credentials:
           system:
             domainCredentials:
-{% if demo_default|default(False) == True or demo_appsec|default(False) == True or demo_autorem|default(False) == True %}
+{% if demo_default|default(False) == True or demo_appsec|default(False) == True or demo_autorem|default(False) == True or hot_appsec|default(False) == True%}
               - credentials:
                 - usernamePassword:
                     id: "git-creds-ace"
@@ -171,4 +171,9 @@ controller:
 
       demo-autorem-jobs-config: |
 {% include 'demo-autorem-jobs.yml.j2' %}
+{% endif %}
+{% if hot_appsec|default(False) == True %}
+
+      hot-appsec-jobs-config: |
+{% include 'hot-appsec-jobs.yml.j2' %}
 {% endif %}

@@ -15,7 +15,7 @@
     - demo_default
     - never
 
-    # Use case - AppSec demo
+  # Use case - AppSec demo
   - role: demo-appsec
     tags:
     - demo_appsec
@@ -25,6 +25,12 @@
   - role: demo-autorem
     tags:
     - demo_autorem
+    - never
+
+  # Use case - AppSec HOT
+  - role: hot-appsec
+    tags:
+    - hot_appsec
     - never
 
   # Use case - Monaco GitOps hands-on training

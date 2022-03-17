@@ -31,7 +31,8 @@ uninstall_targets = []
 enable_targets = [
     'demo_default',
     'demo_appsec',
-    'demo_autorem'
+    'demo_autorem',
+    'hot_appsec'
 ]
 
 def set_log_level(
