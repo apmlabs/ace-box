@@ -1,18 +1,19 @@
-# Getting Familiar with App Sec
-## Security Overview
-Navigate to Application *Security > Security Overview*
+## Getting Familiar with AppSec
+### Security Overview
+
+Navigate to `Application Security > Security Overview`
 
 ![security overview](../../assets/images/2-1-security-overview.png)
 
 Explore what is displayed ont he screen:
-- How many vulnerabilities were discovered
+- How many vulnerabilities were discovered?
 - How many of each category?
 
 > Since we just activated it, the evolution over the past 30 days doesn't show much. 
 
 Click on **View all vulnerabilities**
 
-## Vulnerabilities
+### Vulnerabilities
 On this screen you can see a list of all vulnerabilities that were discovered in the environment. 
 
 ![vulnerabilities](../../assets/images/2-2-vulnerabilities.png)
@@ -25,7 +26,7 @@ Take a look at the list, try out the different filters, take a look at the findi
 
 Click on the vulnerability with the highest score (first in the list).
 
-## Vulnerability details
+### Vulnerability details
 
 (***Here we should take a specific vulnerability where the score increases after we enable the synthetics***)
 

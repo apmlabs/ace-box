@@ -3,18 +3,21 @@
 In this hands on exercise we want to see how internet exposure affects the Davis Security Score in real time. 
 
 ## Run the Pipeline
-Again, before taking a look of what happens behind the scenes, let's deploy the **unguard base config** again, but this time we want to deploy another project to our Dynatrace environment. Open the pipeline **unguard base config**, go on deploy with parameters **build with parameters**, enter "xxxxxxx" in the project section and build the pipeline. 
+Again, before taking a look of what happens behind the scenes, let's deploy the **unguard base config**, but this time we want to deploy another project to our Dynatrace environment. Open the pipeline **unguard base config**, go on deploy with parameters **build with parameters**, enter `synthetic` in the project section and build the pipeline. 
 
-- ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) `what is "xxxxxxx"?`
+![Deploy Unguard](../../assets/images/2-8-unguard-monaco.png)
+
+![Build now](../../assets/images/2-9-synthetic-config.png)
 
 
 
-While the pipeline runs, let us take a look at what we just did.
+While the pipeline runs, let us take a look at what we just deployed.
 
 
 ## Explore Configuration
 
 ### Monaco 
+
 Navigate in Gitea to `monaco/projects`. Under this folder you will find the three sub-projects that were deployed with the Jenkins pipeline just now. 
 
 With these projects we deployed two synthetic tests. Can you find them in the folder structure visualized below?
@@ -34,7 +37,7 @@ With these projects we deployed two synthetic tests. Can you find them in the fo
         │           kubernetes.json
         │           kubernetes.yaml
         │           
-        ├───exercise-2
+        ├───synthetic
         │   └───synthetic-monitor
         │           synthetic-monitors.yaml
         │           unguard-clickpath.json
@@ -88,7 +91,7 @@ With these projects we deployed two synthetic tests. Can you find them in the fo
 ```
 ## Jenkin Pipeline
 
-The Jenkins pipeline is the same as the one from exercise 2. This time we deployed the "xxxxxx" project, instead of "unguard".
+The Jenkins pipeline is the same as the one from exercise 2. This time we deployed the `synthetic` project, instead of `unguard`.
 
 ```groovy
 ENVS_FILE = "monaco/environments.yaml"
@@ -143,7 +146,11 @@ Let's go to the next chapter to take a hands on look at the DSS!
 
 ### Analyze changes in Davis Security Score
 
-The two deployed synthetic tests we deployed started calling the unguard application. If you look at the yaml file for the synthetic monitors, you will see that both call the URL *"http://unguard.{{ .Env.INGRESS_DOMAIN }}/ui"* where INGRESS_DOMAIN is an environment variable defined in your Jenkins instance. 
-These calls simulate internet exposure of the endpoint. This affects the DSS. Lets go and check it out:
+The deployed synthetic test we deployed started calling the unguard application. For a vulnerability to have internet exposure, the vulnerable entity has to be called by at least two different non private network. The calls made by the activegate simulate one endpoint in a non private network. So now we also want to simulate the second endpoint. Before we do so, lets take a look at a specific vulnerability:
 
+-- Go to a vulnerability that has no public exposure (which will have it later)
+
+To simulate the second, open `http://unguard.[<your_VM__IP_adress>].info/ui/`.
+
+-- Go to the vulnerability and show how the DSS increased
 

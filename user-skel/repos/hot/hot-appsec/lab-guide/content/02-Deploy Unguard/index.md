@@ -1,50 +1,35 @@
-# Deploy Unguard
+## Deploy Unguard
 
-To get started with AppSec, we now need an application we want to monitor. For that we will deploy an application called **unguard** with a pre-build Jenkins pippeline. The same pipeline will also deploy configuration to Dynatrace with the help of our Monitoring-as-code tool (monaco). 
+To get started with AppSec, we now need an application we want to monitor. For that we will deploy an application called `unguard` with a pre-build Jenkins pippeline. The same pipeline will also deploy configuration to Dynatrace with the help of our Monitoring-as-code tool (monaco). 
 
-## Trigger Pipelines
+### Trigger Pipelines
 
-Before taking a look at what happens behind the scenes, let us deploy the `unguard` application straight away by going to your jenkins instance (link on your dashboard). On your Jenkins dashboard you will find the `unguard deploy` pipeline. Open it by clicking on it and then run it by clicking on `"build now"`.
+Before taking a look at what happens behind the scenes, let us deploy the `unguard` application straight away by going to your jenkins instance (link on your dashboard). On your Jenkins dashboard you will find the `unguard deploy` pipeline. Open it by clicking on it and then run it by clicking on `"build now"` (see section **unguard deploy** below for screenshots).
 
-On top of that we also want to deploy some Dynatrace configuration to our Dynatrace environment. To do so, let's also deploy the **unguard base config**. Open the pipeline **unguard base config**, go on deploy with parameters `build with parameters`, enter "unguard" in the project section and build the pipeline. 
-
-
-### Unguard deploy
+#### Unguard deploy
 
 ![Deploy Unguard](../../assets/images/2-4-pipeline.png) 
 
 ![Build now](../../assets/images/2-5-buildnow.png)
 
-### Unguard monaco
 
 
+#### Unguard monaco
 
-![Deploy Unguard](../../assets/images/2-8-unguard-monaco)
+On top of that we also want to deploy some Dynatrace configuration to our Dynatrace environment. To do so, let's also deploy the `unguard base config`. Open the pipeline `unguard base config`, go on deploy with parameters `build with parameters`, enter `unguard` in the project section and build the pipeline (see section **unguard monaco** below for screenshots). This pipeline uses the [monaco](https://dynatrace-oss.github.io/dynatrace-monitoring-as-code/) tool to deploy Dynatrace configuration. This is described further in the `Explore Jenkins Configuration` section below. 
 
-![Build now](../../assets/images/2-7-base-config)
+![Deploy Unguard](../../assets/images/2-8-unguard-monaco.png)
 
-
+![Build now](../../assets/images/2-7-base-config.png)
 
 
 While the pipelines run, let us take a look at what we just did.
 
-## Explore Jenkins Configuration
+### Explore Jenkins Configuration
 
 Now lets quickly check the Jenkins pipelines.
 
-### Unguard deploy
-
-`describe vaguely what the pipeline does`
-
-#### What is Monaco?
-
-The Monitoring as Code (MAC) approach enables you to manage your Dynatrace environment monitoring tasks through configuration files instead of a graphical user interface. Configuration files allow you to create, update, and manage your monitoring configurations safely, consistently, and repetitively. They can be reused, versioned, and shared within your team.
-
-![Monaco](../../assets/images/monaco-pipeline.png)
-
---Add description about Monaco
-
-
+#### Unguard Deploy Pipeline
 
 Using Gitea, open the file `/jenkins/deploy.Jenkinsfile`. Here you will see the pipeline used to deploy unguard. 
 
@@ -113,7 +98,18 @@ pipeline {
 Looking at the Jenkins file you will see the **kubectl** and **helm** containers in the **kubegit** pod that are defined in your Jenkins instance and used to run the necessary commands to deploy the helm file of the application. 
 
 
-### Unguard monaco
+#### Unguard Monaco
+
+##### What is Monaco?
+
+The Monitoring as Code (MAC) approach enables you to manage your Dynatrace environment monitoring tasks through configuration files instead of a graphical user interface. Configuration files allow you to create, update, and manage your monitoring configurations safely, consistently, and repetitively. They can be reused, versioned, and shared within your team.
+
+![Monaco](../../assets/images/monaco-pipeline.png)
+
+--Add description about Monaco
+
+
+##### Unguard Monaco Pipeline
 
 Using Gitea, open the file `/jenkins/monaco.Jenkinsfile`. Here you will see the definition of the **unguard monaco** pipeline used to deploy Dynatrace configuration using monaco. 
 
@@ -152,26 +148,6 @@ pipeline {
 ```
 
 A few important sections are noted:
-#### The monaco-runner
-```groovy
-agent {
-    label 'monaco-runner'
-}
-```
-```groovy
-...
-container('monaco')
-...
-```
-This section refers to the `monaco-runner`, a container that was precreated by the Dynatrace ACE services team that can be used within a CI/CD pipeline.
-Within the `monaco` container, we now have the `monaco` CLI available. For more information, visit https://github.com/dynatrace-ace/monaco-runner.
-
-Go to **Manage Jenkins** >> **Configure System** >> **Cloud configuration page** (bottom of settings page) >> **Pod Templates** >> **Pod Template monaco-runner** >> **Pod Template details...** and look at the configuration.
-![](../../assets/images/pod_template.png).
-
-By using this pod template in our Jenkins pipeline, we make the `monaco` command from within the pod available within our pipeline. 
-
-
 
 Now let's take a look at what configuration was actually deployed. Using gitea, open the folder `/monaco/projects/unguard`. Here you will find the known folder structure displayed below. 
 
@@ -229,8 +205,21 @@ Now let's take a look at what configuration was actually deployed. Using gitea, 
 
 
 
-## View results in Dynatrace
+### View results in Dynatrace
 
-As a last step, go to your Dynatrace environment and verify that the pipeline deployed unguard and you can see data flowing in. Go to your Dynatrace tenant (accessible from your dashboard) and go to the  `Frontend` page. 
+As a last step, go to your Dynatrace environment and verify that the pipeline deployed unguard and you can see data flowing in. Go to your Dynatrace tenant (accessible from your dashboard) and go to the  `Frontend` page. You will find the application `unguard` as well as the `unguard` management zone with which you can filter entities throughout the environment. 
 
+![unguard](../../assets/images/2-10-unguard-configuration.png)
 
+If you navigate to the `Dashboard` menu, you will also find the `Application Security Issues` dashboard deployed by our monaco pipeline.
+
+![unguard](../../assets/images/2-11-dashboard.png)
+
+### Deploy a second app: the SimpleNodeService
+As part of a future lab, we also need to deploy another app. 
+To deploy this app, go back to the dashboard of Jenkins, and navigate to the `demo-appsec` folder.
+Click on the *play* button next to the pipeline called `1. Build`, and when asked for a build number leave the default `1`, and click on `Build`.
+
+![](../../assets/images/2-9-jenkins-demo-appsec.png)
+
+For now, we will not use this app. Please continue with the remainder of the lab.
