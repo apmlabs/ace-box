@@ -49,8 +49,8 @@ pipeline {
                     cloudautomation.keptnInit project:"${env.PROJECT}", service:"${env.APP_NAME}", stage:"${env.ENVIRONMENT}", monitoring:"${env.MONITORING}" , shipyard:'cloudautomation/shipyard.yaml'
                     switch(env.QG_MODE) {
                         case "yaml": 
-                            cloudautomation.keptnAddResources('cloudautomation/sli_appsec.yaml','dynatrace/sli.yaml')
-                            cloudautomation.keptnAddResources('cloudautomation/slo_appsec.yaml','slo.yaml')
+                            cloudautomation.keptnAddResources('cloudautomation/sli.yaml','dynatrace/sli.yaml')
+                            cloudautomation.keptnAddResources('cloudautomation/slo.yaml','slo.yaml')
                             cloudautomation.keptnAddResources('cloudautomation/dynatrace.conf.yaml','dynatrace/dynatrace.conf.yaml')
                             break;
                         case "dashboard": 
