@@ -137,7 +137,7 @@
           - script: >
               pipelineJob('hot-appsec/2. Monitoring as Code') {
                 parameters {
-                  stringParam('PROJECT', 'unguard', 'The name of the monaco project to deploy.')
+                  stringParam('PROJECT', 'base', 'The name of the monaco project to deploy.')
                 }
                 definition {
                   cpsScm {
