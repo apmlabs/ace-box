@@ -146,11 +146,21 @@ Let's go to the next chapter to take a hands on look at the DSS!
 
 ### Analyze changes in Davis Security Score
 
-The deployed synthetic test we deployed started calling the unguard application. For a vulnerability to have internet exposure, the vulnerable entity has to be called by at least two different non private network. The calls made by the activegate simulate one endpoint in a non private network. So now we also want to simulate the second endpoint. Before we do so, lets take a look at a specific vulnerability:
+he deployed synthetic test we deployed started calling the unguard application. For a vulnerability to have internet exposure, the vulnerable entity has to be called by at least two different non private network. The calls made by the activegate simulate one endpoint in a non private network. So now we also want to simulate the second endpoint. Before we do so, lets take at the current state of our vulnerabilities.
 
--- Go to a vulnerability that has no public exposure (which will have it later)
+Navigate to `Vulnerabilities` and filter for `Risk assessment: Public Internet Exposure`. As you see, no entities are publicly exposed.
 
-To simulate the second, open `http://unguard.[<your_VM__IP_adress>].info/ui/`.
+![No internet exposure](../../assets/images/4-4-no-internet-exposure.png)
 
--- Go to the vulnerability and show how the DSS increased
+Before we go on, search for the vulnerability with CVE ID: `xxxxxxx`, open the vulnerability and see how the DSS has been lowered due to missing internet exposure.
+
+-add image
+
+Now, to simulate internet exposure, open `http://unguard.[<your_VM__IP_adress>].info/ui/` yourself and generate some traffic .
+Once you have done that, navigate back to `Vulnerabilities` and filter for `Risk assessment: Public Internet Exposure`. 
+
+You will now see the vulnerabilities that evolved to publicly exposed vulnerabilities due to the synthetic activegate as well as your traffic.
+
+![No internet exposure](../../assets/images/4-5-internet-exposure.png)
+
 
