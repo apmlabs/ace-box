@@ -215,6 +215,10 @@ If you navigate to the `Dashboard` menu, you will also find the `Application Sec
 
 ![unguard](../../assets/images/2-11-dashboard.png)
 
+Navigate to the `Kubernetes` menu. You will find the `ACE-BOX` cluster in which the `unguard` application is running. If you click on the cluster name, you will find an overview of the Kubernetes integration with Dynatrace. The monaco pipeline triggered by Jenkins added the necessary credentials to import additional Kubernetes information from Kubernetes (e.g. namspaces, deployments, labels, requests...). This will become important in the next exercise.
+
+![unguard](../../assets/images/2-12-kubernetes.png)
+
 ### Deploy a second app: the SimpleNodeService
 As part of a future lab, we also need to deploy another app. 
 To deploy this app, go back to the dashboard of Jenkins, and navigate to the `demo-appsec` folder.
