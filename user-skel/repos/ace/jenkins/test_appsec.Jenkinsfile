@@ -25,13 +25,14 @@ pipeline {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
         string(name: 'BUILD', defaultValue: '', description: 'The build version to deploy.', trim: true)
         string(name: 'ART_VERSION', defaultValue: '', description: 'Artefact version that is being deployed.', trim: true)
+        choice(name: 'QG_MODE', choices: ['yaml','dashboard'], description: 'Use yaml or dashboard for QG')
     }
     environment {
         ENVIRONMENT = 'staging'
         PROJECT = 'simplenodeproject'
         MONITORING = 'dynatrace'
         VU = 1
-        LOOPCOUNT = 100
+        LOOPCOUNT = 500
         COMPONENT = 'api'
         PARTOF = 'simplenode-app'
         KEPTN_API_TOKEN = credentials('CA_API_TOKEN')
@@ -42,29 +43,23 @@ pipeline {
         label 'kubegit'
     }
     stages {
-        stage('Security Gate PreReqs') {
-            steps {
-                container('git') {
-                    // TEMP - Generate sli files manually to cirumvent https://github.com/keptn-contrib/dynatrace-service/issues/601
-                    withCredentials([usernamePassword(credentialsId: 'git-creds-ace', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh "git config --global user.email ${env.GITHUB_USER_EMAIL}"
-                        sh "git clone ${env.GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_DOMAIN}/${env.GIT_ORG_DEMO}/${env.GIT_REPO_DEMO}"
-                        sh "cd ${env.GIT_REPO_DEMO}/ && sed -e 's|APP_BUILD_VERSION_PLACEHOLDER|${env.ART_VERSION}|' cloudautomation/sli_appsec.yaml > cloudautomation/sli_appsec_gen.yaml"
-                        sh "cd ${env.GIT_REPO_DEMO}/ && git add cloudautomation/sli_appsec_gen.yaml && git commit -m 'Update sli for appsec'"
-                        sh "cd ${env.GIT_REPO_DEMO}/ && git push ${env.GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_DOMAIN}/${env.GIT_ORG_DEMO}/${env.GIT_REPO_DEMO}"
-                        //sh "rm -rf ${env.GIT_REPO_DEMO}"
-                    }
-                }
-            }
-        }    
         stage ('Quality Gate Init') {
             steps {
                 checkout scm
                 script {
                     cloudautomation.keptnInit project:"${env.PROJECT}", service:"${env.APP_NAME}", stage:"${env.ENVIRONMENT}", monitoring:"${env.MONITORING}" , shipyard:'cloudautomation/shipyard.yaml'
-                    cloudautomation.keptnAddResources('cloudautomation/sli_appsec_gen.yaml','dynatrace/sli.yaml')
-                    cloudautomation.keptnAddResources('cloudautomation/slo_appsec.yaml','slo.yaml')
-                    cloudautomation.keptnAddResources('cloudautomation/dynatrace.conf.yaml','dynatrace/dynatrace.conf.yaml')
+                    
+                    switch(env.QG_MODE) {
+                        case "yaml": 
+                            cloudautomation.keptnAddResources('cloudautomation/sli_appsec.yaml','dynatrace/sli.yaml')
+                            cloudautomation.keptnAddResources('cloudautomation/slo_appsec.yaml','slo.yaml')
+                            cloudautomation.keptnAddResources('cloudautomation/dynatrace.conf.yaml','dynatrace/dynatrace.conf.yaml')
+                            break;
+                        case "dashboard": 
+                            cloudautomation.keptnAddResources('cloudautomation/dynatrace-dashboard.conf.yaml','dynatrace/dynatrace.conf.yaml')
+                            break;
+                    }
+                    
                 }
             }
         }
@@ -134,7 +129,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    sleep(time:600,unit:"SECONDS")
+                    //sleep(time:600,unit:"SECONDS")
                     def labels=[:]
                     labels.put("DT_RELEASE_VERSION", "${env.BUILD}.0.0")
                     labels.put("DT_RELEASE_BUILD_VERSION", "${env.ART_VERSION}")

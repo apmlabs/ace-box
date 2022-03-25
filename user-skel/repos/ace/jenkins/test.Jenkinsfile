@@ -25,6 +25,7 @@ pipeline {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
         string(name: 'BUILD', defaultValue: '', description: 'The build version to deploy.', trim: true)
         string(name: 'ART_VERSION', defaultValue: '', description: 'Artefact version that is being deployed.', trim: true)
+        choice(name: 'QG_MODE', choices: ['yaml','dashboard'], description: 'Use yaml or dashboard for QG')
     }
     environment {
         ENVIRONMENT = 'staging'
@@ -46,9 +47,16 @@ pipeline {
             steps {
                 script {
                     cloudautomation.keptnInit project:"${env.PROJECT}", service:"${env.APP_NAME}", stage:"${env.ENVIRONMENT}", monitoring:"${env.MONITORING}" , shipyard:'cloudautomation/shipyard.yaml'
-                    cloudautomation.keptnAddResources('cloudautomation/sli.yaml','dynatrace/sli.yaml')
-                    cloudautomation.keptnAddResources('cloudautomation/slo.yaml','slo.yaml')
-                    cloudautomation.keptnAddResources('cloudautomation/dynatrace.conf.yaml','dynatrace/dynatrace.conf.yaml')
+                    switch(env.QG_MODE) {
+                        case "yaml": 
+                            cloudautomation.keptnAddResources('cloudautomation/sli_appsec.yaml','dynatrace/sli.yaml')
+                            cloudautomation.keptnAddResources('cloudautomation/slo_appsec.yaml','slo.yaml')
+                            cloudautomation.keptnAddResources('cloudautomation/dynatrace.conf.yaml','dynatrace/dynatrace.conf.yaml')
+                            break;
+                        case "dashboard": 
+                            cloudautomation.keptnAddResources('cloudautomation/dynatrace-dashboard.conf.yaml','dynatrace/dynatrace.conf.yaml')
+                            break;
+                    }
                 }
             }
         }

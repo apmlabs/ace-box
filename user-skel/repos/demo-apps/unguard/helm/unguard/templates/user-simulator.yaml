@@ -27,7 +27,9 @@ spec:
           image: "{{ .Values.unguard.userSimulator.image }}:{{ .Values.unguard.userSimulator.tag }}"
           env:
             - name: FRONTEND_ADDR
-              value: "unguard-frontend:80/ui"
+              value: "{{ .Chart.Name }}.{{ .Values.ingress.domain }}/ui"
+            - name: SIMULATE_PRIVATE_RANGES
+              value: "{{ .Values.unguard.userSimulator.simulatePrivateRanges | default 'false'}}"
             - name: DT_RELEASE_VERSION
               value: "{{ .Values.unguard.userSimulator.tag }}"
             - name: DT_RELEASE_BUILD_VERSION

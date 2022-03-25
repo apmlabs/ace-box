@@ -24,3 +24,6 @@ unguard:
   userSimulator:
     image: dynatraceace/unguard-user-simulator
     tag: 0.0.1
+    simulatePrivateRanges: false
+  userSimulatorCronJob:
+    deploy: false
