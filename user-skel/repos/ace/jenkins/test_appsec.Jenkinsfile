@@ -25,7 +25,7 @@ pipeline {
         string(name: 'APP_NAME', defaultValue: 'simplenodeservice', description: 'The name of the service to deploy.', trim: true)
         string(name: 'BUILD', defaultValue: '', description: 'The build version to deploy.', trim: true)
         string(name: 'ART_VERSION', defaultValue: '', description: 'Artefact version that is being deployed.', trim: true)
-        string(name: 'QG_MODE', defaultValue: 'yaml', description: 'Choose between "yaml" and "dashboard".', trim: true)
+        choice(name: 'QG_MODE', choices: ['yaml','dashboard'], description: 'Use yaml or dashboard for QG')
     }
     environment {
         ENVIRONMENT = 'staging'

@@ -53,6 +53,7 @@
                   stringParam('APP_NAME', 'simplenodeservice', 'The name of the service to deploy.')
                   stringParam('BUILD', '', 'The version of the service to deploy.')
                   stringParam('ART_VERSION', '', 'The artefact version and hash to deploy.')
+                  choiceParam('QG_MODE', ['yaml','dashboard'], 'Use yaml or dashboard for QG')
                 }
                 definition {
                   cpsScm {
