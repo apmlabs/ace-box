@@ -34,10 +34,13 @@
     - /tmp/gitea-values.yml
   register: gitea
 
+- name: Source endpoints
+  include: roles/gitea/tasks/source-endpoints.yml
+
 - block:
   - name: Wait for API to be up
     uri:
-      url: "{{ ingress_protocol }}://{{ gitea_domain }}/api/v1/version"
+      url: "{{ gitea_internal_endpoint }}/api/v1/version"
       user: "{{ gitea_username }}"
       password: "{{ gitea_password }}"
       force_basic_auth: yes
@@ -50,7 +53,7 @@
     no_log: true
   - name: Create admin user access token
     uri:
-      url: "{{ ingress_protocol }}://{{ gitea_domain }}/api/v1/users/{{ gitea_username }}/tokens"
+      url: "{{ gitea_internal_endpoint }}/api/v1/users/{{ gitea_username }}/tokens"
       user: "{{ gitea_username }}"
       password: "{{ gitea_password }}"
       method: POST

@@ -12,3 +12,15 @@
     keptn_endpoint: "{{ ingress_protocol }}://{{ keptn_ingress_data.resources[0].spec.rules[0].host }}/api"
     keptn_bridge: "{{ ingress_protocol }}://{{ keptn_ingress_data.resources[0].spec.rules[0].host }}/bridge"
   when: keptn_ingress_data is defined and keptn_ingress_data.resources[0] is defined
+
+- name: Source internal endpoints
+  kubernetes.core.k8s_info:
+    kind: Service
+    name: "api-gateway-nginx"
+    namespace: "{{ keptn_namespace }}"
+  register: keptn_api_gw_data
+
+- name: Set facts
+  set_fact:
+    keptn_internal_endpoint: "http://{{ keptn_api_gw_data.resources[0].spec.clusterIP }}:80/api"
+  when: keptn_api_gw_data is defined and keptn_api_gw_data.resources[0] is defined
