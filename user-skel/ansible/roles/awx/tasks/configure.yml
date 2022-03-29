@@ -2,10 +2,18 @@
 - include_tasks:
     file: source-secrets.yml
 
+- include_tasks:
+    file: source-endpoints.yml
+
 - name: AWX - Source Jenkins secrets
   include_role:
     name: jenkins
     tasks_from: source-secret.yml
+
+- name: AWX - Source Jenkins endpoints
+  include_role:
+    name: jenkins
+    tasks_from: source-endpoints.yml
 
 - name: AWX - Source Gitea secrets
   include_role:
@@ -24,7 +32,7 @@
 
 - name: AWX - Wait for API to be up
   uri:
-    url: "{{ ingress_protocol }}://{{ awx_ingress_domain }}/api/v2/ping/"
+    url: "{{ awx_internal_endpoint }}/api/v2/ping/"
     status_code: 200
     validate_certs: no
   register: result
@@ -37,7 +45,7 @@
     name: "{{ awx_default_org_name }}"
     description: "Default organization"
     state: present
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: organization
@@ -62,7 +70,7 @@
       extra_vars:
         DYNATRACE_API_TOKEN: "{% raw %}{{ dt_api_token }}{% endraw %}"
     state: present
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: credential_type_dt_api_token
@@ -75,7 +83,7 @@
     credential_type: "{{ credential_type_dt_api_token.id }}"
     inputs:
       dt_api_token: "{{ dynatrace_api_token }}"
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: credential_dt_api_token
@@ -89,7 +97,7 @@
     inputs:
       password: "{{ git_password }}"
       username: "{{ git_username }}"
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: credential_git
@@ -107,7 +115,7 @@
     scm_delete_on_update: false
     credential: "{{ credential_git.id }}"
     wait: true
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: project
@@ -115,7 +123,7 @@
 - block:
   - name: AWX - Retrieve Jenkins Crumb
     uri:
-      url: "{{ jenkins_url }}/crumbIssuer/api/json"
+      url: "{{ jenkins_internal_endpoint }}/crumbIssuer/api/json"
       user: "{{ jenkins_username }}"
       password: "{{ jenkins_password }}"
       force_basic_auth: yes
@@ -128,7 +136,7 @@
     register: jenkins_crumb_raw
   - name: AWX - Generate Jenkins API token
     uri:
-      url: "{{ jenkins_url }}/user/{{ jenkins_username }}/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken"
+      url: "{{ jenkins_internal_endpoint }}/user/{{ jenkins_username }}/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken"
       user: "{{ jenkins_username }}"
       password: "{{ jenkins_password }}"
       force_basic_auth: yes
@@ -161,7 +169,7 @@
       dtcommentapiurl: "{% raw %}{{ tenant }}/api/v1/problem/details/{{ pid }}/comments?Api-Token={{ DYNATRACE_API_TOKEN }}{% endraw %}"
       dteventapiurl: "{% raw %}{{ tenant }}/api/v1/events/?Api-Token={{ DYNATRACE_API_TOKEN }}{% endraw %}"
     state: present
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: inventory
@@ -178,7 +186,7 @@
     ask_variables_on_launch: true
     credentials:
       - "{{ credential_dt_api_token.id }}"
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: remediation_template
@@ -203,7 +211,7 @@
       remediation_url: ""
     credentials:
       - "{{ credential_dt_api_token.id }}"
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
   register: canary_reset_template
@@ -224,7 +232,7 @@
       remediation_url: "{{ ingress_protocol }}://{{ awx_ingress_domain }}/api/v2/job_templates/{{ canary_reset_template.id }}/launch/"
     credentials:
       - "{{ credential_dt_api_token.id }}"
-    controller_host: "{{ ingress_protocol }}://{{ awx_ingress_domain }}"
+    controller_host: "{{ awx_internal_endpoint }}"
     controller_password: "{{ awx_admin_password }}"
     controller_username: "{{ awx_admin_username }}"
 

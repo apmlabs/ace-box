@@ -34,9 +34,9 @@
       name: keptn
       tasks_from: source-endpoints
   - set_fact:
-      ca_endpoint: "{{ keptn_endpoint }}"
-      ca_bridge: "{{ keptn_bridge }}"
-      ca_api_token: "{{ keptn_api_token }}"
+      ca_endpoint: "{{ keptn_endpoint|default('') }}"
+      ca_bridge: "{{ keptn_bridge|default('') }}"
+      ca_api_token: "{{ keptn_api_token|default('') }}"
   when: cloud_automation_flavor is defined and cloud_automation_flavor == "KEPTN"
 
 - block:
@@ -45,9 +45,9 @@
       name: cloudautomation
       tasks_from: source-secret
   - set_fact:
-      ca_endpoint: "{{ cloud_automation_endpoint }}"
-      ca_bridge: "{{ cloud_automation_bridge }}"
-      ca_api_token: "{{ cloud_automation_api_token }}"
+      ca_endpoint: "{{ cloud_automation_endpoint|default('') }}"
+      ca_bridge: "{{ cloud_automation_bridge|default('') }}"
+      ca_api_token: "{{ cloud_automation_api_token|default('') }}"
   when: cloud_automation_flavor is defined and cloud_automation_flavor == "CLOUD_AUTOMATION"
 
 - block:
