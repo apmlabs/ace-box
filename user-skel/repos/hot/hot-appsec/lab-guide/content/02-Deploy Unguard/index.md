@@ -106,8 +106,6 @@ The Monitoring as Code (MAC) approach enables you to manage your Dynatrace envir
 
 ![Monaco](../../assets/images/monaco-pipeline.png)
 
---Add description about Monaco
-
 
 ##### Unguard Monaco Pipeline
 
@@ -151,58 +149,51 @@ A few important sections are noted:
 
 Now let's take a look at what configuration was actually deployed. Using gitea, open the folder `/monaco/projects/unguard`. Here you will find the known folder structure displayed below. 
 
-```groovy 
-       
-        ───unguard
-            ├───app-detection-rule
-            │       rule.json
-            │       rules.yaml
-            │       
-            ├───application
-            │       application.json
-            │       application.yaml
-            │       
-            ├───auto-tag
-            │       app.json
-            │       auto-tag.yaml
-            │       environment.json
-            │       
-            ├───conditional-naming-processgroup
-            │       ACEBox-containernamenamespace.json
-            │       conditional-naming-processgroup.yaml
-            │       JavaSpringbootNaming.json
-            │       MongoDBNaming.json
-            │       NodeJSNaming.json
-            │       PostgresNaming.json
-            │       ProcessGroupExeNameProcessGroupKubernetesBasePodName.json
-            │       
-            ├───conditional-naming-service
-            │       appenvironment.json
-            │       conditional-naming-service.yaml
-            │       
-            ├───dashboard
-            │       ApplicationSecurityIssues.json
-            │       dashboard.yaml
-            │       
-            ├───management-zone
-            │       management-zone.yaml
-            │       unguard.json
-            │       
-            ├───request-attributes
-            │       request-attribute-clientip.json
-            │       request-attribute.yaml
-            │       
-            └───synthetic-location
-                    private-synthetic.json
-                    synthetic-location.yaml
-                    
-
-            
 ```
-
-
-
-
+       
+───unguard
+    ├───app-detection-rule
+    │       rule.json
+    │       rules.yaml
+    │       
+    ├───application
+    │       application.json
+    │       application.yaml
+    │       
+    ├───auto-tag
+    │       app.json
+    │       auto-tag.yaml
+    │       environment.json
+    │       
+    ├───conditional-naming-processgroup
+    │       ACEBox-containernamenamespace.json
+    │       conditional-naming-processgroup.yaml
+    │       JavaSpringbootNaming.json
+    │       MongoDBNaming.json
+    │       NodeJSNaming.json
+    │       PostgresNaming.json
+    │       ProcessGroupExeNameProcessGroupKubernetesBasePodName.json
+    │       
+    ├───conditional-naming-service
+    │       appenvironment.json
+    │       conditional-naming-service.yaml
+    │       
+    ├───dashboard
+    │       ApplicationSecurityIssues.json
+    │       dashboard.yaml
+    │       
+    ├───management-zone
+    │       management-zone.yaml
+    │       unguard.json
+    │       
+    ├───request-attributes
+    │       request-attribute-clientip.json
+    │       request-attribute.yaml
+    │       
+    └───synthetic-location
+            private-synthetic.json
+            synthetic-location.yaml
+```
 
 
 ### View results in Dynatrace

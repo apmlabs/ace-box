@@ -23,8 +23,7 @@ Navigate in Gitea to `monaco/projects`. Under this folder you will find the thre
 With these projects we deployed two synthetic tests. Can you find them in the folder structure visualized below?
 
 
-```groovy 
-
+```
  ───monaco
     │   environments.yaml
     │   
@@ -84,12 +83,10 @@ With these projects we deployed two synthetic tests. Can you find them in the fo
             │       
             └───synthetic-location
                     private-synthetic.json
-                    synthetic-location.yaml
-                    
-
-            
+                    synthetic-location.yaml    
 ```
-### Jenkin Pipeline
+
+### Jenkins Pipeline
 
 The Jenkins pipeline is the same as the one from exercise 2. This time we deployed the `synthetic` project, instead of `unguard`.
 
@@ -126,8 +123,6 @@ pipeline {
 }
 ```
 
-
-
 ### DSS Recap
 Why did we deploy two synthetic tests? We did it to show how the Davis Security Score works. So let's quickly recap what the DSS is.
 
@@ -136,13 +131,12 @@ The OneAgent knows and reflects that in the Davis Security Score.
 
 Let's go to the next chapter to take a hands on look at the DSS!
 
---longer explanation?
 
 ![DSS](../../assets/images/4-1-DSS.png)
 
 
 
-###Simulating Public Exposure
+### Simulating Public Exposure
 
 #### Analyze changes in Davis Security Score
 
