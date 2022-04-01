@@ -1,10 +1,10 @@
 ## Deploy Unguard
 
-To get started with AppSec, we now need an application we want to monitor. For that we will deploy an application called `unguard` with a pre-build Jenkins pippeline. The same pipeline will also deploy configuration to Dynatrace with the help of our Monitoring-as-code tool (monaco). 
+To get started with AppSec, we now need an application we want to monitor. Therefore, we will deploy an application called `unguard` with a pre-build Jenkins pippeline. The same pipeline will also deploy configuration to Dynatrace with the help of our Monitoring-as-code tool (monaco). 
 
 ### Trigger Pipelines
 
-Before taking a look at what happens behind the scenes, let us deploy the `unguard` application straight away by going to your jenkins instance (link on your dashboard). On your Jenkins dashboard you will find the `unguard deploy` pipeline. Open it by clicking on it and then run it by clicking on `"build now"` (see section **unguard deploy** below for screenshots).
+Before taking a look at what happens behind the scenes, let us deploy the `unguard` application straight away by going to your jenkins instance (link on your dashboard). On your Jenkins dashboard you will find the `Deploy Unguard` pipeline. Open it by clicking on it and then run it by clicking on `"build now"` (see section **Unguard Deploy** below for screenshots).
 
 #### Unguard deploy
 
@@ -16,7 +16,7 @@ Before taking a look at what happens behind the scenes, let us deploy the `ungua
 
 #### Unguard monaco
 
-On top of that we also want to deploy some Dynatrace configuration to our Dynatrace environment. To do so, let's also deploy the `unguard base config`. Open the pipeline `unguard base config`, go on deploy with parameters `build with parameters`, enter `unguard` in the project section and build the pipeline (see section **unguard monaco** below for screenshots). This pipeline uses the [monaco](https://dynatrace-oss.github.io/dynatrace-monitoring-as-code/) tool to deploy Dynatrace configuration. This is described further in the `Explore Jenkins Configuration` section below. 
+On top of that we also want to deploy some Dynatrace configuration to our Dynatrace environment. To do so, let's also deploy Dynatrace configuration in order to properly monitor the unguard configuration. In your Jenkins dashboard, open the pipeline `Monitoring as Code`, go on `build with parameters`, enter `base` in the project section and build the pipeline (see section below for screenshots). This pipeline uses the [monaco](https://dynatrace-oss.github.io/dynatrace-monitoring-as-code/) tool to deploy Dynatrace configuration. This is described further in the `Explore Jenkins Configuration` section below. 
 
 ![Deploy Unguard](../../assets/images/2-8-unguard-monaco.png)
 
@@ -109,7 +109,7 @@ The Monitoring as Code (MAC) approach enables you to manage your Dynatrace envir
 
 ##### Unguard Monaco Pipeline
 
-Using Gitea, open the file `/jenkins/monaco.Jenkinsfile`. Here you will see the definition of the **unguard monaco** pipeline used to deploy Dynatrace configuration using monaco. 
+Using Gitea, open the file `/jenkins/monaco.Jenkinsfile`. Here you will see the definition of the **Monitoring as Code** pipeline used to deploy Dynatrace configuration using monaco. 
 
 
 ```groovy
@@ -145,54 +145,53 @@ pipeline {
 }
 ```
 
-A few important sections are noted:
+Now let's take a look at what configuration was actually deployed. Using gitea, open the folder `/monaco/projects/base`. Here you will find the known folder structure displayed below. 
 
-Now let's take a look at what configuration was actually deployed. Using gitea, open the folder `/monaco/projects/unguard`. Here you will find the known folder structure displayed below. 
-
-```
+```groovy 
        
-───unguard
-    ├───app-detection-rule
-    │       rule.json
-    │       rules.yaml
-    │       
-    ├───application
-    │       application.json
-    │       application.yaml
-    │       
-    ├───auto-tag
-    │       app.json
-    │       auto-tag.yaml
-    │       environment.json
-    │       
-    ├───conditional-naming-processgroup
-    │       ACEBox-containernamenamespace.json
-    │       conditional-naming-processgroup.yaml
-    │       JavaSpringbootNaming.json
-    │       MongoDBNaming.json
-    │       NodeJSNaming.json
-    │       PostgresNaming.json
-    │       ProcessGroupExeNameProcessGroupKubernetesBasePodName.json
-    │       
-    ├───conditional-naming-service
-    │       appenvironment.json
-    │       conditional-naming-service.yaml
-    │       
-    ├───dashboard
-    │       ApplicationSecurityIssues.json
-    │       dashboard.yaml
-    │       
-    ├───management-zone
-    │       management-zone.yaml
-    │       unguard.json
-    │       
-    ├───request-attributes
-    │       request-attribute-clientip.json
-    │       request-attribute.yaml
-    │       
-    └───synthetic-location
-            private-synthetic.json
-            synthetic-location.yaml
+        ─── base
+            ├───app-detection-rule
+            │       rule.json
+            │       rules.yaml
+            │       
+            ├───application
+            │       application.json
+            │       application.yaml
+            │       
+            ├───auto-tag
+            │       app.json
+            │       auto-tag.yaml
+            │       environment.json
+            │       
+            ├───conditional-naming-processgroup
+            │       ACEBox-containernamenamespace.json
+            │       conditional-naming-processgroup.yaml
+            │       JavaSpringbootNaming.json
+            │       MongoDBNaming.json
+            │       NodeJSNaming.json
+            │       PostgresNaming.json
+            │       ProcessGroupExeNameProcessGroupKubernetesBasePodName.json
+            │       
+            ├───conditional-naming-service
+            │       appenvironment.json
+            │       conditional-naming-service.yaml
+            │       
+            ├───dashboard
+            │       ApplicationSecurityIssues.json
+            │       dashboard.yaml
+            │       
+            ├───management-zone
+            │       management-zone.yaml
+            │       unguard.json
+            │       
+            ├───request-attributes
+            │       request-attribute-clientip.json
+            │       request-attribute.yaml
+            │       
+            └───synthetic-location
+                    private-synthetic.json
+                    synthetic-location.yaml
+            
 ```
 
 
@@ -206,7 +205,7 @@ If you navigate to the `Dashboard` menu, you will also find the `Application Sec
 
 ![unguard](../../assets/images/2-11-dashboard.png)
 
-Navigate to the `Kubernetes` menu. You will find the `ACE-BOX` cluster in which the `unguard` application is running. If you click on the cluster name, you will find an overview of the Kubernetes integration with Dynatrace. The monaco pipeline triggered by Jenkins added the necessary credentials to import additional Kubernetes information from Kubernetes (e.g. namspaces, deployments, labels, requests...). This will become important in the next exercise.
+Navigate to the `Kubernetes` menu. You will find the `ACE-BOX` cluster in which the `unguard` application is running. If you click on the cluster name, you will find an overview of the Kubernetes integration with Dynatrace. The Jenkins pipeline called monaco to add the necessary credentials to import additional Kubernetes information from Kubernetes (e.g. namespaces, deployments, labels, resource requests...). This will become important in the next exercise.
 
 ![unguard](../../assets/images/2-12-kubernetes.png)
 
