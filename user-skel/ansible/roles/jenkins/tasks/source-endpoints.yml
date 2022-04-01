@@ -1,0 +1,12 @@
+---
+- name: Source endpoints
+  kubernetes.core.k8s_info:
+    kind: Service
+    name: "jenkins"
+    namespace: "{{ jenkins_namespace }}"
+  register: jenkins_data
+
+- name: Set facts
+  set_fact:
+    jenkins_internal_endpoint: "http://{{ jenkins_data.resources[0].spec.clusterIP }}:8080"
+  when: jenkins_data is defined and jenkins_data.resources[0] is defined
