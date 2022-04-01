@@ -9,12 +9,15 @@
 
 - name: Delete current Keptn CLI bin
   become: true
+  become_user: root
   ansible.builtin.file:
     path: "{{ keptn_bin_location }}"
     state: absent
   when: force_install is defined and force_install == true
 
 - name: Install Keptn CLI
+  become: true
+  become_user: root
   shell: KEPTN_VERSION="{{ keptn_version }}" /bin/bash "{{ keptn_cli_download_location }}"
   args:
     creates: "{{ keptn_bin_location }}"

@@ -1,5 +1,4 @@
 - name: "Git - Set globals"
-  become_user: "{{ non_root_user }}"
   shell: |
     git config --global user.name {{ git_global_user_name }}
     git config --global user.email {{ git_global_user_email }}

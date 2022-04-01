@@ -8,6 +8,6 @@
   template:
     src: ../templates/ace.config.yml.j2
     dest: "{{ ace_config_file_path }}"
-    owner: "{{ lookup('env','USER') }}"
-    group: "{{ lookup('env','USER') }}"
+    owner: "{{ ace_box_user }}"
+    group: "{{ ace_box_user }}"
     mode: '0644'

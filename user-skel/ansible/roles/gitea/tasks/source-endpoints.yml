@@ -1,0 +1,12 @@
+---
+- name: Source endpoints
+  kubernetes.core.k8s_info:
+    kind: Service
+    name: "gitea-http"
+    namespace: "{{ gitea_namespace }}"
+  register: gitea_http_data
+
+- name: Set facts
+  set_fact:
+    gitea_internal_endpoint: "http://{{ gitea_http_data.resources[0].spec.clusterIP }}:3000"
+  when: gitea_http_data is defined and gitea_http_data.resources[0] is defined

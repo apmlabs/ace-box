@@ -1,6 +1,6 @@
 import {beforeAll, By, step, TestData, TestSettings} from '@flood/element'
 
-const random_ips = ['177.236.37.155',
+const random_ips_pub = ['177.236.37.155',
     '49.210.236.225',
     '66.96.37.30',
     '19.21.221.83',
@@ -59,7 +59,22 @@ const random_ips = ['177.236.37.155',
     '62.179.239.135',
     '113.167.100.35'];
 
-const ip = random_ips[getRandomInt(random_ips.length)];
+const random_ips_priv = ['10.0.1.2',
+    '192.168.10.1',
+    '192.168.10.5',
+    '192.168.10.10',
+    '172.16.10.10'];
+
+const privateRanges = process.env.SIMULATE_PRIVATE_RANGES === 'true'
+
+var ip = ''
+
+if (privateRanges) {
+    ip = random_ips_priv[getRandomInt(random_ips_priv.length)];
+}
+else {
+    ip = random_ips_pub[getRandomInt(random_ips_pub.length)];
+}
 
 // noinspection JSUnusedGlobalSymbols
 export const settings: TestSettings = {
@@ -110,7 +125,8 @@ type TextPost = {
 }
 
 type Config = {
-    frontendUrl: string
+    frontendUrl: string;
+    simulatePrivate: boolean;
 }
 
 function checkEnvVariable(envVar) {

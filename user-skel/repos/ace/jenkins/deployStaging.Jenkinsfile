@@ -88,7 +88,8 @@ pipeline {
                 parameters: [
                     string(name: 'APP_NAME', value: "${env.APP_NAME}"),
                     string(name: 'BUILD', value: "${env.BUILD}"),
-                    string(name: 'ART_VERSION', value: "${env.ART_VERSION}")
+                    string(name: 'ART_VERSION', value: "${env.ART_VERSION}"),
+                    string(name: 'QG_MODE', value: "yaml")
                 ]
             }
         }         

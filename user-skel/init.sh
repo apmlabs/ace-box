@@ -3,44 +3,46 @@
 # This script will be triggered by Terraform as part of the provisioning process.
 # It can also be triggered manually on a VM.
 
+# Run:
+# $ sudo ACE_BOX_USER=dtu_training /home/dtu_training/init.sh
+
+ACE_BOX_USER="${ACE_BOX_USER:-$USER}"
+
 # Prevent input prompts by specifying frontend is not interactive
-echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 echo "INIT - Update apt-get and upgrade already install packages..."
-sudo apt-get update && sudo apt-get dist-upgrade -y
+apt-get update && apt-get dist-upgrade -y
 
 echo "INIT - Setting up Python..."
-sudo apt-get install python3.8 -y
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-
-# Update apt-get again to resolve unmet python3.8/pip dependencies
-sudo apt-get update
-sudo apt-get install python3-pip -y
+apt-get install python3-pip -y
 
 # Upgrade pip
-python3.8 -m pip --version
-python3.8 -m pip install --upgrade pip -q
+python3 -m pip --version
+python3 -m pip install --upgrade pip -q
 
 # Ansible
-# Sudo required in order to properly set up symlinks, etc.
 echo "INIT - Installing Ansible..."
-sudo python3.8 -m pip install ansible -q
-ansible --version
+python3 -m pip install ansible
+ln -s /home/$ACE_BOX_USER/.local/bin/ansible /usr/bin/ansible
+ln -s /home/$ACE_BOX_USER/.local/bin/ansible-galaxy /usr/bin/ansible-galaxy
+ln -s /home/$ACE_BOX_USER/.local/bin/ansible-playbook /usr/bin/ansible-playbook
 
 echo "INIT - Installing Ansible requirements..."
-ansible-galaxy install -r ./ansible/requirements.yml
+sudo -u $ACE_BOX_USER ansible-galaxy install -r /home/$ACE_BOX_USER/ansible/requirements.yml
 
 # Setup ace-cli
 echo "INIT - Setting up ACE-CLI..."
-python3.8 -m pip install -r ./.ace/requirements.txt
-sudo cp ./.ace/ace /usr/local/bin/ace
-sudo chmod 0755 /usr/local/bin/ace
+
+# Install as root. Packages will be available for all users
+python3 -m pip install -r /home/$ACE_BOX_USER/.ace/requirements.txt
+
+cp /home/$ACE_BOX_USER/.ace/ace /usr/local/bin/ace
+chmod 0755 /usr/local/bin/ace
 
 # Remove Windows-style newline characters
-sudo sed -i 's/\r$//' /usr/local/bin/ace
-
-ace --version
+sed -i 's/\r$//' /usr/local/bin/ace
 
 # Set up user groups
-sudo addgroup --system docker
-sudo adduser $USER docker
+addgroup --system docker
+adduser $ACE_BOX_USER docker

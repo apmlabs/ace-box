@@ -32,6 +32,7 @@ Adjust the following environment variables to fit your environment:
 |         Name          | Example Value     | Description                                                                      |
 |-----------------------|-------------------|----------------------------------------------------------------------------------|
 | FRONTEND_ADDR         | `unguard.kube/ui`   | The base address for the Unguard frontend, contains no protocol or trailing slash
+| SIMULATE_PRIVATE_RANGES | `true` | Set to true to simulate traffic from private ranges only. Useful in combination with Dynatrace Synthetic to showcase Public Exposure
 
 ## Running the user simulator
 

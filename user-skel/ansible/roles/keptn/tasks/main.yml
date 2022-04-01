@@ -47,9 +47,12 @@
 
 - name: Keptn - Source Keptn secrets
   include: roles/keptn/tasks/source-secret.yml
+
+- name: Keptn - Source Keptn endpoints
+  include: roles/keptn/tasks/source-endpoints.yml
       
 - name: Keptn - Authenticate CLI
-  shell: "/usr/local/bin/keptn auth --api-token {{ keptn_api_token }} --endpoint {{ ingress_protocol }}://{{ keptn_ingress_domain }}/api"
+  shell: "/usr/local/bin/keptn auth --api-token {{ keptn_api_token }} --endpoint {{ keptn_internal_endpoint }}"
   when: keptn_helm_chart.changed or keptn_ingress.changed
 
 - name: Keptn - Install JMeter service

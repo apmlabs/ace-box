@@ -27,7 +27,7 @@ variable "acebox_user" {
 
 variable "acebox_os" {
   description = "Ubuntu version to use"
-  default     = "ubuntu-minimal-1804-lts"
+  default     = "ubuntu-minimal-2004-lts"
 }
 
 variable "private_ssh_key" {
