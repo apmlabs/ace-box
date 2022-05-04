@@ -23,12 +23,12 @@
 
 - block:
     - name: "Add remote {{ git_remote }}"
-      ansible.builtin.command: "git remote add {{ git_remote }} {{ ingress_protocol }}://{{ git_username }}:{{ git_password }}@{{ gitea_internal_endpoint | regex_replace('http://', '') }}/{{ git_org }}/{{ git_repo }}"
+      ansible.builtin.command: "git remote add {{ git_remote }} http://{{ git_username }}:{{ git_password }}@{{ gitea_internal_endpoint | regex_replace('http://', '') }}/{{ git_org }}/{{ git_repo }}"
       args:
         chdir: "{{ repo_src }}"
   rescue:
     - name: "Set remote {{ git_remote }}"
-      ansible.builtin.command: "git remote set-url {{ git_remote }} {{ ingress_protocol }}://{{ git_username }}:{{ git_password }}@{{ gitea_internal_endpoint | regex_replace('http://', '') }}/{{ git_org }}/{{ git_repo }}"
+      ansible.builtin.command: "git remote set-url {{ git_remote }} http://{{ git_username }}:{{ git_password }}@{{ gitea_internal_endpoint | regex_replace('http://', '') }}/{{ git_org }}/{{ git_repo }}"
       args:
         chdir: "{{ repo_src }}"
 
