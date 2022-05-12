@@ -89,9 +89,7 @@ Let's go to the next chapter to take a hands on look at the DSS!
 
 ### Simulating Public Exposure
 
-#### Analyze changes in Davis Security Score
-
-The deployed synthetic test we deployed, started calling the unguard application. For a vulnerability to have internet exposure, the vulnerable entity has to be called by at least two different non private network. The calls made by the activegate simulate an endpoint in a non private network. So now we also want to simulate the second endpoint. Before we do so, lets take at the current state of our vulnerabilities.
+#### Simulate changes in Davis Security Score
 
 Navigate to `Vulnerabilities` and filter for `Risk assessment: Public Internet Exposure`. As you see, no entities are publicly exposed.
 
@@ -101,8 +99,17 @@ Before we go on, search for the vulnerability with CVE ID: `CVE-2018-19827`, ope
 
 ![No internet exposure](../../assets/images/4-3-DSS-increase.png)
 
-Now, to simulate internet exposure, open `http://unguard.[<your_VM__IP_adress>].nip.io/ui/` yourself and generate some traffic .
-Once you have done that, navigate back to `Vulnerabilities` and filter for `Risk assessment: Public Internet Exposure`. 
+For a vulnerability to have internet exposure, the vulnerable entity has to be called by at least two different non private network. 
+
+We now want to simulate these two networks by adding endpoints to our synthetic test. In order to do so, navigate to `Synthetics > unguard.http > Edit > Frequency and Locations` and add two cities of your choice. 
+
+![Synthetic location](../../assets/images/4-7-synthetic-location-http.png)
+
+Then do the so same for the browser monitor `unguard.clickpath`.
+
+Both these synthetic tests will now start calling the unguard application and affect the public exposure of the vulnerabilities of the application. After we did so, lets take a look at the current state of our vulnerabilities.
+
+#### Analyze changes in Davis Security Score
 
 You will now see the vulnerabilities that evolved to publicly exposed vulnerabilities due to the synthetic activegate as well as your traffic.
 
@@ -111,6 +118,5 @@ You will now see the vulnerabilities that evolved to publicly exposed vulnerabil
 We can also check for our vulnerability with CVE ID: `CVE-2018-19827`. You will find that the DSS score increase.
 
 ![No internet exposure](../../assets/images/4-6-DSS-exposure.png).
-
 
 
