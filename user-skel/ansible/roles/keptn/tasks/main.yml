@@ -48,6 +48,8 @@
     wait_timeout: 15m
     values:
       control-plane:
+        bridge:
+          lookAndFeelUrl: "{{ keptn_look_and_feel_url }}"
         features:
           automaticProvisioningURL: "http://keptn-gitea-provisioner-service.{{ keptn_namespace }}"
   register: keptn_helm_chart
