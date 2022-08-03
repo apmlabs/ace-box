@@ -1,6 +1,0 @@
-config:
-    - simplenode-appsec.staging: "csm.json"
-
-simplenode-appsec.staging:
-    - name: "simplenode.staging"
-    - metricKey: "calc:service.simplenode.staging"
