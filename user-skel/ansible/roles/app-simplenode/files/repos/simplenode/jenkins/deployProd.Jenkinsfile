@@ -11,9 +11,9 @@ pipeline {
     environment {
         DT_API_TOKEN = credentials('DT_API_TOKEN')
         DT_TENANT_URL = credentials('DT_TENANT_URL')
-        STAGING_NAMESPACE = "simplenode-staging"
-        TARGET_NAMESPACE = "simplenode-production"
-		RELEASE_NAME = "${env.APP_NAME}-production"
+        STAGING_NAMESPACE = "simplenode-jenkins-staging"
+        TARGET_NAMESPACE = "simplenode-jenkins-production"
+		    RELEASE_NAME = "${env.APP_NAME}-production"
     }
     agent {
         label 'kubegit'
