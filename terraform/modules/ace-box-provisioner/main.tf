@@ -11,6 +11,8 @@ locals {
   dt_paas_token    = var.dt_paas_token
   ca_tenant        = var.ca_tenant
   ca_api_token     = var.ca_api_token
+  host_group       = var.host_group
+  extra_vars       = var.extra_vars
 }
 
 resource "null_resource" "provisioner_home_dir" {
@@ -47,6 +49,26 @@ resource "null_resource" "provisioner_init" {
   }
 }
 
+locals {
+  prepare_cmd = [
+    "sudo",
+    "ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/",
+    "ACE_BOX_USER=${local.user}",
+    "ACE_INGRESS_DOMAIN=${local.ingress_domain}",
+    "ACE_INGRESS_PROTOCOL=${local.ingress_protocol}",
+    "ACE_DT_TENANT=${local.dt_tenant}",
+    "ACE_DT_API_TOKEN=${local.dt_api_token}",
+    "ACE_DT_PAAS_TOKEN=${local.dt_paas_token}",
+    "ACE_CA_TENANT=${local.ca_tenant}",
+    "ACE_CA_API_TOKEN=${local.ca_api_token}",
+    "ACE_HOST_GROUP=${local.host_group}",
+    "ace prepare --force"
+  ]
+  ace_extra_vars = [
+    for k, v in var.extra_vars : "--extra-var=${k}=${v}"
+  ]
+}
+
 resource "null_resource" "provisioner_ace_prepare" {
   connection {
     host        = local.host
@@ -59,12 +81,21 @@ resource "null_resource" "provisioner_ace_prepare" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/ ACE_BOX_USER=${local.user} ACE_INGRESS_DOMAIN=${local.ingress_domain} ACE_INGRESS_PROTOCOL=${local.ingress_protocol} ACE_DT_TENANT=${local.dt_tenant} ACE_DT_API_TOKEN=${local.dt_api_token} ACE_DT_PAAS_TOKEN=${local.dt_paas_token} ACE_CA_TENANT=${local.ca_tenant} ACE_CA_API_TOKEN=${local.ca_api_token} ace prepare --force"
+      trimspace(join(" ", [join(" ", local.prepare_cmd), join(" ", local.ace_extra_vars)]))
     ]
   }
 }
 
-resource "null_resource" "provisioner_ace_install" {
+locals {
+  enable_cmd = [
+    "sudo",
+    "ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/",
+    "ACE_BOX_USER=${local.user}",
+    "ace enable ${var.use_case}",
+  ]
+}
+
+resource "null_resource" "provisioner_ace_enable" {
   connection {
     host        = local.host
     type        = local.type
@@ -76,7 +107,7 @@ resource "null_resource" "provisioner_ace_install" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo ACE_ANSIBLE_WORKDIR=/home/${local.user}/ansible/ ACE_BOX_USER=${local.user} ace enable ${var.use_case}"
+      trimspace(join(" ", local.enable_cmd))
     ]
   }
 }

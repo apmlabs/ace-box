@@ -1,8 +1,11 @@
 ---
-# Ingress
+# Host
+host_group: "{{ host_group | default('ace-box') }}"
 ingress_class: "{{ ingress_class | default('public') }}"
 ingress_domain: "{{ ingress_domain | default(None) }}"
 ingress_protocol: "{{ ingress_protocol | default(None) }}"
+# Extra vars
+extra_vars: {{ extra_vars | default({}) }}
 # Git
 git_flavor: "{{ git_flavor | default('GITEA') }}"
 # Dynatrace

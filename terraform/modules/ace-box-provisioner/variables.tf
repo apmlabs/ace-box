@@ -41,3 +41,12 @@ variable "ca_api_token" {
 variable "use_case" {
 
 }
+
+variable "host_group" {
+  default = "ace-box"
+}
+
+variable "extra_vars" {
+  type    = map(string)
+  default = {}
+}

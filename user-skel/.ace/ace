@@ -5,6 +5,7 @@ ACE CLI
 Combines ansible-playbooks and tagging logic in a single, simple wrapper
 """
 
+import json
 import os
 import logging
 import subprocess
@@ -12,7 +13,7 @@ import pwd
 
 import click
 
-CLI_VERSION = '0.0.3'
+CLI_VERSION = '0.1.0'
 default_ansible_workdir = os.path.expanduser('~/ansible/')
 default_user = pwd.getpwuid(os.getuid())[0]
 install_targets = [
@@ -180,6 +181,14 @@ def ace(
     envvar='ACE_CA_API_TOKEN',
 )
 @click.option(
+    '--host-group',
+    help=(
+        'Please enter a host group the ACE-Box will be assigned to'
+    ),
+    envvar='ACE_HOST_GROUP',
+)
+@click.option('--extra-var', multiple=True)
+@click.option(
     '-f',
     '--force',
     is_flag=True,
@@ -193,8 +202,10 @@ def prepare(
     dt_paas_token,
     ca_tenant,
     ca_api_token,
+    host_group,
     ansible_workdir,
     user,
+    extra_var,
     force,
 ):
     """Preparing ACE-Box"""
@@ -239,17 +250,26 @@ def prepare(
             click.echo('Chose not to overwrite hosts file. Exiting...')
             return
 
+    prepare_extra_vars = {
+        'ingress_domain': ingress_domain,
+        'ace_box_user': user,
+        'ingress_protocol': ingress_protocol,
+        'dynatrace_tenant_url': dt_tenant,
+        'dynatrace_api_token': dt_api_token,
+        'dynatrace_paas_token': dt_paas_token,
+        'ca_tenant_url': ca_tenant,
+        'ca_api_token': ca_api_token,
+        'ace_box_user': user,
+        'host_group': host_group,
+        'extra_vars': {}
+    }
+
+    for var in extra_var:
+        extra_var_parts = var.split('=')
+        prepare_extra_vars['extra_vars'][extra_var_parts[0]] = "=".join(extra_var_parts[1:])
+
     subprocess.run((
-            'ansible-playbook -vv prepare.yml --extra-vars "'
-            f'ingress_domain={ingress_domain} '
-            f'ingress_protocol={ingress_protocol} '
-            f'dynatrace_tenant_url={dt_tenant} '
-            f'dynatrace_api_token={dt_api_token} '
-            f'dynatrace_paas_token={dt_paas_token} '
-            f'ca_tenant_url={ca_tenant} '
-            f'ca_api_token={ca_api_token} '
-            f'ace_box_user={user}'
-            '"'
+            f'ansible-playbook -vv prepare.yml --extra-vars \'{json.dumps(prepare_extra_vars)}\''
         ),
         cwd=ansible_workdir,
         shell=True,
