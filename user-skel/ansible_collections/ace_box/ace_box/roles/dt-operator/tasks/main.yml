@@ -37,9 +37,31 @@
     state: directory
 
 - block:
-  - name: Download dynatrace-operator manifest
+  - name: Stop microk8s to prevent port conflicts
+    ansible.builtin.systemd:
+      name: snap.microk8s.daemon-kubelite
+      state: stopped
+    ignore_errors: true
+    when: kubernetes_flavour == "k3s"
+  
+  - name: Restart k3s to ensure clean state
+    ansible.builtin.systemd:
+      name: k3s
+      state: restarted
+    when: kubernetes_flavour == "k3s"
+  
+  - name: Wait for k3s to be ready
+    kubernetes.core.k8s_info:
+      kind: Node
+    register: k3s_nodes
+    until: k3s_nodes.resources | length > 0
+    retries: 10
+    delay: 5
+    when: kubernetes_flavour == "k3s"
+  
+  - name: Download latest dynatrace-operator manifest
     ansible.builtin.get_url:
-      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/{{ dt_operator_release }}/kubernetes.yaml"
+      url: "https://github.com/Dynatrace/dynatrace-operator/releases/latest/download/kubernetes.yaml"
       dest: "{{ role_path }}/files/dt_operator.yaml"
       mode: '0664'
   - name: Apply dynatrace-operator manifest
@@ -50,6 +72,15 @@
     retries: 20
     delay: 5
     until: dt_operator is not failed
+  - name: Apply dynatrace-operator manifest in namespace
+    kubernetes.core.k8s:
+      state: present
+      src: "{{ role_path }}/files/dt_operator.yaml"
+      namespace: "{{ dt_operator_namespace }}"
+    register: dt_operator_ns
+    retries: 20
+    delay: 5
+    until: dt_operator_ns is not failed
   when: operator_mode != "applicationMonitoring"
 
 - name: Add stable chart repo
@@ -66,9 +97,9 @@
   when: operator_mode == "applicationMonitoring"
 
 - block:
-  - name: Download CSI manifest
+  - name: Download latest CSI manifest
     ansible.builtin.get_url:
-      url: "https://github.com/Dynatrace/dynatrace-operator/releases/download/{{ dt_operator_release }}/kubernetes-csi.yaml"
+      url: "https://github.com/Dynatrace/dynatrace-operator/releases/latest/download/kubernetes-csi.yaml"
       dest: "{{ role_path }}/files/dt_operator-csi.yaml"
       mode: '0664'
   - name: Apply CSI manifest

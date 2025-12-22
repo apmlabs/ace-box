@@ -53,3 +53,8 @@ override.tf.json
 # Nodejs
 *.env*
 **/id_rsa
+
+# Secrets and sensitive files
+secrets.yaml
+AmazonQ.md
+AGENTS.md

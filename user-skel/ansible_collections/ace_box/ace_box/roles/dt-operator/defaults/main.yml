@@ -14,12 +14,12 @@
 
 ---
 operator_mode: "applicationMonitoring"  # default & prefered deployment option
-dt_operator_release: "1.7.2"            # format without v for helm
-dynakube_api_version: "dynatrace.com/v1beta3"
+dt_operator_release: "latest"           # use latest release from GitHub
+dynakube_api_version: "dynatrace.com/v1beta5"  # updated API version
 log_monitoring: "off"
 
 # operator_mode: "classicFullStack"  
-# dt_operator_release: "v1.2.2"         # format with v
+# dt_operator_release: "latest"         # use latest release
 
 dt_operator_namespace: "dynatrace"
 host_group: "ace-box"
