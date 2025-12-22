@@ -484,8 +484,17 @@ gitea:
 ## @param redis-cluster.enabled Enable redis
 ## @param redis-cluster.usePassword Whether to use password authentication
 redis-cluster:
-  enabled: true
+  enabled: false
   usePassword: false
+
+## Simple Redis (non-HA)
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
 
 ## @section postgresql-ha
 #
@@ -505,7 +514,7 @@ postgresql-ha:
       database: gitea
       password: gitea
       username: gitea
-  enabled: true
+  enabled: false
   postgresql:
     repmgrPassword: changeme2
     postgresPassword: changeme1
@@ -518,6 +527,17 @@ postgresql-ha:
   primary:
     persistence:
       size: 10Gi
+
+## Simple PostgreSQL (non-HA)
+postgresql:
+  enabled: true
+  auth:
+    username: gitea
+    password: gitea
+    database: gitea
+  primary:
+    persistence:
+      enabled: false
 
 ## @section PostgreSQL
 #
