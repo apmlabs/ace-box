@@ -492,6 +492,10 @@ redis:
   enabled: true
   auth:
     enabled: false
+  image:
+    registry: public.ecr.aws
+    repository: docker/library/redis
+    tag: 7-alpine
   master:
     persistence:
       enabled: false
@@ -535,6 +539,10 @@ postgresql:
     username: gitea
     password: gitea
     database: gitea
+  image:
+    registry: public.ecr.aws
+    repository: docker/library/postgres
+    tag: 15-alpine
   primary:
     persistence:
       enabled: false
