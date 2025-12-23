@@ -532,21 +532,6 @@ postgresql-ha:
     persistence:
       size: 10Gi
 
-## Simple PostgreSQL (non-HA)
-postgresql:
-  enabled: true
-  auth:
-    username: gitea
-    password: gitea
-    database: gitea
-  image:
-    registry: public.ecr.aws
-    repository: docker/library/postgres
-    tag: "15"
-  primary:
-    persistence:
-      enabled: false
-
 ## @section PostgreSQL
 #
 ## @param postgresql.enabled Enable PostgreSQL
@@ -556,7 +541,15 @@ postgresql:
 ## @param postgresql.global.postgresql.service.ports.postgresql PostgreSQL service port (overrides `service.ports.postgresql`)
 ## @param postgresql.primary.persistence.size PVC Storage Request for PostgreSQL volume
 postgresql:
-  enabled: false
+  enabled: true
+  image:
+    registry: public.ecr.aws
+    repository: docker/library/postgres
+    tag: "15"
+  auth:
+    username: gitea
+    password: gitea
+    database: gitea
   global:
     postgresql:
       auth:
