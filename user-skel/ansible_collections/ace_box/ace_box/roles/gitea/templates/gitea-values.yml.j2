@@ -494,8 +494,8 @@ redis:
     enabled: false
   image:
     registry: public.ecr.aws
-    repository: docker/library/redis
-    tag: "7"
+    repository: bitnami/redis
+    tag: "7.2"
   master:
     persistence:
       enabled: false
@@ -544,7 +544,7 @@ postgresql:
   enabled: true
   image:
     registry: public.ecr.aws
-    repository: docker/library/postgres
+    repository: bitnami/postgresql
     tag: "15"
   auth:
     username: gitea
